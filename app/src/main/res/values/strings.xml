@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">肺功能仪</string>
+
+    <!-- MainActivity -->
+    <string name="desc_demonstrate">演示图</string>
+    <string name="ble_state_disconnect">未连接</string>
+</resources>
