@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/frag_home">
+    <fragment
+        android:id="@+id/frag_home"
+        android:name="com.fenix.spirometer.ui.fuctionlist.HomeFragment"
+        tools:layout="@layout/frag_home">
+        <argument
+            android:name="toolbar_item"
+            app:argType="string"
+            android:defaultValue="未连接" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_members"
+        android:name="com.fenix.spirometer.ui.memberlist.MemberListFragment"
+        tools:layout="@layout/frag_members">
+        <argument
+            android:name="toolbar_title"
+            app:argType="string"
+            android:defaultValue="选择人员" />
+        <argument
+            android:name="toolbar_item"
+            app:argType="string"
+            android:defaultValue="+添加" />
+<!--        <argument-->
+<!--            android:name="toolbar_bg_color"-->
+<!--            app:argType="integer"-->
+<!--            android:defaultValue="@color/white" />-->
+    </fragment>
+    <fragment
+        android:id="@+id/frag_personal"
+        android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment"
+        tools:layout="@layout/frag_personal">
+    </fragment>
+</navigation>

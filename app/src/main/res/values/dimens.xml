@@ -3,4 +3,6 @@
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_size_normal">16sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
+
+    <dimen name="title_padding_horizontal">5dp</dimen>
 </resources>

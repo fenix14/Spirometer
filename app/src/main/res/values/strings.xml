@@ -2,6 +2,20 @@
     <string name="app_name">肺功能仪</string>
 
     <!-- MainActivity -->
-    <string name="desc_demonstrate">演示图</string>
     <string name="ble_state_disconnect">未连接</string>
+
+    <string name="title_fuc_standard_test">标准测试</string>
+    <string name="title_fuc_vital_capacity_training">肺活量训练</string>
+    <string name="title_fuc_diastolic_test">舒张实验</string>
+    <string name="title_fuc_history_report">历史报告</string>
+    <string name="title_fuc_operation_video">操作视频</string>
+    <string name="title_fuc_message">消息</string>
+
+    <string name="tab_member_list">人员选择</string>
+    <string name="tab_home">主页</string>
+    <string name="tab_personal_center">个人中心</string>
+
+    <string name="desc_demonstrate">演示图</string>
+
+
 </resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/frag_members"
+        android:icon="@drawable/ic_nav_member_list"
+        android:title="@string/tab_personal_center" />
+
+    <item
+        android:id="@+id/frag_home"
+        android:icon="@drawable/ic_nav_home"
+        android:title="@string/tab_home" />
+
+    <item
+        android:id="@+id/frag_personal"
+        android:icon="@drawable/ic_nav_personal_center"
+        android:title="@string/tab_personal_center" />
+</menu>

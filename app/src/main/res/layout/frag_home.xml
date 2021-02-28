@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fuctionlist.HomeFragment">
+
+    <ImageView
+        android:id="@+id/imv_demonstrate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/desc_demonstrate"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img_demonstrate_main" />
+
+    <include
+        layout="@layout/view_functions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

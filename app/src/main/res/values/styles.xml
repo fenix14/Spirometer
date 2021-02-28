@@ -3,7 +3,14 @@
     <style name="DarkTextView" parent="Widget.AppCompat.TextView">
         <item name="android:textColor">@color/white</item>
     </style>
+    <style name="LightTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
     <style name="TitleText" parent="DarkTextView">
         <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+    <style name="ContentTextLight" parent="LightTextView">
+        <item name="android:textSize">@dimen/text_size_normal</item>
+        <item name="background">@drawable/selector_bg_white_grey</item>
     </style>
 </resources>
