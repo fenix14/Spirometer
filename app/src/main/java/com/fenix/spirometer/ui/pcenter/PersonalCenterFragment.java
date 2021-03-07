@@ -1,23 +1,21 @@
 package com.fenix.spirometer.ui.pcenter;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-
 import android.view.View;
+import android.widget.TextView;
+
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.fenix.spirometer.R;
-import com.fenix.spirometer.ui.base.BaseToolbarFragment;
+import com.fenix.spirometer.model.Administrator;
+import com.fenix.spirometer.ui.base.BaseToolbarVmFragment;
+import com.fenix.spirometer.util.InfomationRepository;
 
-public class PersonalCenterFragment extends BaseToolbarFragment {
-
-    private PersonalCenterViewModel mViewModel;
-
-    public static PersonalCenterFragment newInstance() {
-        return new PersonalCenterFragment();
-    }
+public class PersonalCenterFragment extends BaseToolbarVmFragment {
+    private TextView title, summary;
+    private RecyclerView preference;
+    private TextView tvVersion, tvMac;
 
     @Override
     protected int getLayoutId() {
@@ -26,14 +24,28 @@ public class PersonalCenterFragment extends BaseToolbarFragment {
 
     @Override
     protected void initView(View rootView) {
+        title = rootView.findViewById(R.id.title);
+        summary = rootView.findViewById(R.id.summary);
+        summary = rootView.findViewById(R.id.summary);
+        summary = rootView.findViewById(R.id.summary);
+        tvVersion = rootView.findViewById(R.id.content_version);
+        tvMac = rootView.findViewById(R.id.content_mac);
+        initData();
+    }
 
+    private void initData() {
+        tvVersion.setText(InfomationRepository.getAppVersionName());
+        tvMac.setText(InfomationRepository.getMacAddress());
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(PersonalCenterViewModel.class);
-        // TODO: Use the ViewModel
+    protected void initObserver() {
+        viewModel.subscribeToAdministrator(this, administrator -> {
+            if (administrator == null) {
+                return;
+            }
+            title.setText(administrator.getDisplayName());
+            summary.setText(administrator.getDuty());
+        });
     }
-
 }

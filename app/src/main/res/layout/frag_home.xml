@@ -15,8 +15,76 @@
         android:scaleType="fitCenter"
         android:src="@drawable/img_demonstrate_main" />
 
-    <include
-        layout="@layout/view_functions"
+    <GridLayout
+        android:id="@+id/gl_functions"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="2">
+
+        <TextView
+            android:id="@+id/tv_fuc_standard_test"
+            style="@style/ContentTextLight"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="@string/title_fuc_standard_test"
+            app:drawableTopCompat="@drawable/icon_fuc_standard_test" />
+
+        <TextView
+            android:id="@+id/tv_fuc_vital_capacity_training"
+            style="@style/ContentTextLight"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/title_fuc_vital_capacity_training"
+            app:drawableTopCompat="@drawable/icon_fuc_vital_capacity_training" />
+
+        <TextView
+            android:id="@+id/tv_fuc_diastolic_test"
+            style="@style/ContentTextLight"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/title_fuc_diastolic_test"
+            app:drawableTopCompat="@drawable/icon_fuc_diastolic_test" />
+
+        <TextView
+            android:id="@+id/tv_fuc_history_report"
+            style="@style/ContentTextLight"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/title_fuc_history_report"
+            app:drawableTopCompat="@drawable/icon_fuc_history_report" />
+
+        <TextView
+            android:id="@+id/tv_fuc_operation_video"
+            style="@style/ContentTextLight"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/title_fuc_operation_video"
+            app:drawableTopCompat="@drawable/icon_fuc_operation_video" />
+
+        <TextView
+            android:id="@+id/tv_fuc_message"
+            style="@style/ContentTextLight"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/title_fuc_message"
+            app:drawableTopCompat="@drawable/icon_fuc_message" />
+    </GridLayout>
 </LinearLayout>

@@ -5,4 +5,13 @@
         <attr name="centerText" format="string" />
         <attr name="rightText" format="string" />
     </declare-styleable>
+    <declare-styleable name="CustomExcel">
+        <attr name="header_background" format="color" />
+        <attr name="header_min_height" format="dimension" />
+        <attr name="list_item_min_height" format="dimension" />
+        <attr name="header_max_lines" format="integer" />
+        <attr name="stripe_list" format="boolean" />
+        <attr name="first_column_index" format="boolean" />
+        <attr name="last_column_skip_mark" format="boolean" />
+    </declare-styleable>
 </resources>

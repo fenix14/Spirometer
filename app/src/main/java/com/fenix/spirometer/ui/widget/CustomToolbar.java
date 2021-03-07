@@ -2,17 +2,17 @@ package com.fenix.spirometer.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
 
 import com.fenix.spirometer.R;
 
@@ -39,39 +39,56 @@ public class CustomToolbar extends FrameLayout {
         mTextCenter = typedArray.getString(R.styleable.CustomToolbar_centerText);
         mTextRight = typedArray.getString(R.styleable.CustomToolbar_rightText);
 
-        LayoutInflater.from(context).inflate(R.layout.custom_toolbar, this);
+        LayoutInflater.from(context).inflate(R.layout.widget_toolbar, this);
         mLeft = findViewById(R.id.toolbar_left);
         mCenter = findViewById(R.id.toolbar_center);
         mRight = findViewById(R.id.toolbar_right);
 
-        setLeft(mTextLeft);
-        setCenter(mTextCenter);
-        setRight(mTextRight);
+        setLeftText(mTextLeft);
+        setCenterText(mTextCenter);
+        setRightText(mTextRight);
 
     }
 
-    public void setLeft(CharSequence seq) {
-        String str = seq == null ? "" : seq.toString();
-        Log.d("hff", "CustomToolbar.setLeft = " + str);
-        mLeft.setText(str);
+    public void setLeftText(CharSequence seq) {
+        if (TextUtils.isEmpty(seq)) {
+            mLeft.setVisibility(View.GONE);
+        } else {
+            mLeft.setText(seq);
+            mLeft.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void setCenter(CharSequence seq) {
-        String str = seq == null ? "" : seq.toString();
-        Log.d("hff", "CustomToolbar.setCenter = " + str);
-        mCenter.setText(str);
+    public void setCenterText(CharSequence seq) {
+        if (TextUtils.isEmpty(seq)) {
+            mCenter.setVisibility(View.GONE);
+        } else {
+            mCenter.setText(seq);
+            mCenter.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void setRight(CharSequence seq) {
-        String str = seq == null ? "" : seq.toString();
-        Log.d("hff", "CustomToolbar.setRight = " + str);
-        mRight.setText(str);
+    public void setRightText(CharSequence seq) {
+        if (TextUtils.isEmpty(seq)) {
+            mRight.setVisibility(View.GONE);
+        } else {
+            mRight.setText(seq.toString());
+            mRight.setVisibility(View.VISIBLE);
+        }
     }
 
     public void clear() {
         Log.d("hff", "CustomToolbar.clear");
-        setLeft(null);
-        setCenter(null);
-        setRight(null);
+        setLeftText(null);
+        setCenterText(null);
+        setRightText(null);
+    }
+
+    public Button getLeftButton() {
+        return mLeft;
+    }
+
+    public Button getRightButton() {
+        return mRight;
     }
 }

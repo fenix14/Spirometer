@@ -3,6 +3,9 @@
 
     <!-- MainActivity -->
     <string name="ble_state_disconnect">未连接</string>
+    <string name="ble_state_connect">已连接</string>
+    <string name="ble_state_connecting">连接中</string>
+    <string name="confirm_exit">确认退出？</string>
 
     <string name="title_fuc_standard_test">标准测试</string>
     <string name="title_fuc_vital_capacity_training">肺活量训练</string>
@@ -17,5 +20,37 @@
 
     <string name="desc_demonstrate">演示图</string>
 
+    <!-- LoginActivity -->
+    <string name="prompt_phone_num">手机号</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in">登录</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">请输入手机号码</string>
+    <string name="invalid_password">密码不少于5位</string>
+    <string name="login_failed">"输入有误，请确认"</string>
 
+    <!-- PersonalCenterFragment -->
+    <string name="pc_administrators">操作人员管理</string>
+    <string name="pc_detector_calibration">测量仪校准</string>
+    <string name="pc_estimated_value_config">预计值配置</string>
+    <string name="pc_contact_us">联系我们</string>
+    <string name="pc_version">版本信息</string>
+    <string name="pc_mac">Mac地址</string>
+    <string name="pc_account_config">账号管理</string>
+    <string name="item_suffix">></string>
+    <string name="str_null">null</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- MemberListFragment -->
+    <string-array name="excel_title_member_list">
+        <item name="excel_title_name"> </item>
+        <item name="excel_title_name">姓名</item>
+        <item name="excel_title_gender">性别</item>
+        <item name="excel_title_age">年龄\n(岁)</item>
+        <item name="excel_title_height">身高\n(cm)</item>
+        <item name="excel_title_weight">体重\n(kg)</item>
+        <item name="excel_title_province_city">省市</item>
+        <item name="excel_title_province_city"> </item>
+    </string-array>
 </resources>

@@ -6,14 +6,16 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.util.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class TitleType {
 
-    @BgColorId
-    private int bgColor;
+public class TitleNavType {
+
+    @Constants.BgType
+    private int toolbarType;
 
     private boolean isShowBack;
 
@@ -23,19 +25,31 @@ public class TitleType {
     @NonNull
     private String item;
 
-    public TitleType(int bgColor, boolean isShowBack, String title, String item) {
-        this.bgColor = bgColor;
+    @Constants.BgType
+    private int navType;
+
+    public TitleNavType(int toolbarType, boolean isShowBack, @NonNull String title, @NonNull String item, int navType) {
+        this.toolbarType = toolbarType;
         this.isShowBack = isShowBack;
-        this.title = title == null ? "" : title;
-        this.item = item == null ? "" : item;
+        this.title = title;
+        this.item = item;
+        this.navType = navType;
     }
 
-    public int getBgColor() {
-        return bgColor;
+    public int getToolbarType() {
+        return toolbarType;
     }
 
-    public void setBgColor(int bgColor) {
-        this.bgColor = bgColor;
+    public void setToolbarType(int toolbarType) {
+        this.toolbarType = toolbarType;
+    }
+
+    public int getNavType() {
+        return navType;
+    }
+
+    public void setNavType(int navType) {
+        this.navType = navType;
     }
 
     public boolean isShowBack() {

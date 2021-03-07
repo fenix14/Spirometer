@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <PreferenceCategory>
+        <Preference
+            app:allowDividerBelow="true"
+            app:key="administrators"
+            app:title="@string/pc_administrators" />
+        <Preference
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:key="detector_calibration"
+            app:title="@string/pc_detector_calibration" />
+        <Preference
+            app:allowDividerAbove="true"
+            app:key="estimated_value_config"
+            app:title="@string/pc_estimated_value_config" />
+    </PreferenceCategory>
+
+    <Preference
+        android:enabled="false"
+        android:layout="@layout/divider_pref_category" />
+
+    <PreferenceCategory>
+        <Preference
+            app:allowDividerBelow="true"
+            app:key="contact_us"
+            app:title="@string/pc_contact_us" />
+        <Preference
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:key="version"
+            app:title="@string/pc_version" />
+        <Preference
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:key="mac"
+            app:title="@string/pc_mac" />
+        <Preference
+            app:allowDividerAbove="true"
+            app:key="account_config"
+            app:title="@string/pc_account_config" />
+    </PreferenceCategory>
+</PreferenceScreen>

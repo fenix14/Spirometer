@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/frag_home">
+
     <fragment
         android:id="@+id/frag_home"
         android:name="com.fenix.spirometer.ui.fuctionlist.HomeFragment"
@@ -24,14 +25,17 @@
             android:name="toolbar_item"
             app:argType="string"
             android:defaultValue="+添加" />
-<!--        <argument-->
-<!--            android:name="toolbar_bg_color"-->
-<!--            app:argType="integer"-->
-<!--            android:defaultValue="@color/white" />-->
+        <action android:id="@+id/members_to_member"
+            app:destination="@id/frag_member"/>
     </fragment>
     <fragment
         android:id="@+id/frag_personal"
         android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment"
         tools:layout="@layout/frag_personal">
+    </fragment>
+
+    <fragment
+        android:id="@+id/frag_member"
+        android:name="com.fenix.spirometer.ui.AddMemberFragment">
     </fragment>
 </navigation>
