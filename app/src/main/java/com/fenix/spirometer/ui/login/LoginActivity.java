@@ -1,57 +1,41 @@
 package com.fenix.spirometer.ui.login;
 
-import android.app.Activity;
-
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.fenix.spirometer.R;
-import com.fenix.spirometer.model.Administrator;
+import com.fenix.spirometer.model.DetectorCompensation;
+import com.fenix.spirometer.model.Province;
 import com.fenix.spirometer.ui.main.MainActivity;
 import com.fenix.spirometer.util.AllViewModelFactory;
+import com.fenix.spirometer.util.Constants;
+import com.fenix.spirometer.util.FileParser;
+
+import java.util.List;
+
+import static com.fenix.spirometer.util.Constants.SP_KEY_IS_INITIALIZED;
 
 /**
  * 登录页面
  */
 public class LoginActivity extends AppCompatActivity {
-
     private LoginViewModel loginViewModel;
 
-    private EditText etUserName, etPassword;
+    private EditText etUserId, etPassword;
     private Button btnLogin;
     private ProgressBar pbLoading;
-
-    private TextWatcher afterTextChangedListener = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            // ignore
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // ignore
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            loginViewModel.inputDataChanged(etUserName.getText().toString(),
-                    etPassword.getText().toString());
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,49 +46,63 @@ public class LoginActivity extends AppCompatActivity {
 
         initView();
         initObserver();
+        initData();
     }
 
+
     private void initView() {
-        etUserName = findViewById(R.id.username);
-        etUserName.addTextChangedListener(afterTextChangedListener);
-
+        etUserId = findViewById(R.id.userId);
         etPassword = findViewById(R.id.password);
-        etPassword.addTextChangedListener(afterTextChangedListener);
-
         btnLogin = findViewById(R.id.login);
         btnLogin.setOnClickListener(v -> {
             pbLoading.setVisibility(View.VISIBLE);
-            loginViewModel.login(etUserName.getText().toString(), etPassword.getText().toString());
+            loginViewModel.login(etUserId.getText().toString(), etPassword.getText().toString());
         });
 
         pbLoading = findViewById(R.id.loading);
     }
 
     private void initObserver() {
-        loginViewModel.getInputDataState().observe(this, inputDataState -> {
-            btnLogin.setEnabled(inputDataState.isInputValid());
-            if (!inputDataState.isUserNameValid()) {
-                etUserName.setError(getString(R.string.invalid_username));
-            }
-            if (!inputDataState.isPasswordValid() && etPassword.isFocused()) {
-                etPassword.setError(getString(R.string.invalid_password));
-            }
-        });
-
-        loginViewModel.getAdministrator().observe(this, admin -> {
+        loginViewModel.subscribeToLoginState(this, loginState -> {
             pbLoading.setVisibility(View.GONE);
-            if (admin == null) {
-                Toast.makeText(this, R.string.login_failed, Toast.LENGTH_SHORT).show();
+            if (loginState == null) {
                 return;
             }
-
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class).putExtra("admin", admin);
-            startActivity(intent);
-            finish();
+            if (loginState.isLogin()) {
+                startApp();
+            } else {
+                Toast.makeText(this, loginState.getErrMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    private void initData() {
+        SharedPreferences sp = getSharedPreferences(Constants.SP_NAME, 0);
+        if (!sp.getBoolean(SP_KEY_IS_INITIALIZED, false)) {
+            // TODO: 调试初始化数据
+            List<Province> provinces = FileParser.parserProvince(getResources().openRawResource(R.raw.provinces));
+            loginViewModel.insertProvinces(provinces);
+
+            List<DetectorCompensation> compensations = FileParser.parserDetectorCompensations(getResources().openRawResource(R.raw.detector_compensation));
+            loginViewModel.insertDetectorCompensations(compensations);
+
+            loginViewModel.insertEstValues();
+
+            loginViewModel.insertOperators();
+
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean(SP_KEY_IS_INITIALIZED, true);
+            editor.apply();
+        }
+
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA, Manifest.permission.BLUETOOTH_PRIVILEGED
+                , Manifest.permission.ACCESS_WIFI_STATE};
+        requestPermissions(permissions, 0);
+    }
+
+    private void startApp() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 }

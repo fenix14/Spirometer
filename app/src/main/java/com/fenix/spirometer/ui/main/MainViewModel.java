@@ -1,85 +1,129 @@
 package com.fenix.spirometer.ui.main;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.fenix.spirometer.model.Administrator;
+import com.fenix.spirometer.ble.BleRepository;
 import com.fenix.spirometer.model.BleDeviceState;
+import com.fenix.spirometer.model.LoginState;
 import com.fenix.spirometer.model.Member;
-import com.fenix.spirometer.util.Constants;
+import com.fenix.spirometer.model.Operator;
+import com.fenix.spirometer.model.TestInfo;
+import com.fenix.spirometer.room.AddrRepository;
+import com.fenix.spirometer.room.EstValueRepository;
+import com.fenix.spirometer.room.MemberRepository;
+import com.fenix.spirometer.room.OperatorRepository;
+import com.fenix.spirometer.room.DetectCompRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainViewModel extends ViewModel {
-    private MutableLiveData<BleDeviceState> mdBleDeviceState = new MutableLiveData<>();
+    private final ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
 
-    private MutableLiveData<Administrator> mdAdministrator = new MutableLiveData<>(new Administrator("18674018759", "HeFengfei", "123456", "Nothing"));
+    private final MemberRepository memberRepo;
+    private final AddrRepository addrRepo;
+    private final OperatorRepository operRepo;
+    private final DetectCompRepository detectCompRepo;
+    private final EstValueRepository estValueRepo;
 
-    private MutableLiveData<List<Member>> mdMembers = new MutableLiveData<>();
+    private BleRepository bleRepo;
 
-    private MutableLiveData<Integer> mdNavigationBarType = new MutableLiveData<>();
+    private MutableLiveData<TestInfo> mdTestInfo;
 
-    private MutableLiveData<Integer> mdToolbarType = new MutableLiveData<>();
+    private boolean isTesting = false;
+    private Member testMember = null;
+
+    private final MutableLiveData<Boolean> mdIsShowNavBar = new MutableLiveData<>();
 
     public MainViewModel() {
-        List<Member> members = new ArrayList<>();
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二三", "男", 18, 78, 142, "内蒙古", "呼和浩特"));
-        members.add(new Member("一", "男", 18, 78, 142, "新疆", "佳木斯"));
-        members.add(new Member("一二三四", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        members.add(new Member("一二", "男", 18, 78, 142, "湖北", "武汉"));
-        mdMembers.postValue(members);
+        memberRepo = MemberRepository.getInstance();
+        addrRepo = AddrRepository.getInstance();
+        operRepo = OperatorRepository.getInstance();
+        detectCompRepo = DetectCompRepository.getInstance();
+        estValueRepo = EstValueRepository.getInstance();
+        bleRepo = BleRepository.getInstance();
     }
 
-    public void setAdministrator(Administrator admin) {
-        mdAdministrator.postValue(admin);
+    public void login(String userId, String password) {
+
+        operRepo.login(userId, password);
     }
 
-    public void subscribeToAdministrator(LifecycleOwner lifecycleOwner, Observer<Administrator> observer) {
-        mdAdministrator.observe(lifecycleOwner, observer);
+    public void subscribeToLoginState(LifecycleOwner lifecycleOwner, Observer<LoginState> observer) {
+        operRepo.getLoginState().observe(lifecycleOwner, observer);
     }
 
-    public void setBleDeviceState(BleDeviceState bleState) {
-        mdBleDeviceState.postValue(bleState);
+    public boolean isLogin() {
+        LoginState loginState = operRepo.getLoginState().getValue();
+        return loginState != null && loginState.isLogin();
+    }
+
+    public void logout() {
+        operRepo.logout();
+    }
+
+    // 蓝牙设备相关
+    public void connectToBleDevice(String mac) {
+        bleRepo.connectTo(mac);
     }
 
     public void subscribeToBleDeviceState(LifecycleOwner lifecycleOwner, Observer<BleDeviceState> observer) {
-        mdBleDeviceState.observe(lifecycleOwner, observer);
+        bleRepo.getBleDeviceState().observe(lifecycleOwner, observer);
     }
 
-    public void setMembers(List<Member> members) {
-        mdMembers.postValue(members);
-    }
-
+    // 人员列表相关 TODO:有必要放这吗？
     public void subscribeToMembers(LifecycleOwner lifecycleOwner, Observer<List<Member>> observer) {
-        mdMembers.observe(lifecycleOwner, observer);
+        memberRepo.getAllMembers().observe(lifecycleOwner, observer);
     }
 
-
-    public void setNavigationBarBg(int color) {
-        mdNavigationBarType.postValue(color);
+    public LiveData<Member> getMember(String cellphone, String name) {
+        return memberRepo.getMember(cellphone, name);
     }
 
-    public void subscribeToNavigationBarBg(LifecycleOwner lifecycleOwner, Observer<Integer> observer) {
-        mdNavigationBarType.observe(lifecycleOwner, observer);
-    }
-    public void setToolbarType(@Constants.BgType int toolbarType) {
-        mdToolbarType.postValue(toolbarType);
+    public void addMember(Member member) {
+        cachedThreadPool.execute(() -> memberRepo.insertMember(member));
     }
 
-    public void subscribeToToolbarType(LifecycleOwner lifecycleOwner, Observer<Integer> observer) {
-        mdToolbarType.observe(lifecycleOwner, observer);
+    public void updateMember(Member member) {
+        cachedThreadPool.execute(() -> memberRepo.updateMember(member));
+    }
+
+    public boolean isTesting() {
+        return isTesting;
+    }
+
+    public void setTesting(boolean testing) {
+        isTesting = testing;
+    }
+
+    // for OperatorDetailFragment
+    public void addOperator(Operator newOperator) {
+        operRepo.insertOperator(newOperator);
+    }
+
+    public MutableLiveData<Operator> getOperator(String userId) {
+        return operRepo.getOperator(userId);
+    }
+
+    // 底部Tab导航栏是否显示
+    public void setShowNavBar(boolean isShowNavBar) {
+        mdIsShowNavBar.postValue(isShowNavBar);
+    }
+
+    public void subscribeToIsShowNavBar(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
+        mdIsShowNavBar.observe(lifecycleOwner, observer);
+    }
+
+    public void setTestMember(Member member) {
+        testMember = member;
+    }
+
+    public Member getTestMember() {
+        return testMember;
     }
 }

@@ -3,39 +3,103 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/frag_home">
-
     <fragment
         android:id="@+id/frag_home"
-        android:name="com.fenix.spirometer.ui.fuctionlist.HomeFragment"
+        android:name="com.fenix.spirometer.ui.home.HomeFragment"
         tools:layout="@layout/frag_home">
-        <argument
-            android:name="toolbar_item"
-            app:argType="string"
-            android:defaultValue="未连接" />
+        <action
+            android:id="@+id/home_to_members"
+            app:destination="@+id/frag_members" />
+
+        <action
+            android:id="@+id/home_to_personal"
+            app:destination="@+id/frag_personal" />
+        <action
+            android:id="@+id/home_to_member"
+            app:destination="@+id/frag_member" />
     </fragment>
     <fragment
         android:id="@+id/frag_members"
-        android:name="com.fenix.spirometer.ui.memberlist.MemberListFragment"
+        android:name="com.fenix.spirometer.ui.member.MemberListFragment"
         tools:layout="@layout/frag_members">
-        <argument
-            android:name="toolbar_title"
-            app:argType="string"
-            android:defaultValue="选择人员" />
-        <argument
-            android:name="toolbar_item"
-            app:argType="string"
-            android:defaultValue="+添加" />
-        <action android:id="@+id/members_to_member"
-            app:destination="@id/frag_member"/>
+        <action
+            android:id="@+id/members_to_member"
+            app:destination="@+id/frag_member" />
     </fragment>
     <fragment
-        android:id="@+id/frag_personal"
-        android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment"
-        tools:layout="@layout/frag_personal">
+        android:id="@+id/frag_member"
+        android:name="com.fenix.spirometer.ui.member.MemberDetailFragment" >
+        <action
+            android:id="@+id/member_to_members"
+            app:destination="@+id/frag_members" />
+        <action
+            android:id="@+id/member_to_prepare"
+            app:destination="@+id/frag_prepare" />
     </fragment>
 
     <fragment
-        android:id="@+id/frag_member"
-        android:name="com.fenix.spirometer.ui.AddMemberFragment">
+        android:id="@+id/frag_personal"
+        android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment">
+        <action
+            android:id="@+id/personal_to_operators"
+            app:destination="@+id/frag_operator_list" />
+        <action
+            android:id="@+id/personal_to_est_values"
+            app:destination="@+id/frag_est_value_list" />
+        <action
+            android:id="@+id/personal_to_detector_calibration"
+            app:destination="@+id/frag_detector_calibration" />
+        <action
+            android:id="@+id/personal_to_others"
+            app:destination="@+id/frag_personaldefaults" />
     </fragment>
+
+    <fragment
+        android:id="@+id/frag_operator_list"
+        android:name="com.fenix.spirometer.ui.pcenter.operatorlist.OperatorListFragment">
+        <action
+            android:id="@+id/operator_to_detail"
+            app:destination="@+id/frag_operator_detail" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_operator_detail"
+        android:name="com.fenix.spirometer.ui.pcenter.operatorlist.OperatorDetailFragment" />
+    <fragment
+        android:id="@+id/frag_detector_calibration"
+        android:name="com.fenix.spirometer.ui.pcenter.detectorcalibration.DetectorCalibFragment" />
+
+    <fragment
+        android:id="@+id/frag_est_value_list"
+        android:name="com.fenix.spirometer.ui.pcenter.estvaluelist.EstimatedValuesFragment">
+        <action
+            android:id="@+id/est_value_list_to_edit"
+            app:destination="@+id/frag_edit_est_value" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_edit_est_value"
+        android:name="com.fenix.spirometer.ui.pcenter.estvaluelist.EditEstValueFragment" />
+
+    <fragment
+        android:id="@+id/frag_personaldefaults"
+        android:name="com.fenix.spirometer.ui.pcenter.others.CurrencyInfoFragment"
+        tools:layout="@layout/fragment_personaldeaults" />
+
+    <fragment
+        android:id="@+id/frag_prepare"
+        android:name="com.fenix.spirometer.ui.test.PrepareFragment">
+        <action
+            android:id="@+id/prepare_to_testing"
+            app:destination="@+id/frag_testing" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_testing"
+        android:name="com.fenix.spirometer.ui.test.TestingFragment">
+        <action
+            android:id="@+id/testing_to_result"
+            app:destination="@+id/frag_report" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_report"
+        android:name="com.fenix.spirometer.ui.test.TestReportFragment"/>
+
 </navigation>

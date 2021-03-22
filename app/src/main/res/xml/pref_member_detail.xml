@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        android:inputType="text"
+        app:key="setName"
+        app:necessary="true"
+        app:title="@string/member_name" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:choices="@array/member_array_gender"
+        app:content_type="choice"
+        app:key="setGender"
+        app:necessary="true"
+        app:title="@string/member_gender" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        android:inputType="number"
+        app:key="setAge"
+        app:necessary="true"
+        app:title="@string/member_age" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        android:inputType="number"
+        app:key="setWeight"
+        app:necessary="true"
+        app:title="@string/member_weight" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        android:inputType="number"
+        app:key="setHeight"
+        app:necessary="true"
+        app:title="@string/member_height" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        android:inputType="phone"
+        app:key="setCellphone"
+        app:title="@string/member_cell" />
+    <Preference android:layout="@layout/pref_divider" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="drop"
+        app:key="setProvince"
+        app:title="@string/member_province" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="drop"
+        app:key="setCity"
+        app:title="@string/member_city" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="drop"
+        app:key="setCounty"
+        app:title="@string/member_county" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="drop"
+        app:key="setArea"
+        app:title="@string/member_area" />
+</PreferenceScreen>

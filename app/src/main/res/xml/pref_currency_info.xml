@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="@string/key_pref_screen">
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:allowDividerBelow="true"
+        app:content_type="text"
+        app:key="@string/key_pref_first_row" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+        app:content_type="text"
+        app:key="@string/key_pref_second_row" />
+</PreferenceScreen>

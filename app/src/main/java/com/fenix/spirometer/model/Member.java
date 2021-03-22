@@ -1,44 +1,58 @@
 package com.fenix.spirometer.model;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
- * 受试人员模型
+ * 受试人员数据模型
  */
-public class Member extends BaseModel implements Serializable {
+@Entity(primaryKeys = {"cellphone"},
+        indices = {@Index(value = {"name", "cellphone"}, unique = true)})
+public class Member extends BaseModel{
+    @NonNull
     private String name;
+    @NonNull
     private String gender;
-    private int age;
-    private int weight;
-    private int height;
+    @NonNull
+    private String age;
+    @NonNull
+    private String weight;
+    @NonNull
+    private String height;
+    @NonNull
     private String cellphone;
-    private String province;
-    private String city;
-    private String county;
-    private String area;
+    @ColumnInfo(defaultValue = "")
+    private String province = "";
+    @ColumnInfo(defaultValue = "")
+    private String city = "";
+    @ColumnInfo(defaultValue = "")
+    private String county = "";
+    @ColumnInfo(defaultValue = "")
+    private String area = "";
 
-    public Member(String name, String gender, int age, int weight, int height) {
-        this.name = name;
-        this.gender = gender;
-        this.age = age;
-        this.weight = weight;
-        this.height = height;
+    @Ignore
+    public Member() {
     }
 
-    public Member(String name, String gender, int age, int weight, int height, String province, String city) {
+    public Member(@NotNull String name, @NotNull String gender, @NotNull String age, @NotNull String weight, @NotNull String height, String cellphone, String province, String city, String county, String area) {
         this.name = name;
         this.gender = gender;
         this.age = age;
         this.weight = weight;
         this.height = height;
+        this.cellphone = cellphone;
         this.province = province;
         this.city = city;
+        this.county = county;
+        this.area = area;
     }
 
     public String getName() {
@@ -57,27 +71,27 @@ public class Member extends BaseModel implements Serializable {
         this.gender = gender;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
-    public int getWeight() {
+    public String getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(String weight) {
         this.weight = weight;
     }
 
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(String height) {
         this.height = height;
     }
 
@@ -123,5 +137,27 @@ public class Member extends BaseModel implements Serializable {
 
     public void setArea(String area) {
         this.area = area;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return name.equals(member.name) &&
+                gender.equals(member.gender) &&
+                age.equals(member.age) &&
+                weight.equals(member.weight) &&
+                height.equals(member.height) &&
+                cellphone.equals(member.cellphone) &&
+                Objects.equals(province, member.province) &&
+                Objects.equals(city, member.city) &&
+                Objects.equals(county, member.county) &&
+                Objects.equals(area, member.area);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, gender, age, weight, height, cellphone, province, city, county, area);
     }
 }

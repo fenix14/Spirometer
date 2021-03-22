@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frag_spec"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/layout_phone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_height"
+            android:background="@drawable/selector_bg_white_grey"
+            android:clickable="true"
+            android:paddingHorizontal="@dimen/activity_persional_margin">
+
+
+            <TextView
+                android:id="@+id/deaults_title"
+                style="@style/ContentTextLight"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="start|center_vertical"
+                android:text="@string/pref_title_cellphone" />
+
+            <TextView
+                android:id="@+id/deaults_value"
+                style="@style/ContentTextLight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:text="@string/pref_content_cellphone" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:background="@color/light_gray"
+            android:clickable="true" />
+
+        <LinearLayout
+            android:id="@+id/deaults_view_gone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_height"
+            android:layout_marginTop="@dimen/divider_height"
+            android:background="@drawable/selector_bg_white_grey"
+            android:clickable="true"
+            android:paddingHorizontal="@dimen/activity_persional_margin">
+
+            <TextView
+                android:id="@+id/email_title"
+                style="@style/ContentTextLight"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="start|center_vertical"
+                android:text="@string/pref_title_email" />
+
+            <TextView
+                android:id="@+id/email_value"
+                style="@style/ContentTextLight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:text="@string/pref_content_email" />
+        </LinearLayout>
+    <Button
+        android:id="@+id/exitaccount"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:layout_marginTop="@dimen/divider_height"
+        android:background="@drawable/selector_bg_white_grey"
+        android:clickable="true"
+        android:paddingHorizontal="@dimen/activity_horizontal_margin"
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="@color/blue"
+        android:text="退出登录">
+    </Button>>
+</LinearLayout>

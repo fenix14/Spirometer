@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="text"
+        app:key="setName"
+        app:title="@string/estVal_title_name" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:layout="@layout/widget_preference_row"
+        app:content_type="text"
+        app:key="setGender"
+        app:title="@string/estVal_title_gender" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:inputType="text"
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        app:key="setFormula"
+        app:necessary="true"
+        app:title="@string/estVal_title_formula" />
+    <com.fenix.spirometer.ui.widget.CustomPreference
+        android:inputType="number"
+        android:layout="@layout/widget_preference_row"
+        app:content_type="edit"
+        app:key="setValueR"
+        app:necessary="true"
+        app:title="@string/estVal_title_r" />
+</PreferenceScreen>

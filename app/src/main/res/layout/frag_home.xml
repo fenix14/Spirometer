@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.fuctionlist.HomeFragment">
+    tools:context=".ui.home.HomeFragment">
 
     <ImageView
         android:id="@+id/imv_demonstrate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/desc_demonstrate"
-        android:scaleType="fitCenter"
         android:src="@drawable/img_demonstrate_main" />
 
     <GridLayout
@@ -27,64 +28,70 @@
             style="@style/ContentTextLight"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:text="@string/title_fuc_standard_test"
-            app:drawableTopCompat="@drawable/icon_fuc_standard_test" />
+            app:drawableTopCompat="@drawable/icon_func_standard_test" />
 
         <TextView
             android:id="@+id/tv_fuc_vital_capacity_training"
             style="@style/ContentTextLight"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
+            android:padding="10dp"
             android:onClick="onClick"
             android:text="@string/title_fuc_vital_capacity_training"
-            app:drawableTopCompat="@drawable/icon_fuc_vital_capacity_training" />
+            app:drawableTopCompat="@drawable/icon_func_vital_capacity_training" />
 
         <TextView
             android:id="@+id/tv_fuc_diastolic_test"
             style="@style/ContentTextLight"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:onClick="onClick"
             android:text="@string/title_fuc_diastolic_test"
-            app:drawableTopCompat="@drawable/icon_fuc_diastolic_test" />
+            app:drawableTopCompat="@drawable/icon_func_diastolic_test" />
 
         <TextView
-            android:id="@+id/tv_fuc_history_report"
+            android:id="@+id/tv_fuc_pet_test"
             style="@style/ContentTextLight"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:onClick="onClick"
-            android:text="@string/title_fuc_history_report"
-            app:drawableTopCompat="@drawable/icon_fuc_history_report" />
+            android:text="@string/title_fuc_pet_test"
+            app:drawableTopCompat="@drawable/icon_func_pet_test" />
 
         <TextView
             android:id="@+id/tv_fuc_operation_video"
             style="@style/ContentTextLight"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:onClick="onClick"
             android:text="@string/title_fuc_operation_video"
-            app:drawableTopCompat="@drawable/icon_fuc_operation_video" />
+            app:drawableTopCompat="@drawable/icon_func_operation_video" />
 
         <TextView
-            android:id="@+id/tv_fuc_message"
+            android:id="@+id/tv_fuc_history_report"
             style="@style/ContentTextLight"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:onClick="onClick"
-            android:text="@string/title_fuc_message"
-            app:drawableTopCompat="@drawable/icon_fuc_message" />
+            android:text="@string/title_fuc_history_report"
+            app:drawableTopCompat="@drawable/icon_func_history_report" />
     </GridLayout>
 </LinearLayout>

@@ -1,51 +1,78 @@
 package com.fenix.spirometer.ui.pcenter;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 
 import com.fenix.spirometer.R;
-import com.fenix.spirometer.model.Administrator;
-import com.fenix.spirometer.ui.base.BaseToolbarVmFragment;
-import com.fenix.spirometer.util.InfomationRepository;
+import com.fenix.spirometer.ui.base.BaseVMPrefFragment;
+import com.fenix.spirometer.ui.widget.CustomToolbar;
 
-public class PersonalCenterFragment extends BaseToolbarVmFragment {
-    private TextView title, summary;
-    private RecyclerView preference;
-    private TextView tvVersion, tvMac;
-
+public class PersonalCenterFragment extends BaseVMPrefFragment {
     @Override
-    protected int getLayoutId() {
-        return R.layout.frag_personal;
+    protected void initToolNavBar() {
+        viewModel.setShowNavBar(true);
+        CustomToolbar toolbar = getToolbar();
+        toolbar.clear();
+
+        toolbar.setBackgroundResource(R.color.colorPrimary);
+        toolbar.setCenterText(null);
+        toolbar.setLeftText(null);
+        toolbar.setRightText(null);
     }
 
     @Override
-    protected void initView(View rootView) {
-        title = rootView.findViewById(R.id.title);
-        summary = rootView.findViewById(R.id.summary);
-        summary = rootView.findViewById(R.id.summary);
-        summary = rootView.findViewById(R.id.summary);
-        tvVersion = rootView.findViewById(R.id.content_version);
-        tvMac = rootView.findViewById(R.id.content_mac);
-        initData();
+    public boolean onPreferenceTreeClick(Preference preference) {
+        String key = preference.getKey();
+        Bundle bundle = new Bundle();
+		int action;
+        if ("administrators".equals(key)) {
+            action = R.id.personal_to_operators;
+        } else if ("estimated_value_config".equals(key)) {
+            action = R.id.personal_to_est_values;
+        } else if ("detector_calibration".equals(key)) {
+            action = R.id.personal_to_detector_calibration;
+        } else if(preference.getKey().equals("contact_us")){
+            bundle.putString("flag_deaults","contact");
+			action = R.id.personal_to_others;
+        } else if(preference.getKey().equals("version")){
+            bundle.putString("flag_deaults","version");
+			action = R.id.personal_to_others;
+        } else if(preference.getKey().equals("mac")){
+            bundle.putString("flag_deaults","mac");
+			action = R.id.personal_to_others;
+        } else if(preference.getKey().equals("account")){
+            bundle.putString("flag_deaults","account");
+			action = R.id.personal_to_others;
+        } else {
+            return super.onPreferenceTreeClick(preference);
+        }
+		NavHostFragment.findNavController(this).navigate(action, bundle);
+        return true;
     }
 
-    private void initData() {
-        tvVersion.setText(InfomationRepository.getAppVersionName());
-        tvMac.setText(InfomationRepository.getMacAddress());
+    @Override
+    protected void initPreference() {
     }
 
     @Override
     protected void initObserver() {
-        viewModel.subscribeToAdministrator(this, administrator -> {
-            if (administrator == null) {
-                return;
+        viewModel.subscribeToLoginState(this, loginState -> {
+            if (loginState != null && loginState.isLogin()) {
+                setHeader(loginState.getLoginOperator().getDisplayName(), loginState.getLoginOperator().getDuty());
+                PreferenceCategory adminCategory = findPreference("admin_category");
+                if (adminCategory != null) {
+                    adminCategory.setVisible(loginState.getLoginOperator().isAdmin());
+                }
             }
-            title.setText(administrator.getDisplayName());
-            summary.setText(administrator.getDuty());
         });
     }
+
+    @Override
+    protected int getPrefId() {
+        return R.xml.pref_personal_center;
+    }
+
 }

@@ -4,6 +4,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginVertical="@dimen/activity_vertical_margin"
+        android:background="@drawable/bg_stroke_search"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:showDividers="none"
+        android:submitBackground="@null"
+        android:visibility="gone" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" >
+    </com.google.android.material.tabs.TabLayout>
+
     <include layout="@layout/widget_excel_header" />
 
     <androidx.recyclerview.widget.RecyclerView

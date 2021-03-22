@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.pcenter.estvaluelist.EstimatedValuesFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:id="@+id/switch_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:longClickable="false"
+            android:showText="true"
+            android:switchMinWidth="60dp"
+            android:switchTextAppearance="@style/MyTextAppearance"
+            android:textOff="@string/gender_male"
+            android:textOn="@string/gender_female"
+            android:thumb="@drawable/switch_thumb"
+            android:track="@drawable/switch_track" />
+    </LinearLayout>
+
+    <com.fenix.spirometer.ui.widget.CustomExcel
+        android:id="@+id/customExcel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:header_background="@color/light_gray"
+        app:header_max_lines="2"
+        app:header_min_height="@dimen/item_height"
+        app:last_column_type="edit"
+        app:list_item_min_height="@dimen/item_height"
+        app:stripe_list="true" />
+</LinearLayout>

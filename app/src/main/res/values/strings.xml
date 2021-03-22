@@ -1,22 +1,19 @@
 <resources>
     <string name="app_name">肺功能仪</string>
 
+    <string name="dialog_ok">确定</string>
+    <string name="dialog_cancel">取消</string>
+
     <!-- MainActivity -->
+    <string name="tab_home">主页</string>
     <string name="ble_state_disconnect">未连接</string>
     <string name="ble_state_connect">已连接</string>
     <string name="ble_state_connecting">连接中</string>
     <string name="confirm_exit">确认退出？</string>
+    <string name="confirm_delete">确认删除？</string>
 
-    <string name="title_fuc_standard_test">标准测试</string>
-    <string name="title_fuc_vital_capacity_training">肺活量训练</string>
-    <string name="title_fuc_diastolic_test">舒张实验</string>
-    <string name="title_fuc_history_report">历史报告</string>
-    <string name="title_fuc_operation_video">操作视频</string>
-    <string name="title_fuc_message">消息</string>
-
-    <string name="tab_member_list">人员选择</string>
-    <string name="tab_home">主页</string>
-    <string name="tab_personal_center">个人中心</string>
+    <!-- Toolbar -->
+    <string name="item_back">&#060;</string>
 
     <string name="desc_demonstrate">演示图</string>
 
@@ -25,11 +22,23 @@
     <string name="prompt_password">密码</string>
     <string name="action_sign_in">登录</string>
     <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">请输入手机号码</string>
-    <string name="invalid_password">密码不少于5位</string>
-    <string name="login_failed">"输入有误，请确认"</string>
+    <string name="login_invalid_username">请输入手机号码</string>
+    <string name="login_invalid_password">密码不少于5位</string>
+    <string name="login_invalid">"输入有误，请确认"</string>
+    <string name="login_failed_unknown">"登录异常，请退出重试"</string>
+
+    <!-- HomeFragment -->
+    <string name="confirm_bt_connection">请点击右上角连接蓝牙</string>
+    <string name="confirm_replace_ble_device">是否断开当前设备，并绑定新设备</string>
+    <string name="title_fuc_standard_test">标准测试</string>
+    <string name="title_fuc_vital_capacity_training">肺活量训练</string>
+    <string name="title_fuc_diastolic_test">舒张实验</string>
+    <string name="title_fuc_pet_test">PET测试</string>
+    <string name="title_fuc_operation_video">操作视频</string>
+    <string name="title_fuc_history_report">历史报告</string>
 
     <!-- PersonalCenterFragment -->
+    <string name="tab_personal_center">个人中心</string>
     <string name="pc_administrators">操作人员管理</string>
     <string name="pc_detector_calibration">测量仪校准</string>
     <string name="pc_estimated_value_config">预计值配置</string>
@@ -37,20 +46,140 @@
     <string name="pc_version">版本信息</string>
     <string name="pc_mac">Mac地址</string>
     <string name="pc_account_config">账号管理</string>
-    <string name="item_suffix">></string>
+    <string name="item_suffix_skip">></string>
+    <string name="item_suffix_del">X</string>
+    <string name="item_suffix_edit">编辑</string>
     <string name="str_null">null</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- OperatorListFragment -->
+    <string name="operator_list_frag_title_right_add">添加</string>
+    <string-array name="excel_title_operator_list">
+        <item name="excel_title_index"> </item>
+        <item name="excel_title_name">姓名</item>
+        <item name="excel_title_userid">账号</item>
+        <item name="excel_title_password">密码</item>
+        <item name="excel_title_duty">职务</item>
+        <item name="excel_title_suffix"> </item>
+    </string-array>
+    <!-- OperatorDetailFragment -->
+    <string name="tab_operator_detail_add">添加操作人员</string>
+    <string name="tab_operator_detail">操作人员信息</string>
+    <string name="operator_user_id">账号</string>
+    <string name="operator_password">密码</string>
+    <string name="operator_display_name">姓名</string>
+    <string name="operator_duty">职务</string>
+    <string name="operator_description">描述</string>
+    <string name="dialog_confirm_cover">"该用户已存在，是否覆盖？"</string>
 
     <!-- MemberListFragment -->
+    <string name="tab_member_list">人员选择</string>
+    <string name="member_list_frag_title_right_add">+增加</string>
     <string-array name="excel_title_member_list">
-        <item name="excel_title_name"> </item>
+        <item name="excel_title_index"> </item>
         <item name="excel_title_name">姓名</item>
         <item name="excel_title_gender">性别</item>
         <item name="excel_title_age">年龄\n(岁)</item>
         <item name="excel_title_height">身高\n(cm)</item>
         <item name="excel_title_weight">体重\n(kg)</item>
         <item name="excel_title_province_city">省市</item>
-        <item name="excel_title_province_city"> </item>
+        <item name="excel_title_suffix"> </item>
     </string-array>
+
+    <!-- MemberDetailFragment -->
+    <string name="tab_member_detail">人员信息</string>
+    <string name="btn_save">保存</string>
+    <string name="btn_next">下一步</string>
+    <string name="choose">选择</string>
+    <string name="member_name">姓名</string>
+    <string name="member_gender">性别</string>
+    <string name="member_age">年龄</string>
+    <string name="member_cell">手机号</string>
+    <string name="member_height">身高</string>
+    <string name="member_weight">体重</string>
+    <string name="member_province_city">省市</string>
+    <string name="member_province">省份</string>
+    <string name="member_city">城市</string>
+    <string name="member_county">县/区</string>
+    <string name="member_area">大区</string>
+    <string-array name="member_array_gender">
+        <item name="member_gender_male">男</item>
+        <item name="member_gender_female">女</item>
+    </string-array>
+    <string-array name="array_empty">
+        <item name="item_empty">""</item>
+    </string-array>
+    <string-array name="member_array_city">
+        <item name="city_empty">""</item>
+    </string-array>
+    <string-array name="member_array_county">
+        <item name="county_empty">""</item>
+    </string-array>
+    <string-array name="member_array_area">
+        <item name="area_empty">""</item>
+    </string-array>
+    <!-- DetectorCalibrationFragment -->
+    <string name="tab_detector_calibration">测量仪校准</string>
+    <string name="detect_tab1">1~2V</string>
+    <string name="detect_tab2">2~3V</string>
+    <string name="detect_tab3">3~4V</string>
+    <string name="detect_tab4">4~5V</string>
+    <string-array name="excel_title_detector_comp_list">
+        <item name="excel_title_index"> </item>
+        <item name="excel_title_voltage_range">电压范围（mv）</item>
+        <item name="excel_title_compensation">补偿值</item>
+        <item name="excel_title_operation">操作</item>
+    </string-array>
+    <string-array name="tab_items">
+        <item name="voltage_1_2">1~2V</item>
+        <item name="voltage_2_3">2~3V</item>
+        <item name="voltage_3_4">3~4V</item>
+        <item name="voltage_4_5">4~5V</item>
+    </string-array>
+    <string name="dialog_title">补偿值：</string>
+
+    <!-- EstimatedValuesFragment -->
+    <string name="tab_est_value_list">预计值配置表</string>
+    <string name="gender_male">男</string>
+    <string name="gender_female">女</string>
+    <string-array name="excel_title_est_value_list">
+        <item name="excel_title_name">指标</item>
+        <item name="excel_title_est_value">预计值</item>
+        <item name="excel_title_suffix"> </item>
+    </string-array>
+    <!-- EditEstValueFragment -->
+    <string name="estVal_title_name">指标</string>
+    <string name="estVal_title_gender">性别</string>
+    <string name="estVal_title_formula">方程式</string>
+    <string name="estVal_title_r">R</string>
+
+    <!-- TestActivity -->
+
+    <!-- ScanActivity -->
+    <string name="qr_code_text">二维码</string>
+    <string name="scan_qr_code_warn">将二维码放入框内，即可自动扫描</string>
+    <string name="scan_qr_code_from_photo_wrong">没有找到二维码</string>
+    <string name="album_text">相册</string>
+    <string name="cancel">取消</string>
+    <string name="save_pic">保存图片</string>
+
+    <!-- CurrencyInfoFragment -->
+    <string name="key_pref_screen">currency_info</string>
+    <string name="key_pref_first_row">row_first</string>
+    <string name="key_pref_second_row">row_second</string>
+    <string name="pref_title_cellphone">联系电话</string>
+    <string name="pref_content_cellphone">13971883794</string>
+    <string name="pref_title_email">邮箱</string>
+    <string name="pref_content_email">28749377@qq.com</string>
+    <string name="pref_title_mac">MAC地址</string>
+    <string name="pref_content_mac">00-16-EA</string>
+    <string name="pref_title_version">当前版本</string>
+    <string name="pref_content_version">1.0.0</string>
+    <string name="account_title">修改密码</string>>
+    <string name="pref_footer_logout">退出登录</string>>
+
+    <string name="fancy_qr_code_theme_name_yellow">黄</string>
+    <string name="fancy_qr_code_theme_name_green">绿</string>
+    <string name="fancy_qr_code_theme_name_red">红</string>
+    <string name="fancy_qr_code_theme_name_blue">蓝</string>
+    <string name="fancy_qr_code_theme_name_purple">紫</string>
+    <string name="fancy_qr_code_theme_name_black">黑</string>
 </resources>

@@ -23,6 +23,7 @@ public class CustomToolbar extends FrameLayout {
     private CharSequence mTextLeft;
     private CharSequence mTextCenter;
     private CharSequence mTextRight;
+    private OnItemClickListener listener;
 
     public CustomToolbar(@NonNull Context context) {
         this(context, null);
@@ -41,18 +42,26 @@ public class CustomToolbar extends FrameLayout {
 
         LayoutInflater.from(context).inflate(R.layout.widget_toolbar, this);
         mLeft = findViewById(R.id.toolbar_left);
+        setLeftText(mTextLeft);
+        mLeft.setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onLeftClick();
+            }
+        });
         mCenter = findViewById(R.id.toolbar_center);
         mRight = findViewById(R.id.toolbar_right);
-
-        setLeftText(mTextLeft);
-        setCenterText(mTextCenter);
+        mRight.setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onRightClick();
+            }
+        });
         setRightText(mTextRight);
-
+        setCenterText(mTextCenter);
     }
 
     public void setLeftText(CharSequence seq) {
         if (TextUtils.isEmpty(seq)) {
-            mLeft.setVisibility(View.GONE);
+            mLeft.setVisibility(View.INVISIBLE);
         } else {
             mLeft.setText(seq);
             mLeft.setVisibility(View.VISIBLE);
@@ -61,7 +70,7 @@ public class CustomToolbar extends FrameLayout {
 
     public void setCenterText(CharSequence seq) {
         if (TextUtils.isEmpty(seq)) {
-            mCenter.setVisibility(View.GONE);
+            mCenter.setVisibility(View.INVISIBLE);
         } else {
             mCenter.setText(seq);
             mCenter.setVisibility(View.VISIBLE);
@@ -70,7 +79,7 @@ public class CustomToolbar extends FrameLayout {
 
     public void setRightText(CharSequence seq) {
         if (TextUtils.isEmpty(seq)) {
-            mRight.setVisibility(View.GONE);
+            mRight.setVisibility(View.INVISIBLE);
         } else {
             mRight.setText(seq.toString());
             mRight.setVisibility(View.VISIBLE);
@@ -78,17 +87,18 @@ public class CustomToolbar extends FrameLayout {
     }
 
     public void clear() {
-        Log.d("hff", "CustomToolbar.clear");
         setLeftText(null);
         setCenterText(null);
         setRightText(null);
     }
 
-    public Button getLeftButton() {
-        return mLeft;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
-    public Button getRightButton() {
-        return mRight;
+    public interface OnItemClickListener {
+        void onLeftClick();
+
+        void onRightClick();
     }
 }

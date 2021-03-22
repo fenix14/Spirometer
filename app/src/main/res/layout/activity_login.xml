@@ -43,7 +43,7 @@
         app:layout_constraintGuide_percent="0.85" />
 
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/userId"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/prompt_phone_num"
@@ -71,7 +71,6 @@
         android:layout_height="wrap_content"
         style="@style/MainButton"
         android:layout_gravity="start"
-        android:enabled="false"
         android:text="@string/action_sign_in"
         app:layout_constraintBottom_toTopOf="@id/row_bottom"
         app:layout_constraintStart_toStartOf="@id/column_start"

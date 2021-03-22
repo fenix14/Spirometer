@@ -1,45 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
-    <PreferenceCategory>
-        <Preference
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:isPreferenceVisible="false"
+        app:key="admin_category">
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="true"
+            app:content_type="text"
             app:key="administrators"
             app:title="@string/pc_administrators" />
-        <Preference
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
             app:allowDividerAbove="true"
             app:allowDividerBelow="true"
+            app:content_type="text"
             app:key="detector_calibration"
             app:title="@string/pc_detector_calibration" />
-        <Preference
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
             app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:content_type="text"
             app:key="estimated_value_config"
             app:title="@string/pc_estimated_value_config" />
     </PreferenceCategory>
 
-    <Preference
-        android:enabled="false"
-        android:layout="@layout/divider_pref_category" />
-
-    <PreferenceCategory>
-        <Preference
+    <PreferenceCategory app:allowDividerBelow="true">
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
+            app:allowDividerAbove="true"
             app:allowDividerBelow="true"
+            app:content_type="text"
             app:key="contact_us"
             app:title="@string/pc_contact_us" />
-        <Preference
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
             app:allowDividerAbove="true"
             app:allowDividerBelow="true"
+            app:content_type="text"
             app:key="version"
             app:title="@string/pc_version" />
-        <Preference
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
             app:allowDividerAbove="true"
             app:allowDividerBelow="true"
+            app:content_type="text"
             app:key="mac"
             app:title="@string/pc_mac" />
-        <Preference
+        <com.fenix.spirometer.ui.widget.CustomPreference
+            android:layout="@layout/widget_preference_row"
             app:allowDividerAbove="true"
-            app:key="account_config"
+            app:allowDividerBelow="true"
+            app:content_type="text"
+            app:key="account"
             app:title="@string/pc_account_config" />
     </PreferenceCategory>
 </PreferenceScreen>

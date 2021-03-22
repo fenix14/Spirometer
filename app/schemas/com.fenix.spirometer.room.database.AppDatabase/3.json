@@ -1,0 +1,453 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "3828276cdb36b13a695e66e81091b6d5",
+    "entities": [
+      {
+        "tableName": "DetectorCompensation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`voltageLow` INTEGER NOT NULL, `voltageHigh` INTEGER NOT NULL, `compensation` REAL NOT NULL, PRIMARY KEY(`voltageLow`))",
+        "fields": [
+          {
+            "fieldPath": "voltageLow",
+            "columnName": "voltageLow",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voltageHigh",
+            "columnName": "voltageHigh",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "compensation",
+            "columnName": "compensation",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "voltageLow"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_DetectorCompensation_voltageLow_voltageHigh",
+            "unique": true,
+            "columnNames": [
+              "voltageLow",
+              "voltageHigh"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DetectorCompensation_voltageLow_voltageHigh` ON `${TABLE_NAME}` (`voltageLow`, `voltageHigh`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "EstValue",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `isMale` INTEGER NOT NULL DEFAULT true, `formula` TEXT NOT NULL, `valueR` REAL NOT NULL, PRIMARY KEY(`name`, `isMale`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isMale",
+            "columnName": "isMale",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "true"
+          },
+          {
+            "fieldPath": "formula",
+            "columnName": "formula",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "valueR",
+            "columnName": "valueR",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "name",
+            "isMale"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Operator",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `displayName` TEXT NOT NULL, `password` TEXT NOT NULL, `duty` TEXT NOT NULL, `description` TEXT NOT NULL, `isAdmin` INTEGER NOT NULL DEFAULT false, PRIMARY KEY(`userId`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duty",
+            "columnName": "duty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAdmin",
+            "columnName": "isAdmin",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "userId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Member",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `gender` TEXT NOT NULL, `age` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `cellphone` TEXT NOT NULL, `province` TEXT DEFAULT '', `city` TEXT DEFAULT '', `county` TEXT DEFAULT '', `area` TEXT DEFAULT '', PRIMARY KEY(`cellphone`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "age",
+            "columnName": "age",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cellphone",
+            "columnName": "cellphone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "province",
+            "columnName": "province",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "city",
+            "columnName": "city",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "county",
+            "columnName": "county",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "area",
+            "columnName": "area",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "''"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "cellphone"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_Member_name_cellphone",
+            "unique": true,
+            "columnNames": [
+              "name",
+              "cellphone"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Member_name_cellphone` ON `${TABLE_NAME}` (`name`, `cellphone`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Province",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`uid`))",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_Province_uid",
+            "unique": true,
+            "columnNames": [
+              "uid"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Province_uid` ON `${TABLE_NAME}` (`uid`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "City",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `name` TEXT NOT NULL, `proUid` TEXT NOT NULL, PRIMARY KEY(`uid`), FOREIGN KEY(`proUid`) REFERENCES `Province`(`uid`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "proUid",
+            "columnName": "proUid",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_City_uid",
+            "unique": true,
+            "columnNames": [
+              "uid"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_City_uid` ON `${TABLE_NAME}` (`uid`)"
+          },
+          {
+            "name": "index_City_proUid",
+            "unique": false,
+            "columnNames": [
+              "proUid"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_City_proUid` ON `${TABLE_NAME}` (`proUid`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Province",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "proUid"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "County",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `name` TEXT NOT NULL, `citUid` TEXT NOT NULL, PRIMARY KEY(`uid`), FOREIGN KEY(`citUid`) REFERENCES `City`(`uid`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "citUid",
+            "columnName": "citUid",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_County_uid",
+            "unique": true,
+            "columnNames": [
+              "uid"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_County_uid` ON `${TABLE_NAME}` (`uid`)"
+          },
+          {
+            "name": "index_County_citUid",
+            "unique": false,
+            "columnNames": [
+              "citUid"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_County_citUid` ON `${TABLE_NAME}` (`citUid`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "City",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "citUid"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Area",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `name` TEXT NOT NULL, `couUid` TEXT NOT NULL, PRIMARY KEY(`uid`), FOREIGN KEY(`couUid`) REFERENCES `City`(`uid`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "couUid",
+            "columnName": "couUid",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_Area_uid",
+            "unique": true,
+            "columnNames": [
+              "uid"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Area_uid` ON `${TABLE_NAME}` (`uid`)"
+          },
+          {
+            "name": "index_Area_couUid",
+            "unique": false,
+            "columnNames": [
+              "couUid"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Area_couUid` ON `${TABLE_NAME}` (`couUid`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "City",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "couUid"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3828276cdb36b13a695e66e81091b6d5')"
+    ]
+  }
+}

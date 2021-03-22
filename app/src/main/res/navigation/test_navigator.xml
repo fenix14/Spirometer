@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/test_navigator.xml"
+    app:startDestination="@id/frag_add_member">
+    <fragment
+        android:id="@+id/frag_add_member"
+        android:name="com.fenix.spirometer.ui.member.MemberDetailFragment">
+        <action
+            android:id="@+id/member_to_members"
+            app:destination="@+id/frag_members" />
+        <action
+            android:id="@+id/member_to_prepare"
+            app:destination="@+id/frag_prepare" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_members"
+        android:name="com.fenix.spirometer.ui.member.MemberListFragment"
+        tools:layout="@layout/frag_members"/>
+    <fragment
+        android:id="@+id/frag_prepare"
+        android:name="com.fenix.spirometer.ui.test.PrepareFragment">
+        <action
+            android:id="@+id/prepare_to_testing"
+            app:destination="@+id/frag_testing" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_testing"
+        android:name="com.fenix.spirometer.ui.test.TestingFragment">
+        <action
+            android:id="@+id/testing_to_result"
+            app:destination="@+id/frag_report" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_report"
+        android:name="com.fenix.spirometer.ui.test.TestReportFragment"/>
+</navigation>
