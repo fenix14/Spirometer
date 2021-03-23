@@ -16,14 +16,14 @@ public interface MemberDao {
     @Query("select * from Member ORDER BY name")
     LiveData<List<Member>> getAllMembers();
 
-    @Query("select * from Member where cellphone = :cellphone AND name = :name")
-    LiveData<Member> getMember(String cellphone, String name);
+    @Query("select * from Member where id = :id")
+    LiveData<Member> getMember(String id);
 
-    @Query("delete FROM Member")
-    void deleteAll();
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(Member member);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(List<Member> members);
 
     @Update
     void update(Member member);

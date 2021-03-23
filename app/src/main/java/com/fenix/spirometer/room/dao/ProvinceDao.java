@@ -15,6 +15,6 @@ public interface ProvinceDao {
     @Query("SELECT * FROM Province")
     LiveData<List<Province>> getAllProvinces();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertProvinces(List<Province> provincesModels);
 }

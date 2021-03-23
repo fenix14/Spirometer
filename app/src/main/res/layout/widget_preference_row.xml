@@ -63,10 +63,10 @@
         <EditText
             android:id="@+id/pref_content_edit"
             style="@style/PrefItem"
-            android:gravity="start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_stroke_search"
+            android:gravity="start"
             android:visibility="gone" />
 
         <RadioGroup
@@ -90,14 +90,6 @@
                 android:layout_marginStart="@dimen/pref_item_radio_button_margin"
                 android:textSize="@dimen/text_size_normal" />
         </RadioGroup>
-
-        <Spinner
-            android:id="@+id/pref_content_spinner"
-            style="@style/PrefItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_stroke_search"
-            android:visibility="gone" />
 
         <TextView
             android:id="@+id/pref_content_text"

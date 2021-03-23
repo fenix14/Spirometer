@@ -30,13 +30,11 @@ public class MainViewModel extends ViewModel {
     private final OperatorRepository operRepo;
     private final DetectCompRepository detectCompRepo;
     private final EstValueRepository estValueRepo;
-
     private BleRepository bleRepo;
-
     private MutableLiveData<TestInfo> mdTestInfo;
 
     private boolean isTesting = false;
-    private Member testMember = null;
+    private Member chosenMember = null;
 
     private final MutableLiveData<Boolean> mdIsShowNavBar = new MutableLiveData<>();
 
@@ -77,16 +75,17 @@ public class MainViewModel extends ViewModel {
     }
 
     // 人员列表相关 TODO:有必要放这吗？
-    public void subscribeToMembers(LifecycleOwner lifecycleOwner, Observer<List<Member>> observer) {
-        memberRepo.getAllMembers().observe(lifecycleOwner, observer);
+    public LiveData<List<Member>> getAllMembers() {
+       return memberRepo.getAllMembers();
     }
 
-    public LiveData<Member> getMember(String cellphone, String name) {
-        return memberRepo.getMember(cellphone, name);
+    public LiveData<Member> getMember(String id) {
+        return memberRepo.getMember(id);
     }
 
-    public void addMember(Member member) {
-        cachedThreadPool.execute(() -> memberRepo.insertMember(member));
+    public void insertOrUpdateMember(Member member) {
+        chosenMember = member;
+        memberRepo.insertOrUpdate(member);
     }
 
     public void updateMember(Member member) {
@@ -119,11 +118,11 @@ public class MainViewModel extends ViewModel {
         mdIsShowNavBar.observe(lifecycleOwner, observer);
     }
 
-    public void setTestMember(Member member) {
-        testMember = member;
+    public void setChosenMember(Member member) {
+        chosenMember = member;
     }
 
-    public Member getTestMember() {
-        return testMember;
+    public Member getChosenMember() {
+        return chosenMember;
     }
 }

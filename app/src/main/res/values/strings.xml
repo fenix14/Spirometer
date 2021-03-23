@@ -152,6 +152,11 @@
     <string name="estVal_title_r">R</string>
 
     <!-- TestActivity -->
+    <!-- HistoryFragment -->
+    <string name="tab_history">历史报告</string>
+
+
+
 
     <!-- ScanActivity -->
     <string name="qr_code_text">二维码</string>

@@ -3,6 +3,7 @@ package com.fenix.spirometer.room.database;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import com.fenix.spirometer.app.MyApplication;
 import com.fenix.spirometer.model.Area;
@@ -20,11 +21,19 @@ import com.fenix.spirometer.room.dao.EstiValueDao;
 import com.fenix.spirometer.room.dao.MemberDao;
 import com.fenix.spirometer.room.dao.OperatorDao;
 import com.fenix.spirometer.room.dao.ProvinceDao;
+import com.fenix.spirometer.room.dao.TestReportDao;
+import com.fenix.spirometer.room.dao.VoltageDataDao;
+import com.fenix.spirometer.room.model.TestReportModel;
+import com.fenix.spirometer.room.model.VoltageData;
+import com.fenix.spirometer.room.util.VoltageDataConverter;
 
 /**
  * 数据库db
  */
-@Database(entities = {DetectorCompensation.class, EstValue.class, Operator.class, Member.class, Province.class, City.class, County.class, Area.class}, version = 3)
+@Database(entities = {VoltageData.class, TestReportModel.class, DetectorCompensation.class, EstValue.class,
+        Operator.class, Member.class, Province.class, City.class, County.class, Area.class},
+        version = 3)
+@TypeConverters({VoltageDataConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DB_NAME = "database";
 
@@ -41,6 +50,10 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract EstiValueDao estiValueDao();
 
     public abstract DetectCompDao detectCompDao();
+
+    public abstract TestReportDao testReportDao();
+
+    public abstract VoltageDataDao voltageDataDao();
 
     private volatile static AppDatabase sInstance;
 

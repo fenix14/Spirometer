@@ -36,11 +36,23 @@ public class MemberRepository {
         executor.execute(() -> database.memberDao().insert(member));
     }
 
+    public void insertMembers(List<Member> members) {
+        executor.execute(() -> database.memberDao().insert(members));
+    }
+
+    public void insertOrUpdate(Member member) {
+        executor.execute(() -> {
+            if (database.memberDao().insert(member) < 0) {
+                database.memberDao().update(member);
+            }
+        });
+    }
+
     public void updateMember(Member member) {
         executor.execute(() -> database.memberDao().update(member));
     }
 
-    public LiveData<Member> getMember(String cellphone, String name) {
-        return database.memberDao().getMember(cellphone, name);
+    public LiveData<Member> getMember(String id) {
+        return database.memberDao().getMember(id);
     }
 }

@@ -64,21 +64,4 @@ public class AddrRepository {
 //            loadCounties(provinceModels.get(0).getCities().get(0).getUid());
         });
     }
-
-    public MutableLiveData<List<Province>> loadAll() {
-        final MutableLiveData<List<Province>> mdProvinces = new MutableLiveData<>();
-        executor.execute(() -> {
-            List<Province> provinces = database.provinceDao().getAllProvinces();
-            for (Province province : provinces) {
-                List<City> cities = database.cityDao().getCities(province.getUid());
-                for (City city : cities) {
-                    city.setCounties(database.countyDao().getCounties(city.getUid()));
-//                    Log.d("hff", provinceModel + ">>>>>" + cityModels + ">>>> = " + database.countyDao().getCounties(cityModel.getUid()));
-                }
-                province.setCities(cities);
-            }
-            mdProvinces.postValue(provinces);
-        });
-        return mdProvinces;
-    }
 }

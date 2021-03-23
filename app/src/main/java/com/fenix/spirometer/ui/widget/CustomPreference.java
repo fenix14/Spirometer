@@ -35,13 +35,13 @@ public class CustomPreference extends Preference {
     private EditText etContent;
     private TextView tvContent;
     private RadioGroup rgContent;
-    private Spinner spContent;
+    private TextView etvContent;
     private int contentType;
     private final int choicesId;
-    private final int spinnerItemsId;
     private String content;
     private int editType;
-    private SpinnerAdapter spinnerAdapter;
+    private final boolean isShowBoundary;
+    private int chosenRadioButtonId = R.id.rb_first;
     private AdapterView.OnItemSelectedListener spinnerSelectedListener;
 
     public CustomPreference(Context context) {
@@ -60,13 +60,13 @@ public class CustomPreference extends Preference {
         super(context, attrs, defStyleAttr, defStyleRes);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.Preference);
         isNecessary = ta.getBoolean(R.styleable.Preference_necessary, false);
+        isShowBoundary = ta.getBoolean(R.styleable.Preference_show_boundary, false);
         contentType = ta.getInt(R.styleable.Preference_content_type, 0);
         title = ta.getString(R.styleable.Preference_title);
         choicesId = ta.getResourceId(R.styleable.Preference_choices, 0);
-        spinnerItemsId = ta.getResourceId(R.styleable.Preference_spinner_items, 0);
         content = ta.getString(R.styleable.Preference_content_value);
         editType = ta.getInt(R.styleable.Preference_android_inputType, 1);
-        //setLayoutResource(R.layout.widget_preference_edit);
+        setLayoutResource(R.layout.widget_preference_row);
         ta.recycle();
     }
 
@@ -74,6 +74,7 @@ public class CustomPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         TextView tvTitle = (TextView) holder.findViewById(R.id.header_title);
         tvTitle.setText(title);
+        tvTitle.setSingleLine(isSingleLineTitle());
         if (isNecessary) {
             holder.findViewById(R.id.pref_necessary).setVisibility(View.VISIBLE);
         }
@@ -83,6 +84,9 @@ public class CustomPreference extends Preference {
                 tvContent.setVisibility(View.VISIBLE);
                 if (!TextUtils.isEmpty(content)) {
                     tvContent.setText(content);
+                }
+                if (isShowBoundary) {
+                    tvContent.setBackgroundResource(R.drawable.bg_stroke_search);
                 }
                 break;
             case 1: // EditText
@@ -102,23 +106,10 @@ public class CustomPreference extends Preference {
                     rgContent.setVisibility(View.VISIBLE);
                     String[] choices = rgContent.getContext().getResources().getStringArray(choicesId);
                     RadioButton rbFirst = rgContent.findViewById(R.id.rb_first);
-                    RadioButton rbSecond = rgContent.findViewById(R.id.rb_second);
                     rbFirst.setText(choices[0]);
+                    RadioButton rbSecond = rgContent.findViewById(R.id.rb_second);
                     rbSecond.setText(choices[1]);
-                }
-                break;
-            case 3: // Spinner
-                spContent = (Spinner) holder.findViewById(R.id.pref_content_spinner);
-                spContent.setVisibility(View.VISIBLE);
-                if (spinnerItemsId > 0) {
-                    String[] spinnerItems = spContent.getContext().getResources().getStringArray(spinnerItemsId);
-                    List<String> spinnerI = Arrays.asList(spinnerItems);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, spinnerI);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spContent.setAdapter(adapter);
-                } else {
-                    spContent.setAdapter(spinnerAdapter);
-                    spContent.setOnItemSelectedListener(spinnerSelectedListener);
+                    rgContent.check(chosenRadioButtonId);
                 }
                 break;
             default:
@@ -139,10 +130,6 @@ public class CustomPreference extends Preference {
             case 2: // RadioGroup
                 RadioButton rbSelected = rgContent.findViewById(rgContent.getCheckedRadioButtonId());
                 content = rbSelected == null ? "" : rbSelected.getText().toString().trim();
-                break;
-            case 3: // Spinner
-                Object selectItem = spContent.getSelectedItem();
-                content = selectItem == null ? "" : selectItem.toString().trim();
                 break;
             default:
                 content = "";
@@ -167,18 +154,10 @@ public class CustomPreference extends Preference {
             case 2: // RadioGroup
                 t = (T) rgContent;
                 break;
-            case 3: // Spinner
-                t = (T) spContent;
-                break;
             default:
                 return null;
         }
         return t;
-    }
-
-    public void setSpinnerAdapter(SpinnerAdapter spinnerAdapter, AdapterView.OnItemSelectedListener spinnerSelectedListener) {
-        this.spinnerAdapter = spinnerAdapter;
-        this.spinnerSelectedListener = spinnerSelectedListener;
     }
 
     public void setContent(String content) {
@@ -199,18 +178,21 @@ public class CustomPreference extends Preference {
         }
     }
 
+    /**
+     *
+     * @param id ResId for TextView/EditText, [0, 1] for RadioGroup(0:left, 1:right)
+     */
     public void setContent(int id) {
         switch (contentType) {
             case 0: // TextView
-                setContent(getContext().getString(id));
             case 1: // EditText
                 setContent(getContext().getString(id));
                 break;
-            case 3: // Spinner
-                if (spContent != null && spContent.getVisibility() == View.VISIBLE) {
-                    spContent.setSelection(id);
+            case 2: // RadioGroup
+                chosenRadioButtonId = id == 0 ? R.id.rb_first : R.id.rb_second;
+                if (rgContent != null && rgContent.getVisibility() == View.VISIBLE) {
+                    rgContent.check(chosenRadioButtonId);
                 }
-                break;
             default:
                 break;
         }

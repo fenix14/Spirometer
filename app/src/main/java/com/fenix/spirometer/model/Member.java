@@ -14,8 +14,7 @@ import java.util.Objects;
 /**
  * 受试人员数据模型
  */
-@Entity(primaryKeys = {"cellphone"},
-        indices = {@Index(value = {"name", "cellphone"}, unique = true)})
+@Entity(primaryKeys = {"id"})
 public class Member extends BaseModel{
     @NonNull
     private String name;
@@ -28,7 +27,7 @@ public class Member extends BaseModel{
     @NonNull
     private String height;
     @NonNull
-    private String cellphone;
+    private String id;
     @ColumnInfo(defaultValue = "")
     private String province = "";
     @ColumnInfo(defaultValue = "")
@@ -42,13 +41,13 @@ public class Member extends BaseModel{
     public Member() {
     }
 
-    public Member(@NotNull String name, @NotNull String gender, @NotNull String age, @NotNull String weight, @NotNull String height, String cellphone, String province, String city, String county, String area) {
+    public Member(@NotNull String name, @NotNull String gender, @NotNull String age, @NotNull String weight, @NotNull String height, String id, String province, String city, String county, String area) {
         this.name = name;
         this.gender = gender;
         this.age = age;
         this.weight = weight;
         this.height = height;
-        this.cellphone = cellphone;
+        this.id = id;
         this.province = province;
         this.city = city;
         this.county = county;
@@ -95,12 +94,12 @@ public class Member extends BaseModel{
         this.height = height;
     }
 
-    public String getCellphone() {
-        return cellphone;
+    public String getId() {
+        return id;
     }
 
-    public void setCellphone(String cellphone) {
-        this.cellphone = cellphone;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getProvince() {
@@ -149,7 +148,7 @@ public class Member extends BaseModel{
                 age.equals(member.age) &&
                 weight.equals(member.weight) &&
                 height.equals(member.height) &&
-                cellphone.equals(member.cellphone) &&
+                id.equals(member.id) &&
                 Objects.equals(province, member.province) &&
                 Objects.equals(city, member.city) &&
                 Objects.equals(county, member.county) &&
@@ -158,6 +157,6 @@ public class Member extends BaseModel{
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, gender, age, weight, height, cellphone, province, city, county, area);
+        return Objects.hash(name, gender, age, weight, height, id, province, city, county, area);
     }
 }

@@ -17,6 +17,6 @@ public interface CountyDao {
     @Query("SELECT * FROM County where citUid = :citUid")
     List<County> getCounties(String citUid);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertCounties(List<County> counties);
 }

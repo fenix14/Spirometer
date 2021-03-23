@@ -3,35 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="number"
-        android:layout="@layout/widget_preference_row"
         app:content_type="edit"
         app:key="setUserId"
         app:necessary="true"
         app:title="@string/operator_user_id" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="text"
-        android:layout="@layout/widget_preference_row"
         app:content_type="edit"
         app:key="setPassword"
         app:necessary="true"
         app:title="@string/operator_password" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="text"
-        android:layout="@layout/widget_preference_row"
         app:content_type="edit"
         app:key="setDisplayName"
         app:necessary="true"
         app:title="@string/operator_display_name" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="text"
-        android:layout="@layout/widget_preference_row"
         app:content_type="edit"
         app:key="setDuty"
         app:necessary="true"
         app:title="@string/operator_duty" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="textMultiLine"
-        android:layout="@layout/widget_preference_row"
         app:content_type="edit"
         app:key="setDescription"
         app:title="@string/operator_description" />

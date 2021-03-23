@@ -25,20 +25,4 @@ public class MemberViewModel extends ViewModel {
         addrRepo = AddrRepository.getInstance();
         cachedThreadPool = Executors.newCachedThreadPool();
     }
-
-    public void subscribeToProvinces(LifecycleOwner lifecycleOwner, Observer<List<Province>> observer) {
-        addrRepo.loadProvinces().observe(lifecycleOwner, observer);
-    }
-
-    public void subscribeToCities(LifecycleOwner lifecycleOwner, Observer<List<Province>> observer) {
-        mdProvinces.observe(lifecycleOwner, observer);
-    }
-
-    public void subscribeToCounties(LifecycleOwner lifecycleOwner, Observer<List<Province>> observer) {
-        mdProvinces.observe(lifecycleOwner, observer);
-    }
-
-    public void loadProvinces() {
-        addrRepo.loadAll();
-    }
 }

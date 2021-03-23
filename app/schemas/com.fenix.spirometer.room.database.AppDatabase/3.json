@@ -2,8 +2,115 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "3828276cdb36b13a695e66e81091b6d5",
+    "identityHash": "6d5e0164418aa11433f5a09126c163b5",
     "entities": [
+      {
+        "tableName": "VoltageData",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeStamp` INTEGER NOT NULL, `data` TEXT, PRIMARY KEY(`timeStamp`))",
+        "fields": [
+          {
+            "fieldPath": "timeStamp",
+            "columnName": "timeStamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data",
+            "columnName": "data",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "timeStamp"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_VoltageData_timeStamp",
+            "unique": false,
+            "columnNames": [
+              "timeStamp"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_VoltageData_timeStamp` ON `${TABLE_NAME}` (`timeStamp`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TestReportModel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeMills` INTEGER NOT NULL, `memberId` TEXT, `operatorId` TEXT, PRIMARY KEY(`timeMills`), FOREIGN KEY(`memberId`) REFERENCES `Member`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`operatorId`) REFERENCES `Operator`(`userId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "timeMills",
+            "columnName": "timeMills",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "memberId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "operatorId",
+            "columnName": "operatorId",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "timeMills"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_TestReportModel_memberId",
+            "unique": false,
+            "columnNames": [
+              "memberId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TestReportModel_memberId` ON `${TABLE_NAME}` (`memberId`)"
+          },
+          {
+            "name": "index_TestReportModel_operatorId",
+            "unique": false,
+            "columnNames": [
+              "operatorId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TestReportModel_operatorId` ON `${TABLE_NAME}` (`operatorId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Member",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "memberId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Operator",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "operatorId"
+            ],
+            "referencedColumns": [
+              "userId"
+            ]
+          }
+        ]
+      },
       {
         "tableName": "DetectorCompensation",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`voltageLow` INTEGER NOT NULL, `voltageHigh` INTEGER NOT NULL, `compensation` REAL NOT NULL, PRIMARY KEY(`voltageLow`))",
@@ -139,7 +246,7 @@
       },
       {
         "tableName": "Member",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `gender` TEXT NOT NULL, `age` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `cellphone` TEXT NOT NULL, `province` TEXT DEFAULT '', `city` TEXT DEFAULT '', `county` TEXT DEFAULT '', `area` TEXT DEFAULT '', PRIMARY KEY(`cellphone`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `gender` TEXT NOT NULL, `age` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `id` TEXT NOT NULL, `province` TEXT DEFAULT '', `city` TEXT DEFAULT '', `county` TEXT DEFAULT '', `area` TEXT DEFAULT '', PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -172,8 +279,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "cellphone",
-            "columnName": "cellphone",
+            "fieldPath": "id",
+            "columnName": "id",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -208,21 +315,11 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "cellphone"
+            "id"
           ],
           "autoGenerate": false
         },
-        "indices": [
-          {
-            "name": "index_Member_name_cellphone",
-            "unique": true,
-            "columnNames": [
-              "name",
-              "cellphone"
-            ],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Member_name_cellphone` ON `${TABLE_NAME}` (`name`, `cellphone`)"
-          }
-        ],
+        "indices": [],
         "foreignKeys": []
       },
       {
@@ -447,7 +544,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3828276cdb36b13a695e66e81091b6d5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d5e0164418aa11433f5a09126c163b5')"
     ]
   }
 }

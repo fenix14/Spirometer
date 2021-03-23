@@ -25,13 +25,13 @@ public interface EstiValueDao {
     @Delete
     void delete(EstValue estValue);
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Update
     int update(EstValue estValue);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(EstValue estValue);
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(List<EstValue> estValues);
 }

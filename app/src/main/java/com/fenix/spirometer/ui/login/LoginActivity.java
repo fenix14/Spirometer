@@ -90,6 +90,10 @@ public class LoginActivity extends AppCompatActivity {
 
             loginViewModel.insertOperators();
 
+            loginViewModel.insertMembers();
+
+            loginViewModel.insertTestReports();
+
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean(SP_KEY_IS_INITIALIZED, true);
             editor.apply();

@@ -19,10 +19,10 @@ public interface DetectCompDao {
     @Query("select * from DetectorCompensation where voltageLow >= :voltageLow and voltageHigh <= :voltageHigh ORDER BY voltageLow")
     LiveData<List<DetectorCompensation>> getAllByRange(int voltageLow, int voltageHigh);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(DetectorCompensation compensation);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(List<DetectorCompensation> compensation);
 
     @Update

@@ -17,6 +17,6 @@ public interface CityDao {
     @Query("SELECT * FROM City where proUid = :proUid")
     List<City> getCities(String proUid);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertCities(List<City> city);
 }

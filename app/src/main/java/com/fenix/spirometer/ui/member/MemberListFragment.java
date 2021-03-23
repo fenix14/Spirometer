@@ -3,11 +3,8 @@ package com.fenix.spirometer.ui.member;
 import androidx.annotation.LayoutRes;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fenix.spirometer.R;
 import com.fenix.spirometer.model.Member;
@@ -22,20 +19,18 @@ import java.util.List;
 
 public class MemberListFragment extends BaseVMFragment implements CustomExcel.OnRowStateChangeListener, CustomToolbar.OnItemClickListener {
     private CustomExcel<Member> excel;
-    private boolean isTesting = false;
 
     @Override
     protected void initToolNavBar() {
-        isTesting = viewModel.isTesting();
 
         viewModel.setShowNavBar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
 
-        toolbar.setBackgroundResource(isTesting ? R.color.white : R.color.colorPrimary);
+        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_member_list));
-        toolbar.setLeftText(isTesting ? getString(R.string.item_back) : null);
-        toolbar.setRightText(isTesting ? null : getString(R.string.member_list_frag_title_right_add));
+        toolbar.setLeftText(viewModel.isTesting() ? getString(R.string.item_back) : null);
+        toolbar.setRightText(viewModel.isTesting() ? null : getString(R.string.member_list_frag_title_right_add));
         toolbar.setOnItemClickListener(this);
     }
 
@@ -57,16 +52,18 @@ public class MemberListFragment extends BaseVMFragment implements CustomExcel.On
 
     @Override
     protected void initObserver() {
-        viewModel.subscribeToMembers(this, members -> {
-            excel.reload(members);
-        });
+        viewModel.getAllMembers().observe(this, members -> excel.reload(members));
     }
 
     @Override
     public void onBindViewHolder(LinearLayout row, int position) {
         row.setOnClickListener(view -> {
-            viewModel.setTestMember(excel.getData(position));
-            NavHostFragment.findNavController(this).navigateUp();
+            viewModel.setChosenMember(excel.getData(position));
+            if (viewModel.isTesting()) {
+                NavHostFragment.findNavController(this).navigateUp();
+            } else {
+                NavHostFragment.findNavController(this).navigate(R.id.members_to_member);
+            }
         });
     }
 

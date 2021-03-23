@@ -15,7 +15,7 @@ public class ModelObjTransUtil {
         String age = member.getAge();
         String weight = member.getWeight();
         String height = member.getHeight();
-        String cellphone = member.getCellphone();
+        String cellphone = member.getId();
         String province = member.getProvince();
         String city = member.getCity();
         String county = member.getCounty();
@@ -30,7 +30,7 @@ public class ModelObjTransUtil {
 
     public static com.fenix.spirometer.model.Member model2Object(Member model) {
         return new com.fenix.spirometer.model.Member(model.getName(), model.getGender(), model.getAge(), model.getHeight(),
-                model.getWeight(), model.getCellphone(), model.getProvince(), model.getCity(),
+                model.getWeight(), model.getId(), model.getProvince(), model.getCity(),
                 model.getCounty(), model.getArea());
     }
 

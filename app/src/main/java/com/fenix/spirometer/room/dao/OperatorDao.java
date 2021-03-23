@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.fenix.spirometer.model.Operator;
 
@@ -21,11 +22,14 @@ public interface OperatorDao {
     @Query("select * from Operator where userId = :userId")
     Operator getOperator(String userId);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertOperator(Operator operator);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertOperators(List<Operator> operators);
+
+    @Update
+    void updateOperator(Operator operator);
 
     @Delete
     void deleteOperator(Operator operator);

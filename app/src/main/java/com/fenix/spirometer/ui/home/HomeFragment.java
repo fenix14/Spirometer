@@ -87,7 +87,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
         if (vId == R.id.tv_fuc_operation_video) {
             Toast.makeText(getActivity(), "go to Video!", Toast.LENGTH_SHORT).show();
         } else if (vId == R.id.tv_fuc_history_report) {
-            Toast.makeText(getActivity(), "go to History!", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigate(R.id.home_to_history);
         } else {
 //            if (!isConnect) {
 //                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
@@ -96,6 +96,13 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
             viewModel.setTesting(true);
             NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.setTesting(false);
+        viewModel.setChosenMember(null);
     }
 
     @Override

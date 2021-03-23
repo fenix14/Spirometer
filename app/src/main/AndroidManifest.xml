@@ -19,7 +19,6 @@ package="com.fenix.spirometer">
     android:name="android.permission.LOCAL_MAC_ADDRESS"
     tools:ignore="ProtectedPermissions" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 <uses-feature android:name="android.hardware.camera" />
 <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -52,8 +51,5 @@ package="com.fenix.spirometer">
     </activity>
 
     <activity android:name=".scanner.ScanActivity" />
-    <activity android:name=".ui.test.TestActivity">
-        <nav-graph android:value="@navigation/test_navigator" />
-    </activity>
 </application>
 </manifest>

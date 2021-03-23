@@ -15,6 +15,8 @@ import com.fenix.spirometer.room.DetectCompRepository;
 import com.fenix.spirometer.room.EstValueRepository;
 import com.fenix.spirometer.room.MemberRepository;
 import com.fenix.spirometer.room.OperatorRepository;
+import com.fenix.spirometer.room.TestReportRepository;
+import com.fenix.spirometer.room.model.TestReportModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +33,15 @@ public class LoginViewModel extends ViewModel {
     private final OperatorRepository operRepo;
     private final DetectCompRepository detectCompRepo;
     private final EstValueRepository estValueRepo;
+    private final TestReportRepository reportRepository;
+
     public LoginViewModel() {
         memberRepo = MemberRepository.getInstance();
         addrRepo = AddrRepository.getInstance();
         operRepo = OperatorRepository.getInstance();
         detectCompRepo = DetectCompRepository.getInstance();
         estValueRepo = EstValueRepository.getInstance();
+        reportRepository = TestReportRepository.getInstance();
     }
 
     public void login(String userId, String password) {
@@ -83,5 +88,25 @@ public class LoginViewModel extends ViewModel {
         operators.add(new Operator("98765432109", "尼戈姆莎买买提", "123456sdfsdfdsfsdfdsf7890", "护士长", "123123asdasd", false));
         operators.add(new Operator("11111111111", "TEST", "password123", "外科主任", "123123asdasd", false));
         operRepo.insertOperator(operators);
+    }
+
+    public void insertMembers() {
+        List<Member> members = new ArrayList<>();
+        members.add(new Member("路人甲", "男", "18", "80", "175", "420303198705092516", "湖北", "武汉", "江夏", ""));
+        members.add(new Member("路人乙", "女", "17", "60", "169", "420304198705092518", "湖北", "十堰", "张湾", ""));
+        members.add(new Member("路人丙", "男", "12", "70", "166", "420303198705092517", "上海", "上海", "黄浦", ""));
+        members.add(new Member("路人丁", "女", "28", "100", "188", "420303198705092599", "江苏", "南京", "雨花台", ""));
+        members.add(new Member("路人戊", "男", "44", "67", "190", "420303198705092514", "", "", "", ""));
+        memberRepo.insertMembers(members);
+    }
+
+    public void insertTestReports() {
+        List<TestReportModel> testReportModels = new ArrayList<>();
+        testReportModels.add(new TestReportModel(1111111111L, "420303198705092516", "18674018759"));
+        testReportModels.add(new TestReportModel(2222222222L, "420303198705092516", "98765432109"));
+        testReportModels.add(new TestReportModel(3333333333L, "420304198705092518", "12345678901"));
+        testReportModels.add(new TestReportModel(4444444444L, "420304198705092518", "18674018759"));
+        testReportModels.add(new TestReportModel(5555555555L, "420303198705092514", "12345678901"));
+        reportRepository.insertReports(testReportModels);
     }
 }

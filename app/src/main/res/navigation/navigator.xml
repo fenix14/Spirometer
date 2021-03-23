@@ -6,20 +6,24 @@
     <fragment
         android:id="@+id/frag_home"
         android:name="com.fenix.spirometer.ui.home.HomeFragment"
+        android:label="main"
         tools:layout="@layout/frag_home">
         <action
             android:id="@+id/home_to_members"
             app:destination="@+id/frag_members" />
-
         <action
             android:id="@+id/home_to_personal"
             app:destination="@+id/frag_personal" />
         <action
             android:id="@+id/home_to_member"
             app:destination="@+id/frag_member" />
+        <action
+            android:id="@+id/home_to_history"
+            app:destination="@+id/frag_history" />
     </fragment>
     <fragment
         android:id="@+id/frag_members"
+        android:label="main"
         android:name="com.fenix.spirometer.ui.member.MemberListFragment"
         tools:layout="@layout/frag_members">
         <action
@@ -39,6 +43,7 @@
 
     <fragment
         android:id="@+id/frag_personal"
+        android:label="main"
         android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment">
         <action
             android:id="@+id/personal_to_operators"
@@ -101,5 +106,8 @@
     <fragment
         android:id="@+id/frag_report"
         android:name="com.fenix.spirometer.ui.test.TestReportFragment"/>
+    <fragment
+        android:id="@+id/frag_history"
+        android:name="com.fenix.spirometer.ui.history.HistoryFragment"/>
 
 </navigation>
