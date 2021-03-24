@@ -154,6 +154,17 @@
     <!-- TestActivity -->
     <!-- HistoryFragment -->
     <string name="tab_history">历史报告</string>
+    <string name="btn_search">查询</string>
+    <string-array name="excel_title_simple_report_list">
+        <item name="excel_title_index"> </item>
+        <item name="excel_title_date">日期</item>
+        <item name="excel_title_timer">时间</item>
+        <item name="excel_title_name">姓名</item>
+        <item name="excel_title_gender">性别</item>
+        <item name="excel_title_age">年龄\n(岁)</item>
+        <item name="excel_title_suffix"> </item>
+    </string-array>
+
 
 
 

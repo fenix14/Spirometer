@@ -1,11 +1,13 @@
-package com.fenix.spirometer.room.model;
+package com.fenix.spirometer.model;
 
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
 import com.fenix.spirometer.model.Member;
+import com.fenix.spirometer.room.model.TestReportModel;
+import com.fenix.spirometer.util.Utils;
 
-public class SimpleHistory {
+public class SimpleReport extends BaseModel {
     @Embedded
     public TestReportModel testReportModel;
 
@@ -33,7 +35,7 @@ public class SimpleHistory {
     )
     public String age;
 
-    public SimpleHistory(TestReportModel testReportModel, String memberName, String gender, String age) {
+    public SimpleReport(TestReportModel testReportModel, String memberName, String gender, String age) {
         this.testReportModel = testReportModel;
         this.memberName = memberName;
         this.gender = gender;
@@ -46,6 +48,18 @@ public class SimpleHistory {
 
     public void setTestReportModel(TestReportModel testReportModel) {
         this.testReportModel = testReportModel;
+    }
+
+    public long getTimeMills() {
+        return testReportModel.getTimeMills();
+    }
+
+    public String getDate() {
+        return Utils.getDateByMills(testReportModel.getTimeMills());
+    }
+
+    public String getTime() {
+        return Utils.getTimeByMills(testReportModel.getTimeMills());
     }
 
     public String getMemberName() {

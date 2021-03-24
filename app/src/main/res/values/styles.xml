@@ -48,6 +48,11 @@
         <item name="android:padding">5dp</item>
     </style>
 
+    <style name="SearchItem" parent="ContentTextLight">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
     <style name="BottomNavigationBar" parent="MainButton">
         <item name="android:textSize">@dimen/text_size_ex_large</item>
     </style>

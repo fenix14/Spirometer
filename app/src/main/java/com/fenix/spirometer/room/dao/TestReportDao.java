@@ -5,13 +5,11 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.RoomWarnings;
 import androidx.room.Transaction;
 
 import com.fenix.spirometer.room.model.History;
-import com.fenix.spirometer.room.model.SimpleHistory;
+import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.room.model.TestReportModel;
-import com.fenix.spirometer.room.model.VoltageData;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ public interface TestReportDao {
 
     @Transaction
     @Query("select * from TestReportModel")
-    LiveData<List<SimpleHistory>> getAllSimple();
+    LiveData<List<SimpleReport>> getAllSimpleReports();
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertTestReports(List<TestReportModel> testReports);

@@ -9,8 +9,7 @@ import com.fenix.spirometer.app.MyApplication;
 import com.fenix.spirometer.model.LoginState;
 import com.fenix.spirometer.model.Operator;
 import com.fenix.spirometer.room.database.AppDatabase;
-import com.fenix.spirometer.room.model.History;
-import com.fenix.spirometer.room.model.SimpleHistory;
+import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.room.model.TestReportModel;
 import com.fenix.spirometer.room.model.VoltageData;
 
@@ -61,7 +60,7 @@ public class TestReportRepository {
         });
     }
 
-    public LiveData<List<SimpleHistory>> getSimpleReports() {
-        return database.testReportDao().getAllSimple();
+    public LiveData<List<SimpleReport>> getSimpleReports() {
+        return database.testReportDao().getAllSimpleReports();
     }
 }

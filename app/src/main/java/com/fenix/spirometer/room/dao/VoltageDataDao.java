@@ -6,8 +6,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.fenix.spirometer.room.model.SimpleHistory;
-import com.fenix.spirometer.room.model.TestReportModel;
 import com.fenix.spirometer.room.model.VoltageData;
 
 import java.util.List;

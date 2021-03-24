@@ -11,12 +11,14 @@ import com.fenix.spirometer.model.BleDeviceState;
 import com.fenix.spirometer.model.LoginState;
 import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.model.Operator;
+import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.model.TestInfo;
 import com.fenix.spirometer.room.AddrRepository;
 import com.fenix.spirometer.room.EstValueRepository;
 import com.fenix.spirometer.room.MemberRepository;
 import com.fenix.spirometer.room.OperatorRepository;
 import com.fenix.spirometer.room.DetectCompRepository;
+import com.fenix.spirometer.room.TestReportRepository;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +32,7 @@ public class MainViewModel extends ViewModel {
     private final OperatorRepository operRepo;
     private final DetectCompRepository detectCompRepo;
     private final EstValueRepository estValueRepo;
+    private final TestReportRepository reportRepo;
     private BleRepository bleRepo;
     private MutableLiveData<TestInfo> mdTestInfo;
 
@@ -45,6 +48,7 @@ public class MainViewModel extends ViewModel {
         detectCompRepo = DetectCompRepository.getInstance();
         estValueRepo = EstValueRepository.getInstance();
         bleRepo = BleRepository.getInstance();
+        reportRepo = TestReportRepository.getInstance();
     }
 
     public void login(String userId, String password) {
@@ -107,6 +111,11 @@ public class MainViewModel extends ViewModel {
 
     public MutableLiveData<Operator> getOperator(String userId) {
         return operRepo.getOperator(userId);
+    }
+
+    // for HistoryFragment
+    public LiveData<List<SimpleReport>> getAllSimpleReports() {
+        return reportRepo.getSimpleReports();
     }
 
     // 底部Tab导航栏是否显示

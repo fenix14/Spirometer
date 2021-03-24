@@ -10,7 +10,14 @@ import androidx.appcompat.app.AlertDialog;
 import com.fenix.spirometer.R;
 import com.fenix.spirometer.app.MyApplication;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Utils {
+    private static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private static SimpleDateFormat SIMPLE_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
     public static boolean isUserIdValid(String userId) {
         return Constants.USER_NAME_PATTERN.matcher(userId).matches();
     }
@@ -35,5 +42,13 @@ public class Utils {
                 .setPositiveButton(R.string.dialog_ok, listener)
                 .setNegativeButton(R.string.dialog_cancel, listener)
                 .create();
+    }
+
+    public static String getDateByMills(long timeMills) {
+        return SIMPLE_DATE_FORMAT.format(new Date(timeMills));
+    }
+
+    public static String getTimeByMills(long timeMills) {
+        return SIMPLE_TIME_FORMAT.format(new Date(timeMills));
     }
 }
