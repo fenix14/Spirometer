@@ -13,7 +13,10 @@
         <attr name="list_item_min_height" format="dimension" />
         <attr name="header_max_lines" format="integer" />
         <attr name="stripe_list" format="boolean" />
-        <attr name="first_column_index" format="boolean" />
+        <attr name="prefix_type" format="reference" >
+            <enum name="index" value="0" />
+            <enum name="checkbox" value="1" />
+        </attr>
         <attr name="tab_items" format="reference" />
         <attr name="last_column_type">
             <enum name="skip" value="0" />

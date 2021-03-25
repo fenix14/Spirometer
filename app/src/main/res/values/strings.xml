@@ -155,6 +155,7 @@
     <!-- HistoryFragment -->
     <string name="tab_history">历史报告</string>
     <string name="btn_search">查询</string>
+    <string name="search">搜索</string>
     <string-array name="excel_title_simple_report_list">
         <item name="excel_title_index"> </item>
         <item name="excel_title_date">日期</item>
@@ -164,7 +165,12 @@
         <item name="excel_title_age">年龄\n(岁)</item>
         <item name="excel_title_suffix"> </item>
     </string-array>
+    <!-- TestReportFragment -->
+    <string name="tab_report">肺活量标准测试报告</string>
+    <string name="btn_compare">对比</string>
 
+    <!-- ReportCompareFragment -->
+    <string name="tab_report_compare">对比报告</string>
 
 
 

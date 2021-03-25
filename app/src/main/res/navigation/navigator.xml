@@ -105,9 +105,21 @@
     </fragment>
     <fragment
         android:id="@+id/frag_report"
-        android:name="com.fenix.spirometer.ui.test.TestReportFragment"/>
+        android:name="com.fenix.spirometer.ui.test.TestReportFragment">
+    </fragment>
+
     <fragment
         android:id="@+id/frag_history"
-        android:name="com.fenix.spirometer.ui.history.HistoryFragment"/>
+        android:name="com.fenix.spirometer.ui.history.HistoryFragment">
+        <action
+            android:id="@+id/history_to_report"
+            app:destination="@+id/frag_report" />
+        <action
+            android:id="@+id/history_to_compare"
+            app:destination="@+id/frag_compare" />
+    </fragment>
+    <fragment
+        android:id="@+id/frag_compare"
+        android:name="com.fenix.spirometer.ui.history.ReportCompareFragment"/>
 
 </navigation>

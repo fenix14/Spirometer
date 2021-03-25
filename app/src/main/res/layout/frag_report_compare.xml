@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.member.MemberListFragment">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.fenix.spirometer.ui.widget.CustomExcel
         android:id="@+id/customExcel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:header_background="@color/light_gray"
-        app:prefix_type="index"
-        app:show_search="true"
-        app:last_column_type="skip"
-        app:header_max_lines="2"
+        app:header_max_lines="1"
         app:header_min_height="@dimen/item_height"
         app:list_item_min_height="@dimen/item_height"
         app:stripe_list="true" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,26 +30,32 @@
             android:layout_marginVertical="@dimen/activity_vertical_margin"
             android:layout_weight="1"
             android:background="@drawable/bg_stroke_search"
+            android:closeIcon="@null"
             android:iconifiedByDefault="false"
             android:queryBackground="@null"
+            android:queryHint="@string/search"
+            android:searchIcon="@null"
             android:showDividers="none"
             android:submitBackground="@null" />
 
         <Button
             android:id="@+id/btn_search"
-            style="@style/MainButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/excel_toolbar_height"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
-            android:text="@string/btn_search" />
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:text="@string/btn_search"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_normal" />
     </LinearLayout>
 
     <com.fenix.spirometer.ui.widget.CustomExcel
         android:id="@+id/customExcel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:first_column_index="true"
+        app:prefix_type="index"
         app:header_background="@color/light_gray"
         app:header_max_lines="2"
         app:header_min_height="@dimen/item_height"

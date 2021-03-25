@@ -9,6 +9,8 @@ import androidx.room.PrimaryKey;
 import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.model.Operator;
 
+import java.util.Objects;
+
 @Entity(foreignKeys = {
         @ForeignKey(entity = Member.class, parentColumns = "id", childColumns = "memberId"),
         @ForeignKey(entity = Operator.class, parentColumns = "userId", childColumns = "operatorId")
@@ -48,5 +50,20 @@ public class TestReportModel {
 
     public void setOperatorId(String operatorId) {
         this.operatorId = operatorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestReportModel that = (TestReportModel) o;
+        return timeMills == that.timeMills &&
+                Objects.equals(memberId, that.memberId) &&
+                Objects.equals(operatorId, that.operatorId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timeMills, memberId, operatorId);
     }
 }

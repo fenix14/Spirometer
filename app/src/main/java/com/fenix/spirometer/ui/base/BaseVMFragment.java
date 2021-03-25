@@ -41,6 +41,15 @@ public abstract class BaseVMFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initData();
+    }
+
+    protected void initData() {
+    }
+
     protected abstract void initToolNavBar();
 
     protected CustomToolbar getToolbar() {

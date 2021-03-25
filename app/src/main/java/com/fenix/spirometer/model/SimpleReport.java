@@ -7,6 +7,8 @@ import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.room.model.TestReportModel;
 import com.fenix.spirometer.util.Utils;
 
+import java.util.Objects;
+
 public class SimpleReport extends BaseModel {
     @Embedded
     public TestReportModel testReportModel;
@@ -84,5 +86,21 @@ public class SimpleReport extends BaseModel {
 
     public void setAge(String age) {
         this.age = age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleReport that = (SimpleReport) o;
+        return Objects.equals(testReportModel, that.testReportModel) &&
+                Objects.equals(memberName, that.memberName) &&
+                Objects.equals(gender, that.gender) &&
+                Objects.equals(age, that.age);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(testReportModel, memberName, gender, age);
     }
 }

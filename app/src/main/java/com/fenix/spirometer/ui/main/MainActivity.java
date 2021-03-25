@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onBackPressed() {
-        if ("main".contentEquals(navController.getCurrentDestination().getLabel()) && !viewModel.isTesting()) {
+        CharSequence label = navController.getCurrentDestination().getLabel();
+        if (label != null && "main".contentEquals(label) && !viewModel.isTesting()) {
             showExitConfirmDialog();
         } else {
             navController.navigateUp();

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +35,8 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
     public static final int SUFFIX_TYPE_SKIP = 0;
     public static final int SUFFIX_TYPE_DEL = 1;
     public static final int SUFFIX_TYPE_EDIT = 2;
+    public static final int PREFIX_TYPE_INDEX = 0;
+    public static final int PREFIX_TYPE_CHECKBOX = 1;
     private final LinearLayout llHeader;
     private final RecyclerView rvList;
     private final boolean isListStripe;
@@ -43,11 +47,13 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
     private int[] headerGravities;
     private final int headerMinHeight;
     private int suffixType;
-    private boolean isShowIndex;
+    private int prefixType;
     private final int tabItemsId;
     private TabLayout tabLayout = null;
     private LinearLayoutManager listManager;
-    private List<T> dataList = new ArrayList<>();
+    private List<T> mDataList = new ArrayList<>();
+    private int selectedPosition = -1;
+    private int chosenPosition = -1;
 
     public CustomExcel(Context context) {
         this(context, null);
@@ -64,7 +70,7 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
         headerMinHeight = typedArray.getDimensionPixelSize(R.styleable.CustomExcel_header_min_height, 0);
         isListStripe = typedArray.getBoolean(R.styleable.CustomExcel_stripe_list, true);
         suffixType = typedArray.getInt(R.styleable.CustomExcel_last_column_type, -1);
-        isShowIndex = typedArray.getBoolean(R.styleable.CustomExcel_first_column_index, false);
+        prefixType = typedArray.getInt(R.styleable.CustomExcel_prefix_type, -1);
         boolean isShowSearch = typedArray.getBoolean(R.styleable.CustomExcel_show_search, false);
         tabItemsId = typedArray.getResourceId(R.styleable.CustomExcel_tab_items, 0);
 
@@ -82,9 +88,9 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
     }
 
     private void setupRow(LinearLayout row, @NonNull String[] header) {
-        TextView textView;
+        View textView;
         for (int i = 0; i < columns; i++) {
-            textView = (TextView) row.getChildAt(i);
+            textView = row.getChildAt(i);
             textView.setVisibility(View.VISIBLE);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, headerGravities[i]);
             if (i == columns - 1) {
@@ -94,13 +100,21 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
                 }
             }
             textView.setLayoutParams(layoutParams);
-            textView.setText(header[i]);
+            if (textView instanceof CheckBox) {
+                CheckBox checkBox = ((CheckBox) textView);
+                if (prefixType == PREFIX_TYPE_CHECKBOX) {
+                    checkBox.setButtonDrawable(ContextCompat.getDrawable(getContext(), R.drawable.checkbox_button));
+                    checkBox.setText("");
+                } else {
+                    checkBox.setButtonDrawable(null);
+                    checkBox.setText(header[i]);
+                }
+            } else {
+                ((TextView) textView).setText(header[i]);
+            }
         }
         row.setWeightSum(weightSum);
         row.setMinimumHeight(headerMinHeight);
-        row.requestLayout();
-
-
     }
 
     public void setup(@NonNull String[] headers, @NonNull int[] headerGravities, @NonNull List<T> data, @NonNull List<Method> getters) {
@@ -109,7 +123,7 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
             throw new IllegalArgumentException("headers = " + columns + "gravities = " + headerGravities.length);
         }
         this.headerGravities = headerGravities;
-        dataList = data;
+        mDataList = data;
         weightSum = 0;
         for (int i : headerGravities) {
             weightSum += i;
@@ -119,7 +133,7 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
         listManager = new LinearLayoutManager(rvList.getContext());
         rvList.setLayoutManager(listManager);
 
-        adapter = new BaseExcelAdapter(dataList, getters, isShowIndex);
+        adapter = new BaseExcelAdapter(mDataList, getters);
         adapter.setStripe(isListStripe);
         rvList.setAdapter(adapter);
         setupTabLayout();
@@ -146,7 +160,7 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                int sizeForEach = dataList.size() / tabLayout.getTabCount();
+                int sizeForEach = mDataList.size() / tabLayout.getTabCount();
                 listManager.scrollToPositionWithOffset(tab.getPosition() * sizeForEach, 0);
             }
 
@@ -159,7 +173,7 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
             }
         });
         rvList.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            int sizeForEach = dataList.size() / tabLayout.getTabCount();
+            int sizeForEach = mDataList.size() / tabLayout.getTabCount();
             tabLayout.setScrollPosition(listManager.findLastVisibleItemPosition() / sizeForEach, 0, true);
         });
     }
@@ -171,15 +185,15 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
 
     @Override
     public boolean onQueryTextChange(String searchContent) {
-        if (dataList == null) {
+        if (mDataList == null) {
             return false;
         }
         Log.d("hff", "searchContent = " + searchContent);
         if (TextUtils.isEmpty(searchContent)) {
-            adapter.reload(dataList);
+            adapter.reload(mDataList);
         } else {
             List<T> searchList = new ArrayList<>();
-            for (T data : dataList) {
+            for (T data : mDataList) {
                 if (ModelUtils.contains(data, adapter.getters, searchContent)) {
                     searchList.add(data);
                 }
@@ -193,16 +207,14 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
         private boolean isStripe = false;
         final List<T> dataList;
         final List<Method> getters;
-        final boolean isShowIndex;
         private int columnCount;
         private OnRowStateChangeListener listener;
 
-        public BaseExcelAdapter(@NonNull List<T> dataList, @NonNull List<Method> getters, boolean isShowIndex) {
+        public BaseExcelAdapter(@NonNull List<T> dataList, @NonNull List<Method> getters) {
             this.dataList = dataList;
             this.getters = getters;
-            this.isShowIndex = isShowIndex;
             columnCount = getters.size();
-            if (isShowIndex) {
+            if (prefixType >= 0) {
                 columnCount++;
             }
             if (suffixType >= 0) {
@@ -219,12 +231,19 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            TextView item;
             String[] rowContents = new String[columnCount];
             int start = 0;
-            if (isShowIndex) {
-                rowContents[start++] = String.valueOf(position);
+            switch (prefixType) {
+                case PREFIX_TYPE_INDEX:
+                    rowContents[start++] = String.valueOf(position);
+                    break;
+                case PREFIX_TYPE_CHECKBOX:
+                    rowContents[start++] = "";
+                    break;
+                default:
+                    break;
             }
+
             switch (suffixType) {
                 case SUFFIX_TYPE_SKIP:
                     rowContents[columnCount - 1] = getContext().getString(R.string.item_suffix_skip);
@@ -251,7 +270,17 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
             }
             holder.llRow.setBackgroundResource((isStripe && position % 2 == 1) ? R.color.light_gray : R.color.white);
             setupRow(holder.llRow, rowContents);
-            if (listener != null) {
+            ((CheckBox)holder.llRow.getChildAt(0)).setChecked(selectedPosition == position || chosenPosition == position);
+            if (isEditMode()) {
+                holder.llRow.setOnClickListener(view -> {
+                    if (selectedPosition >= 0 && mDataList.get(selectedPosition).equals(dataList.get(position))) {
+                        selectedPosition = -1;
+                    } else if (position != chosenPosition){
+                        selectedPosition = position;
+                    }
+                    notifyDataSetChanged();
+                });
+            } else if (listener != null) {
                 listener.onBindViewHolder(holder.llRow, position);
             }
         }
@@ -271,11 +300,6 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
 
         public void setOnRowStateChangedListener(OnRowStateChangeListener listener) {
             this.listener = listener;
-        }
-
-        public void addRow(T data) {
-            dataList.add(data);
-            notifyItemInserted(dataList.size());
         }
 
         public void reload(List<T> data) {
@@ -313,12 +337,32 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
     }
 
     public void reload(List<T> data) {
-        dataList = data;
-        adapter.reload(dataList);
+        mDataList = data;
+        adapter.reload(mDataList);
     }
 
     public T getData(int position) {
-        Log.d("hff", "deleting:" + position + ". " + adapter.getDataList().get(position));
         return adapter.getDataList().get(position);
+    }
+
+    public void switchMode(boolean isCheckbox) {
+        int type = isCheckbox ? PREFIX_TYPE_CHECKBOX : PREFIX_TYPE_INDEX;
+        if (type != prefixType) {
+            prefixType = type;
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    public boolean isEditMode() {
+        return prefixType == PREFIX_TYPE_CHECKBOX;
+    }
+
+    public void choose(T t) {
+        chosenPosition = mDataList.indexOf(t);
+        if (isEditMode()) {
+            adapter.notifyDataSetChanged();
+        } else {
+            switchMode(true);
+        }
     }
 }
