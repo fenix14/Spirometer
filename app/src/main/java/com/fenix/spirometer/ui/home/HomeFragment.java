@@ -1,7 +1,6 @@
 package com.fenix.spirometer.ui.home;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -12,9 +11,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.model.BleDeviceState;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.scanner.ScanActivity;
-import com.fenix.spirometer.ui.member.MemberDetailFragment;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.Constants;
 import com.fenix.spirometer.util.Utils;
@@ -74,10 +73,27 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
 
     @Override
     protected void initObserver() {
-        viewModel.subscribeToBleDeviceState(this, bleDeviceState -> {
-            isConnect = bleDeviceState != null && bleDeviceState.isConnect();
-            Log.d("hff", "isConnect = " + isConnect);
-            toolbar.setRightText(getString(isConnect ? R.string.ble_state_connect : R.string.ble_state_disconnect));
+            Log.d("hff", "initObserver");
+        viewModel.getBleDeviceState().observe(this, bleDeviceState -> {
+            Log.d("hff", "state = " + bleDeviceState);
+            if (bleDeviceState != null) {
+                int state = bleDeviceState.getState();
+                switch (state) {
+                    case BleDeviceState.State.STATE_CONNECTED:
+                        isConnect = true;
+                        toolbar.setRightText(getString(R.string.ble_state_connect));
+                        break;
+                    case BleDeviceState.State.STATE_CONNECTING:
+                        toolbar.setRightText(getString(R.string.ble_state_connecting));
+                        break;
+                    case BleDeviceState.State.STATE_DISCONNECTED:
+                        isConnect = false;
+                        toolbar.setRightText(getString(R.string.ble_state_disconnect));
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
     }
 
@@ -89,12 +105,13 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
         } else if (vId == R.id.tv_fuc_history_report) {
             NavHostFragment.findNavController(this).navigate(R.id.home_to_history);
         } else {
-//            if (!isConnect) {
-//                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-            viewModel.setTesting(true);
-            NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
+            if (!isConnect) {
+                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            viewModel.startMeasure();
+            //viewModel.setTesting(true);
+            //NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
         }
     }
 
@@ -115,8 +132,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
             showBtConnectDialog(getString(R.string.confirm_replace_ble_device));
             return;
         }
-        //viewModel.connectToBleDevice("28:F5:37:8B:8D:AB");
-        startActivity(new Intent(getActivity(), ScanActivity.class));
+        viewModel.connectToBleDevice("20:05:19:15:20:1E");
     }
 
     private void showBtConnectDialog(String content) {
@@ -124,6 +140,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
             btConnDialog = Utils.createConfirmDialog(getActivity(), content,
                     (dialogInterface, which) -> {
                         if (which == BUTTON_POSITIVE) {
+                            viewModel.disconnect();
                             startActivity(new Intent(getActivity(), ScanActivity.class));
                         }
                     });

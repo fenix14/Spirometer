@@ -35,7 +35,8 @@
         android:inputType="phone"
         app:content_type="edit"
         app:key="setId"
-        app:title="@string/member_cell" />
+        app:necessary="true"
+        app:title="@string/member_id" />
     <Preference android:layout="@layout/pref_divider" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         app:content_type="text"

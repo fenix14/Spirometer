@@ -60,7 +60,7 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
     protected  final int PERMS_LOCAL_MAC_ADDRESS =204;
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(true);
+        viewModel.setShowNavBar(false);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
 

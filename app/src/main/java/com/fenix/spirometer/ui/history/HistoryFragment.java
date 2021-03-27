@@ -30,7 +30,7 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(true);
+        viewModel.setShowNavBar(false);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
 

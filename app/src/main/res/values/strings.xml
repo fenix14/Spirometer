@@ -92,7 +92,7 @@
     <string name="member_name">姓名</string>
     <string name="member_gender">性别</string>
     <string name="member_age">年龄</string>
-    <string name="member_cell">手机号</string>
+    <string name="member_id">身份证号</string>
     <string name="member_height">身高</string>
     <string name="member_weight">体重</string>
     <string name="member_province_city">省市</string>
@@ -171,6 +171,9 @@
 
     <!-- ReportCompareFragment -->
     <string name="tab_report_compare">对比报告</string>
+
+    <!-- PrepareFragment -->
+    <string name="tab_prepare">调整姿势</string>
 
 
 

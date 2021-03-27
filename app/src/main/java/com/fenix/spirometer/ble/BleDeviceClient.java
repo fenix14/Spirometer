@@ -19,18 +19,36 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.fenix.spirometer.model.BleDeviceState;
+import com.fenix.spirometer.model.BleDeviceState.State;
+
 import java.lang.ref.WeakReference;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.fenix.spirometer.ble.Contants.MSG_DATA_RECEIVED;
-import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_CONNECT;
+import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_CONNECTED;
 import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_CONNECTING;
-import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_DISCONNECT;
+import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_DISCONNECTED;
+import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_DISCONNECTING;
 import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_INITIALIZED;
+import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_STATE_CHANGE;
+import static com.fenix.spirometer.ble.Contants.MSG_FAILED;
 
 public class BleDeviceClient {
+    private static final UUID UUID_SERVICE = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
+    private static final UUID UUID_COMMUNICATE = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
+    private static final UUID UUID_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
+    private static final String COMMAND_START_MEASURE = "$FB$01110000$YE$";
+    private static final char[] COMMAND_START_MEASURE1 = new char[]{'$', 'F', 'B', '$', '0', '1', '1', '1', '0', '0', '0', '0', '$', 'Y', 'E', '$'};
+
+    String start;
+
     public Context context;
     private BluetoothManager btManager;
     private BluetoothAdapter btAdapter;
@@ -41,13 +59,10 @@ public class BleDeviceClient {
     private MyHandler mHandler;
     private Handler resultHandler;
     private DataCleaner dataCleaner;
+    private BleDeviceState bleDeviceState = new BleDeviceState();
 
-    private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private BluetoothGattCharacteristic mWriteCharacteristic;
+    private BluetoothGattCharacteristic mCommunicateChara;
     private final BluetoothGattCallback mGattCallback = new BaseBluetoothGattCallback();
-
-    private BleDeviceClient() {
-    }
 
     private static class InstanceHolder {
         private static BleDeviceClient INSTANCE = new BleDeviceClient();
@@ -76,39 +91,32 @@ public class BleDeviceClient {
             thread.start();
         }
         mHandler = new MyHandler(thread.getLooper(), this);
-        this.resultHandler = resultHandler;
+        setResultHandler(resultHandler);
         return true;
-//      Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//      context.startActivity(enableBtIntent);
     }
 
     // 以下为对外接口
     // 3.设备直连，不需要扫描过程。传入mac地址，来源应该是二维码扫描
     public void connectTo(String mac) {
-        Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
-//        for (BluetoothDevice device : devices) {
-//            Log.d("hff", "设备：" + device.getName() + " " + device.getAddress());
-//        }
-        mBluetoothDevice = btAdapter.getRemoteDevice(mac);
-        Log.d("hff", "设备：" + mBluetoothDevice.getName() + " " + mBluetoothDevice.getAddress());
-        mBluetoothGatt = mBluetoothDevice.connectGatt(context, false, mGattCallback);
-        mBluetoothGatt.connect();
-        Log.d("hff", "mBluetoothGatt = " + mBluetoothGatt);
-        List<BluetoothGattService> services = mBluetoothGatt.getServices();
-        Log.d("hff", "services: " + services);
-        for (BluetoothGattService service : services) {
-            Log.d("hff", "uuid: " + service.getUuid());
-            List<BluetoothGattCharacteristic> chars = service.getCharacteristics();
-            for (BluetoothGattCharacteristic characteristic : chars) {
-                Log.d("hff", "characteristic.uuid: " + characteristic.getUuid());
+        mHandler.post(() -> {
+            mBluetoothDevice = btAdapter.getRemoteDevice(mac);
+            Log.d("hff", "设备：" + mBluetoothDevice.getName() + " " + mBluetoothDevice.getAddress());
+            if (mBluetoothDevice == null) {
+                mHandler.deliverMessage(MSG_FAILED, "BluetoothDevice not found");
+                return;
             }
-
-        }
+            mBluetoothGatt = mBluetoothDevice.connectGatt(context, false, mGattCallback);
+            mBluetoothGatt.connect();
+            bleDeviceState.setMac(mac);
+            bleDeviceState.setDeviceName(mBluetoothDevice.getName());
+            mHandler.deliverMessage(MSG_DEVICE_CONNECTING, null);
+        });
     }
 
     // 4.开始测量
     public void startMeasure() {
-        sendCommand(new byte[0]);
+        Log.d("hff", "startMeasure: " + Arrays.toString(COMMAND_START_MEASURE1));
+        sendCommand(getBytes(COMMAND_START_MEASURE1));
         dataCleaner = new DataCleaner();
     }
 
@@ -118,28 +126,15 @@ public class BleDeviceClient {
     }
 
     private void sendCommand(byte[] command) {
-        mWriteCharacteristic.setValue(command);
-        mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);
-    }
-
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
-        if (btAdapter == null || mBluetoothGatt == null) {
-            return;
-        }
-        boolean isSuccess = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-//        if (UUID_BLE_SPP_NOTIFY.equals(characteristic.getUuid()) {
-//            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-//                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-//            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-//            sendSuccess = bluetoothLeService.mBluetoothGatt.writeDescriptor(descriptor);
-//        }
+        Log.d("hff", "onCharacteristicChanged: " + Arrays.toString(command));
+        mCommunicateChara.setValue(COMMAND_START_MEASURE);
+        mBluetoothGatt.writeCharacteristic(mCommunicateChara);
     }
 
     // 6.设备断开
     public void disconnect() {
+        mHandler.deliverMessage(MSG_DEVICE_DISCONNECTING, null);
         mBluetoothGatt.disconnect();
-        mBluetoothGatt.close();
     }
 
     private void closeGatt() {
@@ -165,26 +160,17 @@ public class BleDeviceClient {
             super.onConnectionStateChange(gatt, status, newState);
             Log.d("hff", "newState: " + newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                List<BluetoothGattService> services = gatt.getServices();
-                for (BluetoothGattService service : services) {
-                    Log.d("hff", "uuid: " + service.getUuid());
-                    List<BluetoothGattCharacteristic> chars = service.getCharacteristics();
-                    for (BluetoothGattCharacteristic characteristic : chars) {
-                        Log.d("hff", "characteristic.uuid: " + characteristic.getUuid());
-                    }
-
-                }
+                mHandler.deliverMessage(MSG_DEVICE_CONNECTED, null);
                 // 3.1连接成功，准备寻找服务。
-//                try {
-//                    Thread.sleep(1000);
-//                    mBluetoothGatt.discoverServices();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-                mHandler.sendEmptyMessage(MSG_DEVICE_CONNECT);
+                try {
+                    Thread.sleep(1000);
+                    mBluetoothGatt.discoverServices();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                mHandler.deliverMessage(MSG_DEVICE_DISCONNECTED, null);
                 //断连发送消息
-                mHandler.sendEmptyMessage(MSG_DEVICE_DISCONNECT);
                 if (mBluetoothGatt != null) {
                     mBluetoothGatt.close();
                     mBluetoothGatt = null;
@@ -194,32 +180,30 @@ public class BleDeviceClient {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.d("hff", "onServicesDiscovered: " + status);
             // TODO：以下操作转给Handler处理
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                BluetoothGattService serviceRead;
-                BluetoothGattService serviceWrite;
-                serviceRead = gatt.getService(UUID.fromString(""));
-                serviceWrite = gatt.getService(UUID.fromString(""));
-                // 读
-                if (serviceRead != null) {
-                    mNotifyCharacteristic = serviceRead.getCharacteristic(UUID.fromString(""));
+                BluetoothGattService service = gatt.getService(UUID_SERVICE);
+                if (service == null) {
+                    mHandler.deliverMessage(MSG_FAILED, "Service not found.");
+                    return;
                 }
-
-                // 写
-                if (serviceWrite != null) {
-                    mWriteCharacteristic = serviceWrite.getCharacteristic(UUID.fromString(""));
+                mCommunicateChara = service.getCharacteristic(UUID_COMMUNICATE);
+                if (mCommunicateChara == null) {
+                    mHandler.deliverMessage(MSG_FAILED, "Characteristic not found.");
+                    return;
                 }
                 // 打开通知开关（读）
-                if (mNotifyCharacteristic != null) {
-                    //设置可以接收通知，有点忘了
-                }
+                setCharacteristicNotification(mCommunicateChara, true);
             } else {
                 //服务连接失败
+                mHandler.deliverMessage(MSG_FAILED, "Service not found.");
             }
         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.d("hff", "onCharacteristicRead: " + status);
             // 收到设备上报数据？？？？？
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //收到设备notify值 （设备上报值）
@@ -230,6 +214,7 @@ public class BleDeviceClient {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
+            Log.d("hff", "onCharacteristicWrite: " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //write成功
             }
@@ -240,21 +225,41 @@ public class BleDeviceClient {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
+            Log.d("hff", "onCharacteristicChanged: " + Arrays.toString(characteristic.getValue()));
         }
 
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorRead(gatt, descriptor, status);
+            Log.d("hff", "onDescriptorRead " + status);
         }
 
         //打开通知开关成功后会回调这里
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            Log.d("hff", "onDescriptorWrite: " + status);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                mHandler.deliverMessage(MSG_DEVICE_INITIALIZED, null);
+            }
         }
 
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
+            Log.d("hff", "onReadRemoteRssi " + status);
+        }
+    }
+
+    private void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
+        if (btAdapter == null || mBluetoothGatt == null) {
+            return;
+        }
+        boolean isSuccess = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        Log.d("hff", "setCharacteristicNotification: " + isSuccess);
+        if (UUID_COMMUNICATE.equals(characteristic.getUuid())) {
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID_DESCRIPTOR);
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            boolean result = mBluetoothGatt.writeDescriptor(descriptor);
         }
     }
 
@@ -269,31 +274,57 @@ public class BleDeviceClient {
         @Override
         public void handleMessage(@NonNull Message msg) {
             // TODO 空指针隐患处理
+
+            Log.d("hff", "handleMessage: " + msg.what + ": " + msg.obj);
             switch (msg.what) {
-                case MSG_DEVICE_CONNECT:
-                    // 连接成功
-                    postMessage(MSG_DEVICE_CONNECT, null);
-                    break;
-                case MSG_DEVICE_DISCONNECT:
-                    // 断开连接
-                    postMessage(MSG_DEVICE_DISCONNECT, null);
-                    break;
-                case MSG_DEVICE_CONNECTING:
+                case State.STATE_CONNECTING:
                     // 连接中
+                    bleDeviceState.setState(State.STATE_CONNECTING);
+                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    break;
+                case MSG_DEVICE_DISCONNECTED:
+                    // 断开连接
+                    bleDeviceState.setState(State.STATE_DISCONNECTED);
+                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    break;
+                case MSG_DEVICE_DISCONNECTING:
+                    // 断开连接
+                    bleDeviceState.setState(State.STATE_DISCONNECTING);
+                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    break;
+                case MSG_DEVICE_CONNECTED:
+                    // 连接成功
+                    bleDeviceState.setState(State.STATE_CONNECTED);
+                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
                     break;
                 case MSG_DEVICE_INITIALIZED:
                     // 初始化完成
+                    bleDeviceState.setState(State.STATE_READY);
+                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
                     break;
                 case MSG_DATA_RECEIVED:
                     // 数据接收
                     if (msg.obj instanceof MeasureData) {
-                        postMessage(MSG_DEVICE_DISCONNECT, dealWithData((MeasureData) msg.obj));
+                        postMessage(MSG_DEVICE_DISCONNECTED, dealWithData((MeasureData) msg.obj));
                     }
+                    break;
+                case MSG_FAILED:
+                    postMessage(MSG_FAILED, msg.obj);
                     break;
                 default:
                     super.handleMessage(msg);
                     break;
             }
+        }
+
+        void deliverMessage(int what, Object message) {
+            if (message != null) {
+                Message msg = obtainMessage(what);
+                sendMessage(msg);
+            } else {
+                sendEmptyMessage(what);
+            }
+
         }
     }
 
@@ -308,7 +339,7 @@ public class BleDeviceClient {
         if (data == null) {
             resultHandler.sendEmptyMessage(flag);
         } else {
-            Message message = resultHandler.obtainMessage();
+            Message message = resultHandler.obtainMessage(flag);
             message.obj = data;
             resultHandler.sendMessage(message);
         }
@@ -316,5 +347,14 @@ public class BleDeviceClient {
 
     public void setResultHandler(Handler handler) {
         resultHandler = handler;
+    }
+
+    public static byte[] getBytes(char[] chars) {
+        Charset cs = Charset.forName("UTF-8");
+        CharBuffer cb = CharBuffer.allocate(chars.length);
+        cb.put(chars);
+        cb.flip();
+        ByteBuffer bb = cs.encode(cb);
+        return bb.array();
     }
 }

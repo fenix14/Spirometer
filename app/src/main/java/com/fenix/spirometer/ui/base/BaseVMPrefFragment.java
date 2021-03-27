@@ -57,7 +57,7 @@ public abstract class BaseVMPrefFragment extends PreferenceFragmentCompat {
         viewModel = new ViewModelProvider(getActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(MyApplication.getInstance())).
                 get(MainViewModel.class);
         toolbar = (CustomToolbar) ((AppCompatActivity) getActivity()).getSupportActionBar().getCustomView();
-        btnFooter = view.findViewById(R.id.footer);
+        btnFooter = view.getRootView().findViewById(R.id.footer);
         vHeader = view.findViewById(R.id.header);
 
         tvHeaderTitle = view.findViewById(R.id.header_title);

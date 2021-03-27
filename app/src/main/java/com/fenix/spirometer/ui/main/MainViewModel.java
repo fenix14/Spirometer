@@ -74,8 +74,21 @@ public class MainViewModel extends ViewModel {
         bleRepo.connectTo(mac);
     }
 
+    // 蓝牙设备相关
+    public void disconnect() {
+        bleRepo.disConnect();
+    }
+
     public void subscribeToBleDeviceState(LifecycleOwner lifecycleOwner, Observer<BleDeviceState> observer) {
         bleRepo.getBleDeviceState().observe(lifecycleOwner, observer);
+    }
+
+    public MutableLiveData<BleDeviceState> getBleDeviceState() {
+        return bleRepo.getBleDeviceState();
+    }
+
+    public void startMeasure() {
+        bleRepo.startMeasure();
     }
 
     // 人员列表相关 TODO:有必要放这吗？

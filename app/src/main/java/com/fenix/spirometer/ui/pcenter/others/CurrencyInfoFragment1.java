@@ -38,7 +38,7 @@ public class CurrencyInfoFragment1 extends BaseVMPrefFragment implements CustomT
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(true);
+        viewModel.setShowNavBar(false);
         Bundle bundle = getArguments();
         contentType = bundle == null ? "empty" : bundle.getString(FLAG_CONTENT_TYPE, "empty");
 

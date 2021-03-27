@@ -19,7 +19,7 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(true);
+        viewModel.setShowNavBar(false);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
 

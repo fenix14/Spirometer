@@ -22,8 +22,7 @@ public class MemberListFragment extends BaseVMFragment implements CustomExcel.On
 
     @Override
     protected void initToolNavBar() {
-
-        viewModel.setShowNavBar(true);
+        viewModel.setShowNavBar(!viewModel.isTesting());
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
 
