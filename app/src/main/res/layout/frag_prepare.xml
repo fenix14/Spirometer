@@ -1,6 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <ImageView
+        android:id="@+id/ImageView_prepare"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/margin_paragraph"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_fun_posture_test"
+        app:layout_constraintBottom_toTopOf="@+id/center"
+        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintStart_toStartOf="@id/start"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_position"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/margin_paragraph"
+        android:text="@string/prepare_title_position"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_normal"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintStart_toStartOf="@id/start"
+        app:layout_constraintTop_toTopOf="@id/center" />
+
+    <TextView
+        android:id="@+id/content_position"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/margin_content_to_title"
+        android:text="@string/prepare_content_position"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/text_size_normal"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintStart_toStartOf="@id/start"
+        app:layout_constraintTop_toBottomOf="@id/title_position" />
+
+    <TextView
+        android:id="@+id/title_action"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/margin_paragraph"
+        android:text="@string/prepare_title_action"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_normal"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintStart_toStartOf="@id/start"
+        app:layout_constraintTop_toBottomOf="@id/content_position" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/margin_content_to_title"
+        android:text="@string/prepare_content_action"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/text_size_normal"
+        app:layout_constraintEnd_toEndOf="@id/end"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="@id/start"
+        app:layout_constraintTop_toBottomOf="@id/title_action" />
 </androidx.constraintlayout.widget.ConstraintLayout>

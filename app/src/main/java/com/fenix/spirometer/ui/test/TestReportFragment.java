@@ -19,15 +19,15 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(false);
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_report));
         toolbar.setLeftText(getString(R.string.item_back));
         toolbar.setRightText(viewModel.isTesting() ? null : getString(R.string.btn_compare));
         toolbar.setOnItemClickListener(this);
+
+        viewModel.setShowNavBar(false);
     }
 
     @Override

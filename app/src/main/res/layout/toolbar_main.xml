@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.fenix.spirometer.ui.widget.CustomToolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom_toolbar="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    custom_toolbar:leftText="left"
-    custom_toolbar:centerText="center"
-    custom_toolbar:rightText="right"
     android:layout_height="wrap_content" />

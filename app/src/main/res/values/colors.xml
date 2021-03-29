@@ -11,6 +11,7 @@
     <color name="colorPrimary">#FF3F51B5</color>
     <color name="dark_gray">#FFAAAAAA</color>
     <color name="light_gray">#FFEEEEEE</color>
+    <color name="transparent">#00000000</color>
     <color name="red">#FFEE0000</color>
     
     <color name="colorAccent">#FF4081</color>

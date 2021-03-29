@@ -7,10 +7,13 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -19,14 +22,17 @@ import android.widget.TextView;
 
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StringRes;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.fenix.spirometer.R;
+import com.google.android.material.internal.DescendantOffsetUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS;
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
 
 public class CustomPreference extends Preference {
@@ -94,6 +100,10 @@ public class CustomPreference extends Preference {
                 etContent.setVisibility(View.VISIBLE);
                 if (!TextUtils.isEmpty(content)) {
                     etContent.setText(content);
+                }
+                if (isShowBoundary) {
+                    ConstraintLayout container = (ConstraintLayout) holder.findViewById(R.id.pref_container);
+                    container.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
                 }
                 etContent.setInputType(editType);
                 if (editType == (InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_CLASS_TEXT)) {

@@ -44,7 +44,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.List;
 
-public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClickListener,CustomToolbar.OnItemClickListener {
+public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClickListener, CustomToolbar.OnItemClickListener {
     private String mParam1;
     CustomToolbar toolbar;
     LinearLayout mlayoutphone;
@@ -54,21 +54,22 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
     TextView memailtitle;
     TextView memailvaule;
     Button mexitButton;
-    boolean isaccount=false;
+    boolean isaccount = false;
     protected final int PERMS_REQUEST_CODE = 202;
-    protected  final int PERMS_BLUETOOTH_PRIVILEGED =203;
-    protected  final int PERMS_LOCAL_MAC_ADDRESS =204;
+    protected final int PERMS_BLUETOOTH_PRIVILEGED = 203;
+    protected final int PERMS_LOCAL_MAC_ADDRESS = 204;
+
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(false);
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText("联系我们");
         toolbar.setLeftText("<");
         toolbar.setRightText(null);
         toolbar.setOnItemClickListener(this);
+
+        viewModel.setShowNavBar(false);
     }
 
     @LayoutRes
@@ -81,47 +82,47 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         toolbar.clear();
         toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setLeftText("<");
-        mlayoutphone=rootView.findViewById(R.id.layout_phone);
-        mlayouemail=rootView.findViewById(R.id.deaults_view_gone);
-        mphonetitle=rootView.findViewById(R.id.deaults_title);
-        mphonevaule=rootView.findViewById(R.id.deaults_value);
-        memailtitle=rootView.findViewById(R.id.email_title);
-        memailvaule=rootView.findViewById(R.id.email_value);
-        mexitButton=rootView.findViewById(R.id.exitaccount);
+        mlayoutphone = rootView.findViewById(R.id.layout_phone);
+        mlayouemail = rootView.findViewById(R.id.deaults_view_gone);
+        mphonetitle = rootView.findViewById(R.id.deaults_title);
+        mphonevaule = rootView.findViewById(R.id.deaults_value);
+        memailtitle = rootView.findViewById(R.id.email_title);
+        memailvaule = rootView.findViewById(R.id.email_value);
+        mexitButton = rootView.findViewById(R.id.exitaccount);
         mexitButton.setOnClickListener(this);
         mlayouemail.setOnClickListener(this);
-        String[] permissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA,Manifest.permission.BLUETOOTH_PRIVILEGED
-                ,Manifest.permission.ACCESS_WIFI_STATE};
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA, Manifest.permission.BLUETOOTH_PRIVILEGED
+                , Manifest.permission.ACCESS_WIFI_STATE};
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            requestPermissions(permissions,PERMS_REQUEST_CODE);
-            requestPermissions(permissions,PERMS_BLUETOOTH_PRIVILEGED);
-            requestPermissions(permissions,PERMS_LOCAL_MAC_ADDRESS);
+            requestPermissions(permissions, PERMS_REQUEST_CODE);
+            requestPermissions(permissions, PERMS_BLUETOOTH_PRIVILEGED);
+            requestPermissions(permissions, PERMS_LOCAL_MAC_ADDRESS);
         }
     }
 
     @Override
     protected void initObserver() {
-        if(mParam1.equals("contact")){
+        if (mParam1.equals("contact")) {
             toolbar.setCenterText("联系我们");
             mexitButton.setVisibility(View.GONE);
             mphonetitle.setText(R.string.pref_title_cellphone);
             mphonevaule.setText(R.string.pref_content_cellphone);
             memailtitle.setText(R.string.pref_title_email);
             memailvaule.setText(R.string.pref_content_email);
-        }else if(mParam1.equals("version")){
+        } else if (mParam1.equals("version")) {
             toolbar.setCenterText("版本信息");
             mlayouemail.setVisibility(View.GONE);
             mexitButton.setVisibility(View.GONE);
             mphonetitle.setText(R.string.pref_title_version);
             mphonevaule.setText(R.string.pref_content_version);
-        }else if(mParam1.equals("mac")){
+        } else if (mParam1.equals("mac")) {
             toolbar.setCenterText("Mac地址");
             mlayouemail.setVisibility(View.GONE);
             mexitButton.setVisibility(View.GONE);
             mphonetitle.setText(R.string.pref_title_mac);
             mphonevaule.setText(getBtAddressByReflection());
-        }else if(mParam1.equals("account")){
+        } else if (mParam1.equals("account")) {
             isaccount = true;
             mlayoutphone.setVisibility(View.GONE);
             memailtitle.setText(R.string.account_title);
@@ -133,14 +134,14 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.exitaccount:
-                Log.d("wuxin","exit========");
+                Log.d("wuxin", "exit========");
                 viewModel.logout();
                 break;
             case R.id.deaults_view_gone:
-                if(isaccount){
-                    Log.d("wuxin","change password========");
+                if (isaccount) {
+                    Log.d("wuxin", "change password========");
                 }
                 break;
         }
@@ -156,12 +157,13 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
     public void onRightClick() {
 
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString("flag_deaults");
-            Log.d("wuxin","==========="+mParam1);
+            Log.d("wuxin", "===========" + mParam1);
         }
     }
 
@@ -176,9 +178,9 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
                 return "NULL";
             }
             Method method = bluetoothManagerService.getClass().getMethod("getAddress");
-            if(method != null) {
+            if (method != null) {
                 Object obj = method.invoke(bluetoothManagerService);
-                if(obj != null) {
+                if (obj != null) {
                     return obj.toString();
                 }
             }
@@ -193,6 +195,7 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         }
         return null;
     }
+
     public String getWifiMacFromNode() {
         String wifiMac = "";
         RandomAccessFile f = null;
@@ -201,7 +204,7 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
             f.seek(0);
             wifiMac = f.readLine().trim();
             f.close();
-            Log.d("", "getWifiMacFromNode "+wifiMac);
+            Log.d("", "getWifiMacFromNode " + wifiMac);
             return wifiMac;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

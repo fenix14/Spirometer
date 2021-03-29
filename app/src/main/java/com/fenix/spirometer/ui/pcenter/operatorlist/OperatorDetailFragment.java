@@ -26,10 +26,9 @@ public class OperatorDetailFragment extends BaseVMPrefFragment implements Custom
         Bundle data = getArguments();
         displayOperator = data == null ? null : (Operator) data.getSerializable(FLAG_DATA);
 
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(displayOperator == null ? R.string.tab_operator_detail_add : R.string.tab_operator_detail));
         toolbar.setLeftText(getString(R.string.item_back));
         toolbar.setRightText(null);

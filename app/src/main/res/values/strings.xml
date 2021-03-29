@@ -174,8 +174,16 @@
 
     <!-- PrepareFragment -->
     <string name="tab_prepare">调整姿势</string>
+    <string name="footer_start_testing">开始测试</string>
+    <string name="prepare_title_position">姿势要求</string>
+    <string name="prepare_content_position">端坐好，背挺直，嘴巴含着，牙齿咬住吹嘴，左手平举设备右手捏住鼻子</string>
+    <string name="prepare_title_action">呼吸动作要领</string>
+    <string name="prepare_content_action">正常呼吸三次，全力呼吸三次，全力将气吹出，循环三次。</string>
 
 
+    <!-- TestingFragment -->
+    <string name="tab_testing">待改</string>
+    <string name="footer_stop_testing">结束测试</string>
 
 
     <!-- ScanActivity -->
@@ -198,8 +206,10 @@
     <string name="pref_content_mac">00-16-EA</string>
     <string name="pref_title_version">当前版本</string>
     <string name="pref_content_version">1.0.0</string>
-    <string name="account_title">修改密码</string>>
-    <string name="pref_footer_logout">退出登录</string>>
+    <string name="account_title">修改密码</string>
+    <string name="pref_footer_logout">退出登录</string>
+    <string name="pref_Agency_title">机构信息</string>
+    <string name="pref_content_Agency">请输入机构信息</string>
 
     <string name="fancy_qr_code_theme_name_yellow">黄</string>
     <string name="fancy_qr_code_theme_name_green">绿</string>

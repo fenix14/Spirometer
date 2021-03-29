@@ -74,13 +74,13 @@ public abstract class BaseVMPrefFragment extends PreferenceFragmentCompat {
                 tvHeaderSummary.setText(headerSummary);
             }
         }
-        initToolNavBar();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         initPreference();
+        initToolNavBar();
         initObserver();
         initData();
     }

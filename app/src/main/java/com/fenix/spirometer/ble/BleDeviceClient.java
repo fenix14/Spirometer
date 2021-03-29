@@ -15,6 +15,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,9 +26,8 @@ import com.fenix.spirometer.model.BleDeviceState.State;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.UUID;
 
 import static com.fenix.spirometer.ble.Contants.MSG_DATA_RECEIVED;
@@ -38,16 +38,28 @@ import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_DISCONNECTING;
 import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_INITIALIZED;
 import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_STATE_CHANGE;
 import static com.fenix.spirometer.ble.Contants.MSG_FAILED;
+import static com.fenix.spirometer.ble.Contants.MSG_RAW_DATA_RECEIVED;
 
 public class BleDeviceClient {
+    private static final int KEY_PREFIX = 0;
+    private static final int KEY_SUFFIX = 1;
+    private static final int KEY_DATA_START = 2;
+    private static final int KEY_DATA_STOP = 3;
+    private static final SparseArray<byte[]> PACKET_FEATURES = new SparseArray<byte[]>() {{
+        put(KEY_PREFIX, new byte[]{36, 70, 66, 36});
+        put(KEY_SUFFIX, new byte[]{36, 70, 69, 36});
+        put(KEY_DATA_START, new byte[]{49, 50});
+        put(KEY_DATA_STOP, new byte[]{49, 51});
+    }};
     private static final UUID UUID_SERVICE = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_COMMUNICATE = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    private static final String COMMAND_START_MEASURE = "$FB$01110000$YE$";
-    private static final char[] COMMAND_START_MEASURE1 = new char[]{'$', 'F', 'B', '$', '0', '1', '1', '1', '0', '0', '0', '0', '$', 'Y', 'E', '$'};
-
-    String start;
+    private static final String COMMAND_START_MEASURE = "$YB$01110000$YE$";
+    private static final String COMMAND_STOP_MEASURE = "$YB$01130000$YE$";
+    private static final String DATA_PREFIX_START = "$FB$0112";
+    private static final String DATA_PREFIX_STOP = "$FB$0113";
+    private static final String DATA_SUFFIX = "$FE$";
 
     public Context context;
     private BluetoothManager btManager;
@@ -59,7 +71,8 @@ public class BleDeviceClient {
     private MyHandler mHandler;
     private Handler resultHandler;
     private DataCleaner dataCleaner;
-    private BleDeviceState bleDeviceState = new BleDeviceState();
+    BleDeviceState bleDeviceState = new BleDeviceState();
+    StringBuilder data;
 
     private BluetoothGattCharacteristic mCommunicateChara;
     private final BluetoothGattCallback mGattCallback = new BaseBluetoothGattCallback();
@@ -115,20 +128,22 @@ public class BleDeviceClient {
 
     // 4.开始测量
     public void startMeasure() {
-        Log.d("hff", "startMeasure: " + Arrays.toString(COMMAND_START_MEASURE1));
-        sendCommand(getBytes(COMMAND_START_MEASURE1));
+        Log.d("hff", "startMeasure: " + COMMAND_START_MEASURE);
+        sendCommand(COMMAND_START_MEASURE.getBytes());
         dataCleaner = new DataCleaner();
     }
 
     // 5.结束测量
     public void stopMeasure() {
-        sendCommand(new byte[0]);
+        sendCommand(COMMAND_STOP_MEASURE.getBytes());
     }
 
     private void sendCommand(byte[] command) {
-        Log.d("hff", "onCharacteristicChanged: " + Arrays.toString(command));
-        mCommunicateChara.setValue(COMMAND_START_MEASURE);
-        mBluetoothGatt.writeCharacteristic(mCommunicateChara);
+        Log.d("hff", "sendCommand: " + Arrays.toString(command));
+        if (mCommunicateChara != null && mBluetoothGatt != null) {
+            mCommunicateChara.setValue(command);
+            mBluetoothGatt.writeCharacteristic(mCommunicateChara);
+        }
     }
 
     // 6.设备断开
@@ -204,28 +219,24 @@ public class BleDeviceClient {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             Log.d("hff", "onCharacteristicRead: " + status);
-            // 收到设备上报数据？？？？？
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                //收到设备notify值 （设备上报值）
-            }
         }
 
-        //发送命令给设备成功之后
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Log.d("hff", "onCharacteristicWrite: " + status);
+            Log.d("hff", "onCharacteristicWrite: " + status + ", value = " + Arrays.toString(characteristic.getValue()));
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //write成功
             }
 
         }
 
-        //收到通知（read），？？？？？
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            Log.d("hff", "onCharacteristicChanged: " + Arrays.toString(characteristic.getValue()));
+            // 处理数据
+            Log.d("hff", "onCharacteristicChanged");
+            //mHandler.deliverMessage(MSG_RAW_DATA_RECEIVED, characteristic.getValue());
         }
 
         @Override
@@ -263,8 +274,8 @@ public class BleDeviceClient {
         }
     }
 
-    private class MyHandler extends Handler {
-        private WeakReference<BleDeviceClient> reference;
+    private static class MyHandler extends Handler {
+        private final WeakReference<BleDeviceClient> reference;
 
         MyHandler(Looper looper, BleDeviceClient client) {
             super(looper);
@@ -274,42 +285,52 @@ public class BleDeviceClient {
         @Override
         public void handleMessage(@NonNull Message msg) {
             // TODO 空指针隐患处理
+            if (reference == null || reference.get() == null) {
+                return;
+            }
 
+            BleDeviceState state = reference.get().bleDeviceState;
             Log.d("hff", "handleMessage: " + msg.what + ": " + msg.obj);
             switch (msg.what) {
                 case State.STATE_CONNECTING:
                     // 连接中
-                    bleDeviceState.setState(State.STATE_CONNECTING);
-                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    state.setState(State.STATE_CONNECTING);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
                     break;
                 case MSG_DEVICE_DISCONNECTED:
                     // 断开连接
-                    bleDeviceState.setState(State.STATE_DISCONNECTED);
-                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    state.setState(State.STATE_DISCONNECTED);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
                     break;
                 case MSG_DEVICE_DISCONNECTING:
                     // 断开连接
-                    bleDeviceState.setState(State.STATE_DISCONNECTING);
-                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    state.setState(State.STATE_DISCONNECTING);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
                     break;
                 case MSG_DEVICE_CONNECTED:
                     // 连接成功
-                    bleDeviceState.setState(State.STATE_CONNECTED);
-                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    state.setState(State.STATE_CONNECTED);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
                     break;
                 case MSG_DEVICE_INITIALIZED:
                     // 初始化完成
-                    bleDeviceState.setState(State.STATE_READY);
-                    postMessage(MSG_DEVICE_STATE_CHANGE, bleDeviceState);
+                    state.setState(State.STATE_READY);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
+                    break;
+                case MSG_RAW_DATA_RECEIVED:
+                    // 数据接收
+                    if (msg.obj instanceof byte[]) {
+                        reference.get().dealWitRawData((byte[]) msg.obj);
+                    }
                     break;
                 case MSG_DATA_RECEIVED:
                     // 数据接收
                     if (msg.obj instanceof MeasureData) {
-                        postMessage(MSG_DEVICE_DISCONNECTED, dealWithData((MeasureData) msg.obj));
+                        reference.get().postMessage(MSG_DATA_RECEIVED, (MeasureData) msg.obj);
                     }
                     break;
                 case MSG_FAILED:
-                    postMessage(MSG_FAILED, msg.obj);
+                    reference.get().postMessage(MSG_FAILED, msg.obj);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -319,7 +340,9 @@ public class BleDeviceClient {
 
         void deliverMessage(int what, Object message) {
             if (message != null) {
-                Message msg = obtainMessage(what);
+                Message msg = obtainMessage();
+                msg.what = what;
+                msg.obj = message;
                 sendMessage(msg);
             } else {
                 sendEmptyMessage(what);
@@ -328,14 +351,7 @@ public class BleDeviceClient {
         }
     }
 
-    private synchronized MeasureData dealWithData(MeasureData rawData) {
-        if (dataCleaner == null) {
-            dataCleaner = new DataCleaner();
-        }
-        return dataCleaner.clean(rawData);
-    }
-
-    private synchronized void postMessage(int flag, @Nullable Object data) {
+    private void postMessage(int flag, @Nullable Object data) {
         if (data == null) {
             resultHandler.sendEmptyMessage(flag);
         } else {
@@ -349,12 +365,46 @@ public class BleDeviceClient {
         resultHandler = handler;
     }
 
+    private static final int OFFSET_4 = 4;
+
+    private synchronized void dealWitRawData(byte[] newData) {
+        String newDataStr = new String(newData);
+        int start = 0;
+        if (newDataStr.startsWith(DATA_PREFIX_START)) {
+            start = DATA_PREFIX_START.length();
+            data = new StringBuilder();
+        }
+
+        if (data == null) {
+            return;
+        }
+        int locSuffix = newDataStr.indexOf(DATA_SUFFIX);
+        if (locSuffix > 0) {
+            data.append(newDataStr.substring(start, locSuffix));
+            dealWithData(data.toString());
+            data = null;
+        } else {
+            data.append(newDataStr.substring(start));
+        }
+    }
+
+
+    private void dealWithData(String rawData) {
+        int length = rawData.length() / OFFSET_4;
+        int[] data = new int[length];
+        for (int i = 0; i < length; i++) {
+            String sub = rawData.substring(i * OFFSET_4, (i + 1) * OFFSET_4);
+            data[i] = Integer.parseInt(sub);
+        }
+        Log.d("hff", "dealWithData() data with int: " + Arrays.toString(data));
+        mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
+    }
+
     public static byte[] getBytes(char[] chars) {
-        Charset cs = Charset.forName("UTF-8");
         CharBuffer cb = CharBuffer.allocate(chars.length);
         cb.put(chars);
         cb.flip();
-        ByteBuffer bb = cs.encode(cb);
+        ByteBuffer bb = StandardCharsets.UTF_8.encode(cb);
         return bb.array();
     }
 }

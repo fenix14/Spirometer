@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.fenix.spirometer.R;
 import com.fenix.spirometer.ui.main.MainViewModel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.AllViewModelFactory;
@@ -27,6 +29,7 @@ public abstract class BaseVMFragment extends Fragment {
     public static final String FLAG_NAV_BG_TYPE = "nav_bg_color";
     protected MainViewModel viewModel;
     private CustomToolbar toolbar;
+    private Button btnFooter;
 
     @Nullable
     @Override
@@ -35,15 +38,21 @@ public abstract class BaseVMFragment extends Fragment {
         View rootView = inflater.inflate(getLayoutId(), container, false);
         setHasOptionsMenu(true);
         toolbar = (CustomToolbar) ((AppCompatActivity) getActivity()).getSupportActionBar().getCustomView();
-        initToolNavBar();
         initView(rootView);
         initObserver();
         return rootView;
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        btnFooter = view.getRootView().findViewById(R.id.footer);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+        initToolNavBar();
         initData();
     }
 
@@ -54,6 +63,10 @@ public abstract class BaseVMFragment extends Fragment {
 
     protected CustomToolbar getToolbar() {
         return toolbar != null ? toolbar : (CustomToolbar) ((AppCompatActivity) getActivity()).getSupportActionBar().getCustomView();
+    }
+
+    protected Button getFooter() {
+        return btnFooter;
     }
 
     @LayoutRes

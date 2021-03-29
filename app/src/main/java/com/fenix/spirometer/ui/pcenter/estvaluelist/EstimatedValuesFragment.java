@@ -30,14 +30,14 @@ public class EstimatedValuesFragment extends BaseVMFragment implements CustomExc
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(false);
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_est_value_list));
         toolbar.setLeftText(getString(R.string.item_back));
         toolbar.setOnItemClickListener(this);
+
+        viewModel.setShowNavBar(false);
     }
 
     @Override

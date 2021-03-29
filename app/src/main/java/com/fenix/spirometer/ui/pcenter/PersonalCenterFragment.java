@@ -13,14 +13,14 @@ import com.fenix.spirometer.ui.widget.CustomToolbar;
 public class PersonalCenterFragment extends BaseVMPrefFragment {
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(true);
+        viewModel.setShowLightToolbar(false);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(null);
         toolbar.setLeftText(null);
         toolbar.setRightText(null);
+
+        viewModel.setShowNavBar(true);
     }
 
     @Override

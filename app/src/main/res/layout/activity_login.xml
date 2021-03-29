@@ -50,8 +50,8 @@
         android:inputType="phone"
         android:selectAllOnFocus="true"
         app:layout_constraintBottom_toTopOf="@id/row_top"
-        app:layout_constraintStart_toStartOf="@id/column_start"
-        app:layout_constraintEnd_toEndOf="@id/column_end"/>
+        app:layout_constraintEnd_toEndOf="@id/column_end"
+        app:layout_constraintStart_toStartOf="@id/column_start" />
 
     <EditText
         android:id="@+id/password"
@@ -62,19 +62,21 @@
         android:inputType="textPassword"
         android:selectAllOnFocus="true"
         app:layout_constraintBottom_toTopOf="@id/row_center"
-        app:layout_constraintStart_toStartOf="@id/column_start"
-        app:layout_constraintEnd_toEndOf="@id/column_end"/>
+        app:layout_constraintEnd_toEndOf="@id/column_end"
+        app:layout_constraintStart_toStartOf="@id/column_start" />
 
     <Button
         android:id="@+id/login"
+        style="@style/MainButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/MainButton"
         android:layout_gravity="start"
+        android:background="@drawable/bg_button"
+        android:padding="@dimen/text_padding"
         android:text="@string/action_sign_in"
         app:layout_constraintBottom_toTopOf="@id/row_bottom"
-        app:layout_constraintStart_toStartOf="@id/column_start"
-        app:layout_constraintEnd_toEndOf="@id/column_end"/>
+        app:layout_constraintEnd_toEndOf="@id/column_end"
+        app:layout_constraintStart_toStartOf="@id/column_start" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -82,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/row_top"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/row_top" />
 </androidx.constraintlayout.widget.ConstraintLayout>

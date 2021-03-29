@@ -39,17 +39,17 @@
         app:title="@string/member_id" />
     <Preference android:layout="@layout/pref_divider" />
     <com.fenix.spirometer.ui.widget.CustomPreference
-        app:content_type="text"
+        app:content_type="edit"
         app:key="setProvince"
         app:show_boundary="true"
         app:title="@string/member_province" />
     <com.fenix.spirometer.ui.widget.CustomPreference
-        app:content_type="text"
+        app:content_type="edit"
         app:key="setCity"
         app:show_boundary="true"
         app:title="@string/member_city" />
     <com.fenix.spirometer.ui.widget.CustomPreference
-        app:content_type="text"
+        app:content_type="edit"
         app:key="setCounty"
         app:show_boundary="true"
         app:title="@string/member_county" />

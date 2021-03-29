@@ -37,14 +37,14 @@ public class DetectorCalibFragment extends BaseVMFragment implements CustomExcel
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(false);
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_detector_calibration));
         toolbar.setLeftText(getString(R.string.item_back));
         toolbar.setOnItemClickListener(this);
+
+        viewModel.setShowNavBar(false);
     }
 
     @Override

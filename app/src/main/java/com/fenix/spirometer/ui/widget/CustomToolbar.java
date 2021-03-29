@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -100,5 +101,10 @@ public class CustomToolbar extends FrameLayout {
         void onLeftClick();
 
         void onRightClick();
+    }
+
+    public void setTextColor(@ColorInt int color) {
+        mLeft.setTextColor(color);
+        mCenter.setTextColor(color);
     }
 }

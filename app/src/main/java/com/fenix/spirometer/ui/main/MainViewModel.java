@@ -40,6 +40,7 @@ public class MainViewModel extends ViewModel {
     private Member chosenMember = null;
 
     private final MutableLiveData<Boolean> mdIsShowNavBar = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mdIsShowLightToolbar = new MutableLiveData<>(false);
 
     public MainViewModel() {
         memberRepo = MemberRepository.getInstance();
@@ -90,6 +91,9 @@ public class MainViewModel extends ViewModel {
     public void startMeasure() {
         bleRepo.startMeasure();
     }
+    public void stopMeasure() {
+        bleRepo.stopMeasure();
+    }
 
     // 人员列表相关 TODO:有必要放这吗？
     public LiveData<List<Member>> getAllMembers() {
@@ -136,8 +140,17 @@ public class MainViewModel extends ViewModel {
         mdIsShowNavBar.postValue(isShowNavBar);
     }
 
+    public void setShowLightToolbar(boolean isLightType) {
+        if (isLightType != mdIsShowLightToolbar.getValue()) {
+            mdIsShowLightToolbar.postValue(isLightType);
+        }
+    }
+
     public void subscribeToIsShowNavBar(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
         mdIsShowNavBar.observe(lifecycleOwner, observer);
+    }
+    public void subscribeToIsLightToolbar(LifecycleOwner lifecycleOwner, Observer<Boolean> observer) {
+        mdIsShowLightToolbar.observe(lifecycleOwner, observer);
     }
 
     public void setChosenMember(Member member) {

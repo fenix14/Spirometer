@@ -65,10 +65,9 @@ public class EditEstValueFragment extends BaseVMPrefFragment implements CustomTo
 
     @Override
     protected void initToolNavBar() {
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_member_detail));
         toolbar.setLeftText(getString(R.string.item_back));
         toolbar.setRightText(null);

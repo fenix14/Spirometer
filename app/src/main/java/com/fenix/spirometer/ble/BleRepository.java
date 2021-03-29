@@ -97,7 +97,7 @@ public class BleRepository {
         bleDeviceClient.release();
     }
 
-    private synchronized void postData(MeasureData data) {
+    private void postData(MeasureData data) {
         repoHandler.post(() -> mdMeasureData.postValue(data));
     }
 
@@ -132,7 +132,7 @@ public class BleRepository {
         }
     }
 
-    private synchronized void changeState(BleDeviceState state) {
+    private void changeState(BleDeviceState state) {
         Log.d("hff", "newState = " + state);
         mdBleDeviceState.postValue(state);
     }

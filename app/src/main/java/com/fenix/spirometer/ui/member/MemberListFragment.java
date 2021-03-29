@@ -22,15 +22,15 @@ public class MemberListFragment extends BaseVMFragment implements CustomExcel.On
 
     @Override
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(!viewModel.isTesting());
+        viewModel.setShowLightToolbar(viewModel.isTesting());
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_member_list));
         toolbar.setLeftText(viewModel.isTesting() ? getString(R.string.item_back) : null);
         toolbar.setRightText(viewModel.isTesting() ? null : getString(R.string.member_list_frag_title_right_add));
         toolbar.setOnItemClickListener(this);
+
+        viewModel.setShowNavBar(!viewModel.isTesting());
     }
 
     @Override

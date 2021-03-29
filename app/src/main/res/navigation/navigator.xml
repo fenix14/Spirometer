@@ -98,6 +98,7 @@
     </fragment>
     <fragment
         android:id="@+id/frag_testing"
+        android:label="testing"
         android:name="com.fenix.spirometer.ui.test.TestingFragment">
         <action
             android:id="@+id/testing_to_result"

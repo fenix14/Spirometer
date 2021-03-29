@@ -57,10 +57,9 @@ public class MemberDetailFragment extends BaseVMPrefFragment implements CustomTo
 
     @Override
     protected void initToolNavBar() {
+        viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
-
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(getString(R.string.tab_member_detail));
         toolbar.setLeftText(getString(R.string.item_back));
         toolbar.setRightText(viewModel.isTesting() ? getString(R.string.choose) : null);
@@ -215,7 +214,7 @@ public class MemberDetailFragment extends BaseVMPrefFragment implements CustomTo
                     .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
                     .setCyclic(false, false, false)//循环与否
                     .setSelectOptions(0, 0, 0)  //设置默认选中项
-                    .setOutSideCancelable(false)//点击外部dismiss default true
+                    .setOutSideCancelable(true)//点击外部dismiss default true
                     .isDialog(true)//是否显示为对话框样式
                     .isRestoreItem(true)//切换时是否还原，设置默认选中第一项。
                     .build();

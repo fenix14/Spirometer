@@ -29,15 +29,15 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
     private AlertDialog btConnDialog;
 
     protected void initToolNavBar() {
-        viewModel.setShowNavBar(true);
-
+        viewModel.setShowLightToolbar(false);
         toolbar = getToolbar();
         toolbar.clear();
-        toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setCenterText(null);
         toolbar.setLeftText(null);
         toolbar.setRightText(getString(R.string.ble_state_disconnect));
         toolbar.setOnItemClickListener(this);
+
+        viewModel.setShowNavBar(true);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
 
     @Override
     protected void initObserver() {
-            Log.d("hff", "initObserver");
+        Log.d("hff", "initObserver");
         viewModel.getBleDeviceState().observe(this, bleDeviceState -> {
             Log.d("hff", "state = " + bleDeviceState);
             if (bleDeviceState != null) {
@@ -101,17 +101,18 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
     public void onClick(View view) {
         int vId = view.getId();
         if (vId == R.id.tv_fuc_operation_video) {
+            viewModel.stopMeasure();
             Toast.makeText(getActivity(), "go to Video!", Toast.LENGTH_SHORT).show();
         } else if (vId == R.id.tv_fuc_history_report) {
             NavHostFragment.findNavController(this).navigate(R.id.home_to_history);
         } else {
-            if (!isConnect) {
-                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            viewModel.startMeasure();
-            //viewModel.setTesting(true);
-            //NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
+//            if (!isConnect) {
+//                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            viewModel.startMeasure();
+            viewModel.setTesting(true);
+            NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
         }
     }
 
