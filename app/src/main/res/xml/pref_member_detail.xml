@@ -3,11 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="text"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:content_type="edit"
         app:key="setName"
         app:necessary="true"
         app:title="@string/member_name" />
     <com.fenix.spirometer.ui.widget.CustomPreference
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:choices="@array/member_array_gender"
         app:content_type="choice"
         app:key="setGender"
@@ -15,45 +19,61 @@
         app:title="@string/member_gender" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="number"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:content_type="edit"
         app:key="setAge"
         app:necessary="true"
         app:title="@string/member_age" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="number"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:content_type="edit"
         app:key="setWeight"
         app:necessary="true"
         app:title="@string/member_weight" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="number"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:content_type="edit"
         app:key="setHeight"
         app:necessary="true"
         app:title="@string/member_height" />
     <com.fenix.spirometer.ui.widget.CustomPreference
         android:inputType="phone"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:content_type="edit"
         app:key="setId"
         app:necessary="true"
         app:title="@string/member_id" />
     <Preference android:layout="@layout/pref_divider" />
     <com.fenix.spirometer.ui.widget.CustomPreference
-        app:content_type="edit"
-        app:key="setProvince"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:content_type="text"
         app:show_boundary="true"
+        app:key="setProvince"
         app:title="@string/member_province" />
     <com.fenix.spirometer.ui.widget.CustomPreference
-        app:content_type="edit"
-        app:key="setCity"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:content_type="text"
         app:show_boundary="true"
+        app:key="setCity"
         app:title="@string/member_city" />
     <com.fenix.spirometer.ui.widget.CustomPreference
-        app:content_type="edit"
-        app:key="setCounty"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:content_type="text"
         app:show_boundary="true"
+        app:key="setCounty"
         app:title="@string/member_county" />
     <com.fenix.spirometer.ui.widget.CustomPreference
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
         app:content_type="edit"
         app:key="setArea"
         app:title="@string/member_area" />

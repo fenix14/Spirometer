@@ -1,10 +1,12 @@
 package com.fenix.spirometer.ui.test;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.fenix.spirometer.ble.BleRepository;
+import com.fenix.spirometer.ble.MeasureData;
 import com.fenix.spirometer.model.BleDeviceState;
 import com.fenix.spirometer.room.MemberRepository;
 
@@ -17,7 +19,11 @@ public class TestViewModel extends ViewModel {
         memRepo = MemberRepository.getInstance();
     }
 
-    public void subscribeToBleDeviceState(LifecycleOwner lifecycleOwner, Observer<BleDeviceState> observer) {
-        bleRepo.getBleDeviceState().observe(lifecycleOwner, observer);
+    public MutableLiveData<BleDeviceState> getBleDeviceState() {
+        return bleRepo.getBleDeviceState();
+    }
+
+    public MutableLiveData<MeasureData> getMeasureData() {
+        return bleRepo.getMeasureData();
     }
 }

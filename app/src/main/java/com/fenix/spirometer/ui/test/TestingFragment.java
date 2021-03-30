@@ -3,18 +3,26 @@ package com.fenix.spirometer.ui.test;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.ble.MeasureData;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
+import com.fenix.spirometer.ui.pcenter.detectorcalibration.DetectorCalibViewModel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
+import com.fenix.spirometer.util.AllViewModelFactory;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -23,31 +31,39 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
+import com.github.mikephil.charting.formatter.DefaultValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+
 public class TestingFragment extends BaseVMFragment implements View.OnClickListener, OnChartValueSelectedListener {
-    protected final String[] months = new String[]{
+    private final static String[] months = new String[]{
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
     };
 
-    protected final String[] parties = new String[]{
+    private final static String[] parties = new String[]{
             "Party A", "Party B", "Party C", "Party D", "Party E", "Party F", "Party G", "Party H",
             "Party I", "Party J", "Party K", "Party L", "Party M", "Party N", "Party O", "Party P",
             "Party Q", "Party R", "Party S", "Party T", "Party U", "Party V", "Party W", "Party X",
             "Party Y", "Party Z"
     };
 
-    private LineChart chart1;
-    private LineChart chart2;
-    private Button mButton1;
-    private Button mButton2;
-
-    protected Typeface tfRegular;
-    protected Typeface tfLight;
+    private ConcurrentLinkedQueue<MeasureData> dataQueue = new ConcurrentLinkedQueue<>();
+    private TestViewModel testViewModel;
+    private LineChart chart1, chart2;
+    private Typeface tfRegular, tfLight;
+    private Stack<MeasureData> measureDataStack = new Stack<MeasureData>();
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void initToolNavBar() {
@@ -70,23 +86,6 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     }
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_linechart;
-    }
-
-    @Override
-    protected void initView(View rootView) {
-        mButton1 = rootView.findViewById(R.id.add);
-        mButton2 = rootView.findViewById(R.id.add1);
-        mButton1.setOnClickListener(this);
-        mButton2.setOnClickListener(this);
-        chart1 = rootView.findViewById(R.id.chart1);
-        chart2 = rootView.findViewById(R.id.chart2);
-        chart1.setOnChartValueSelectedListener(this);
-        chart2.setOnChartValueSelectedListener(this);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tfRegular = Typeface.createFromAsset(getContext().getAssets(), "OpenSans-Regular.ttf");
@@ -94,7 +93,22 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     }
 
     @Override
-    protected void initData() {
+    protected int getLayoutId() {
+        return R.layout.activity_linechart;
+    }
+
+
+    @Override
+    protected void initView(View rootView) {
+        testViewModel = new ViewModelProvider(this, new AllViewModelFactory()).get(TestViewModel.class);
+
+        rootView.findViewById(R.id.add).setOnClickListener(this);
+        rootView.findViewById(R.id.add1).setOnClickListener(this);
+        chart1 = rootView.findViewById(R.id.chart1);
+        chart2 = rootView.findViewById(R.id.chart2);
+        chart1.setOnChartValueSelectedListener(this);
+        chart2.setOnChartValueSelectedListener(this);
+
         // no description text
         chart1.getDescription().setEnabled(false);
         chart2.getDescription().setEnabled(false);
@@ -102,7 +116,6 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         // enable touch gestures
         chart1.setTouchEnabled(false);
         chart2.setTouchEnabled(true);
-
         chart1.setDragDecelerationFrictionCoef(0.9f);
         chart2.setDragDecelerationFrictionCoef(0.9f);
 
@@ -123,22 +136,29 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         // set an alternative background color
         chart1.setBackgroundColor(Color.LTGRAY);
         chart2.setBackgroundColor(Color.LTGRAY);
-        chart1.animateX(1500);
-        chart2.animateX(1500);
+
         YAxis rightAxis = chart1.getAxisRight();
         rightAxis.setEnabled(false);
 
-        IAxisValueFormatter xAxisFormatter = new DefaultAxisValueFormatter(30);
+        YAxis rightAxis2 = chart2.getAxisRight();
+        rightAxis2.setEnabled(false);
+    }
+
+    @Override
+    protected void initData() {
+        chart1.animateX(1500);
+        chart2.animateX(1500);
+
+        ValueFormatter xAxisFormatter = new CustomFormatter(0);
         XAxis xAxis = chart1.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTypeface(tfLight);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(15);
+        // xAxis.setLabelCount(15);
         xAxis.setValueFormatter(xAxisFormatter);
-
-        YAxis rightAxis2 = chart2.getAxisRight();
-        rightAxis2.setEnabled(false);
+        //xAxis.setLabelCount(5, true);
+        xAxis.setGranularityEnabled(true);
 
         XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
         mv.setChartView(chart1); // For bounds control
@@ -146,31 +166,34 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     }
 
     private void addEntry(LineChart chart, String title, int color) {
-        LineData data = chart.getData();
-        if (data == null) {
-            data = new LineData();
-            chart.setData(data);
+        LineData lineData = chart.getData();
+        if (lineData == null) {
+            lineData = new LineData();
+            chart.setData(lineData);
             chart.getData().setHighlightEnabled(!chart.getData().isHighlightEnabled());
         }
-        ILineDataSet set = data.getDataSetByIndex(0);
+//        ILineDataSet lastSet = lineData.getDataSetByIndex(lineData.getDataSetCount() - 1);
         // set.addEntry(...); // can be called as well
-        if (set == null) {
-            set = createSet(title, color);
-            data.addDataSet(set);
-        }
+//        if (lastSet == null) {
+//            lastSet = createSet(title, color);
+//            lineData.addDataSet(lastSet);
+//        }
         // choose a random dataSet
-        int randomDataSetIndex = (int) (Math.random() * data.getDataSetCount());
-        ILineDataSet randomSet = data.getDataSetByIndex(randomDataSetIndex);
-        float value = (float) (Math.random() * 20) + 20f * (randomDataSetIndex + 1);
-        data.addEntry(new Entry(randomSet.getEntryCount(), value), randomDataSetIndex);
-        data.notifyDataChanged();
+//        Entry entry = new Entry(lastSet.getEntryCount(), ((float) Math.random() * 50));
+//        Log.d("hff", "entry = " + entry + ", count = " + (lineData.getDataSetCount() - 1));
+//        lineData.addEntry(entry, lineData.getDataSetCount() - 1);
+        lineData.addDataSet(createSet(title, color));
+        chart.setVisibleXRangeMaximum(60000);
+        chart.setVisibleXRangeMinimum(60000);
         // let the chart know it's data has changed
         chart.notifyDataSetChanged();
-        chart.setVisibleXRangeMaximum(30);
+        chart.invalidate();
         //chart.setVisibleYRangeMaximum(15, AxisDependency.LEFT);
 //      // this automatically refreshes the chart (calls invalidate())
-        chart.moveViewTo(data.getEntryCount() - 7, 20f, YAxis.AxisDependency.LEFT);
+        //chart.moveViewTo(data.getEntryCount() - 7, 20f, YAxis.AxisDependency.LEFT);
     }
+
+    int j = 0;
 
     private LineDataSet createSet(String title, int color) {
         LineDataSet set = new LineDataSet(null, title);
@@ -182,6 +205,10 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         set.setDrawValues(!set.isDrawValuesEnabled());
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         set.setDrawCircles(false);
+        for (int k = 0; k < 100; k++) {
+            set.addEntry(new Entry(j++, ((float) Math.random() * 50)));
+        }
+        Log.d("hff2", "after createSet: j = " + j);
         return set;
     }
 
@@ -225,10 +252,6 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add:
-                //addEntry(chart1,"通气功能",ColorTemplate.getHoloBlue());
-                for (int i = 0; i < 5; i++) {
-                    addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
-                }
                 feedMultiple();
                 break;
             case R.id.add1:
@@ -240,75 +263,72 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         }
     }
 
-    private Thread thread;
+
+    final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
+        }
+    };
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private void feedMultiple() {
-
-        if (thread != null)
-            thread.interrupt();
-
-        final Runnable runnable = new Runnable() {
-
-            @Override
-            public void run() {
-                addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
-            }
-        };
-
-        thread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                for (int i = 0; i < 40; i++) {
-
-                    // Don't generate garbage runnables inside the loop.
+        executorService.execute(() -> {
+            for (int i = 0; i <= 600; i++) {
+                // Don't generate garbage runnables inside the loop.
+                try {
+                    Log.d("hff1", "before sleep");
+                    Thread.sleep(100);
+                    Log.d("hff1", "after sleep");
                     requireActivity().runOnUiThread(runnable);
-
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         });
-        thread.start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        for (int i = 0; i < 5; i++) {
-            initEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
-        }
-        if (thread != null) {
-            thread.interrupt();
-        }
+//        for (int i = 0; i < 5; i++) {
+//            initEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
+//        }
     }
 
     public void initEntry(LineChart chart, String title, int color) {
-        LineData data = chart.getData();
-        if (data == null) {
-            data = new LineData();
-            chart.setData(data);
-            chart.getData().setHighlightEnabled(!chart.getData().isHighlightEnabled());
-        }
-        ILineDataSet set = data.getDataSetByIndex(0);
-        // set.addEntry(...); // can be called as well
-        if (set == null) {
-            set = createSet(title, color);
-            data.addDataSet(set);
-        }
-        // choose a random dataSet
-        int randomDataSetIndex = (int) (Math.random() * data.getDataSetCount());
-        ILineDataSet randomSet = data.getDataSetByIndex(randomDataSetIndex);
-        float value = (float) (Math.random() * 20) + 20f * (randomDataSetIndex + 1);
-        data.addEntry(new Entry(randomSet.getEntryCount(), 50f), randomDataSetIndex);
-        data.notifyDataChanged();
-        // let the chart know it's data has changed
-        chart.notifyDataSetChanged();
-        chart.setVisibleXRangeMaximum(30);
+//        LineData data = chart.getData();
+//        if (data == null) {
+//            data = new LineData();
+//            chart.setData(data);
+//            chart.getData().setHighlightEnabled(!chart.getData().isHighlightEnabled());
+//        }
+//        ILineDataSet set = data.getDataSetByIndex(0);
+//        // set.addEntry(...); // can be called as well
+//        if (set == null) {
+//            set = createSet(title, color);
+//            data.addDataSet(set);
+//        }
+//        // choose a random dataSet
+//        int randomDataSetIndex = (int) (Math.random() * data.getDataSetCount());
+//        ILineDataSet randomSet = data.getDataSetByIndex(randomDataSetIndex);
+//        float value = (float) (Math.random() * 20) + 20f * (randomDataSetIndex + 1);
+//        data.addEntry(new Entry(randomSet.getEntryCount(), 50f), randomDataSetIndex);
+//        data.notifyDataChanged();
+//        // let the chart know it's data has changed
+//        chart.notifyDataSetChanged();
+//        chart.setVisibleXRangeMaximum(200);
+//        chart.setVisibleXRangeMinimum(200);
+//
+//       // chart.moveViewTo(data.getEntryCount() - 7, 20f, YAxis.AxisDependency.LEFT);
+    }
 
-        chart.moveViewTo(data.getEntryCount() - 7, 20f, YAxis.AxisDependency.LEFT);
+    @Override
+    protected void initObserver() {
+        testViewModel.getBleDeviceState().observe(this, bleDeviceState -> {
+            //TODO 蓝牙断开处理
+        });
+        testViewModel.getMeasureData().observe(this, dataQueue::offer);
     }
 }

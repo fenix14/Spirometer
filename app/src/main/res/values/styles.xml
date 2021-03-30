@@ -19,7 +19,6 @@
 
     <style name="ContentTextLight" parent="LightTextView">
         <item name="android:textSize">@dimen/text_size_normal</item>
-        <item name="android:background">@drawable/selector_bg_white_grey</item>
     </style>
 
     <style name="MainButton" parent="@style/Widget.AppCompat.Button.Borderless">

@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/pref_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="@dimen/pref_item_height"
+    android:layout_height="@dimen/pref_item_height"
     android:padding="@dimen/layout_margin_short">
 
     <androidx.constraintlayout.widget.Guideline
@@ -31,7 +30,7 @@
     <TextView
         android:id="@+id/pref_necessary"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="end|center_vertical"
         android:text="*"
         android:textColor="@color/red"
@@ -46,7 +45,8 @@
         android:id="@+id/header_title"
         style="@style/PrefItem"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="start|center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/content_start"
         app:layout_constraintStart_toStartOf="@+id/title_start"
@@ -54,7 +54,7 @@
 
     <FrameLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/content_end"
         app:layout_constraintStart_toStartOf="@+id/content_start"
@@ -64,16 +64,17 @@
             android:id="@+id/pref_content_edit"
             style="@style/PrefItem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@drawable/bg_stroke_search"
-            android:gravity="start"
+            android:gravity="start|center_vertical"
             android:visibility="gone" />
 
         <RadioGroup
             android:id="@+id/pref_content_radio"
             style="@style/PrefItem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -95,7 +96,8 @@
             android:id="@+id/pref_content_text"
             style="@style/PrefItem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
             android:visibility="gone" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

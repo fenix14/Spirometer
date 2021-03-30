@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,20 +61,6 @@ public abstract class BaseVMPrefFragment extends PreferenceFragmentCompat {
         btnFooter = view.getRootView().findViewById(R.id.footer);
         vHeader = view.findViewById(R.id.header);
 
-        tvHeaderTitle = view.findViewById(R.id.header_title);
-        tvHeaderSummary = view.findViewById(R.id.header_summary);
-
-        if (headerTitle == null && headerSummary == null) {
-            vHeader.setVisibility(View.GONE);
-        } else {
-            vHeader.setVisibility(View.VISIBLE);
-            if (!TextUtils.isEmpty(headerTitle)) {
-                tvHeaderTitle.setText(headerTitle);
-            }
-            if (!TextUtils.isEmpty(headerSummary)) {
-                tvHeaderSummary.setText(headerSummary);
-            }
-        }
     }
 
     @Override
