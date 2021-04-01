@@ -37,8 +37,6 @@ public class BleRepository {
         handlerThread = new HandlerThread("BleRepository");
         handlerThread.start();
         repoHandler = new MyHandler(handlerThread.getLooper());
-
-        Log.w("hff", "BleRepository.newInstance() >> init bleClient");
         bleDeviceClient = BleDeviceClient.getInstance();
         bleDeviceClient.init(MyApplication.getInstance(), repoHandler);
     }
@@ -101,9 +99,13 @@ public class BleRepository {
         repoHandler.post(() -> mdMeasureData.postValue(data));
     }
 
-    private class MyHandler extends Handler {
+    public class MyHandler extends Handler {
+        public String name;
+
         MyHandler(Looper looper) {
             super(looper);
+            name = getClass().getName() + (int) (Math.random() * 1000);
+            Log.d("hff", "name = " + name);
         }
 
         @Override

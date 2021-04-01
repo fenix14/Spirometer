@@ -26,4 +26,11 @@ public class TestViewModel extends ViewModel {
     public MutableLiveData<MeasureData> getMeasureData() {
         return bleRepo.getMeasureData();
     }
+
+    public void startMeasure() {
+        bleRepo.startMeasure();
+    }
+    public void stopMeasure() {
+        bleRepo.stopMeasure();
+    }
 }

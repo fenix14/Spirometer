@@ -9,7 +9,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import java.util.Arrays;
 
 public class CustomFormatter extends DefaultAxisValueFormatter {
-    private final static int[] title = new int[]{0, 20000 , 40000, 60000};
+    private final static int[] title = new int[]{2000 , 4000, 6000};
 
     /**
      * Constructor that specifies to how many digits the value should be
@@ -36,7 +36,6 @@ public class CustomFormatter extends DefaultAxisValueFormatter {
     public String getAxisLabel(float value, AxisBase axis) {
         int valueInt = (int)value;
         int index = Arrays.binarySearch(title, valueInt);
-        Log.d("hff", "getFormattedValue.index = " + index + ", valueInt = " + valueInt);
-        return index >= 0 ? String.valueOf(title[index]/1000) : "";
+        return index >= 0 ? String.valueOf(title[index]/100) : "";
     }
 }

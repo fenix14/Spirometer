@@ -1,5 +1,6 @@
 package com.fenix.spirometer.ui.test;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.util.Arrays;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -146,6 +148,7 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
 
     @Override
     protected void initData() {
+        Arrays.fill(DEFAULT_DATA, 0);
         chart1.animateX(1500);
         chart2.animateX(1500);
 
@@ -165,7 +168,7 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         chart1.setMarker(mv);
     }
 
-    private void addEntry(LineChart chart, String title, int color) {
+    private void addEntry(LineChart chart, String title, int color, int[] data) {
         LineData lineData = chart.getData();
         if (lineData == null) {
             lineData = new LineData();
@@ -182,9 +185,9 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
 //        Entry entry = new Entry(lastSet.getEntryCount(), ((float) Math.random() * 50));
 //        Log.d("hff", "entry = " + entry + ", count = " + (lineData.getDataSetCount() - 1));
 //        lineData.addEntry(entry, lineData.getDataSetCount() - 1);
-        lineData.addDataSet(createSet(title, color));
-        chart.setVisibleXRangeMaximum(60000);
-        chart.setVisibleXRangeMinimum(60000);
+        lineData.addDataSet(createSet(title, color, data));
+        chart.setVisibleXRangeMaximum(6000);
+        chart.setVisibleXRangeMinimum(6000);
         // let the chart know it's data has changed
         chart.notifyDataSetChanged();
         chart.invalidate();
@@ -195,20 +198,19 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
 
     int j = 0;
 
-    private LineDataSet createSet(String title, int color) {
-        LineDataSet set = new LineDataSet(null, title);
+    private LineDataSet createSet(String title, int color, int[] data) {
+        LineDataSet set = new LineDataSet(null, null);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         //set.setColor(ColorTemplate.getHoloBlue());
         set.setColor(color);
         set.setLineWidth(2f);
-        set.setDrawIcons(!set.isDrawIconsEnabled());
-        set.setDrawValues(!set.isDrawValuesEnabled());
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+       // set.setDrawIcons(false);
+        //set.setDrawValues(false);
+        set.setMode(LineDataSet.Mode.LINEAR);
         set.setDrawCircles(false);
-        for (int k = 0; k < 100; k++) {
-            set.addEntry(new Entry(j++, ((float) Math.random() * 50)));
+        for (int datum : data) {
+            set.addEntry(new Entry(j++, datum));
         }
-        Log.d("hff2", "after createSet: j = " + j);
         return set;
     }
 
@@ -255,33 +257,40 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
                 feedMultiple();
                 break;
             case R.id.add1:
-                addEntry(chart2, "流量容积杯", Color.rgb(240, 99, 99));
+                chart1.clear();
+//                addEntry(chart2, "流量容积杯", Color.rgb(240, 99, 99));
+                testViewModel.stopMeasure();
+                break;
+            case R.id.footer:
+                NavHostFragment.findNavController(this).navigate(R.id.testing_to_result);
                 break;
             default:
-                NavHostFragment.findNavController(this).navigate(R.id.testing_to_result);
                 break;
         }
     }
 
+private static final int[] DEFAULT_DATA = new int[100];
 
     final Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
+            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), dataQueue.isEmpty() ? DEFAULT_DATA : dataQueue.poll().getVoltages());
         }
     };
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private void feedMultiple() {
+        testViewModel.startMeasure();
         executorService.execute(() -> {
-            for (int i = 0; i <= 600; i++) {
+            for (int i = 0; i <= 60; i++) {
                 // Don't generate garbage runnables inside the loop.
                 try {
-                    Log.d("hff1", "before sleep");
-                    Thread.sleep(100);
-                    Log.d("hff1", "after sleep");
-                    requireActivity().runOnUiThread(runnable);
+                    Thread.sleep(1000);
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        requireActivity().runOnUiThread(runnable);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

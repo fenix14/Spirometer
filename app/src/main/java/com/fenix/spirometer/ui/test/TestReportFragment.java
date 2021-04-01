@@ -42,14 +42,12 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
 
     @Override
     protected void initData() {
-        Bundle bundle = getArguments();
-        Log.d("hff", "aaaaa");
-        if (bundle == null || !(bundle.get(HistoryFragment.KEY_REPORT) instanceof SimpleReport)) {
-            Log.d("hff", "bbbbb");
-            NavHostFragment.findNavController(this).navigateUp();
-            return;
-        }
-        simpleReport = (SimpleReport) bundle.get(HistoryFragment.KEY_REPORT);
+//        Bundle bundle = getArguments();
+//        if (bundle == null || !(bundle.get(HistoryFragment.KEY_REPORT) instanceof SimpleReport)) {
+//            NavHostFragment.findNavController(this).navigateUp();
+//            return;
+//        }
+//        simpleReport = (SimpleReport) bundle.get(HistoryFragment.KEY_REPORT);
     }
 
     @Override

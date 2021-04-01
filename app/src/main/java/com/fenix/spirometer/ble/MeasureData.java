@@ -9,5 +9,19 @@ public class MeasureData {
         this.voltages = voltages;
     }
 
+    public long getTimeStamp() {
+        return timeStamp;
+    }
 
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public int[] getVoltages() {
+        return voltages;
+    }
+
+    public void setVoltages(int[] voltages) {
+        this.voltages = voltages;
+    }
 }

@@ -104,6 +104,7 @@ public class BleDeviceClient {
             thread.start();
         }
         mHandler = new MyHandler(thread.getLooper(), this);
+        Log.d("hff", "BleDeviceClient init success");
         setResultHandler(resultHandler);
         return true;
     }
@@ -126,16 +127,42 @@ public class BleDeviceClient {
         });
     }
 
+    int time = 0;
+    int preData = 0;
+    Thread thread1;
+
     // 4.开始测量
     public void startMeasure() {
         Log.d("hff", "startMeasure: " + COMMAND_START_MEASURE);
-        sendCommand(COMMAND_START_MEASURE.getBytes());
+        //sendCommand(COMMAND_START_MEASURE.getBytes());
         dataCleaner = new DataCleaner();
+        thread1 = new Thread(() -> {
+            while (time++ < 60) {
+                int[] data = new int[100];
+                for (int i = 0; i < 100; i++) {
+                    boolean isAdd = (int) (Math.random() * 10) < 5;
+                    if (preData == 0) {
+                        data[i] = preData + 1;
+                    } else {
+                        data[i] = isAdd ? preData + 1 : preData - 1;
+                    }
+                    preData = data[i];
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
+            }
+        });
+        thread1.start();
     }
 
     // 5.结束测量
     public void stopMeasure() {
         sendCommand(COMMAND_STOP_MEASURE.getBytes());
+        thread1.interrupt();
     }
 
     private void sendCommand(byte[] command) {
@@ -290,7 +317,6 @@ public class BleDeviceClient {
             }
 
             BleDeviceState state = reference.get().bleDeviceState;
-            Log.d("hff", "handleMessage: " + msg.what + ": " + msg.obj);
             switch (msg.what) {
                 case State.STATE_CONNECTING:
                     // 连接中
@@ -326,7 +352,8 @@ public class BleDeviceClient {
                 case MSG_DATA_RECEIVED:
                     // 数据接收
                     if (msg.obj instanceof MeasureData) {
-                        reference.get().postMessage(MSG_DATA_RECEIVED, (MeasureData) msg.obj);
+                        Log.d("hff", "handleMessage: " + msg.what + ": " + Arrays.toString(((MeasureData) msg.obj).getVoltages()));
+                        reference.get().postMessage(MSG_DATA_RECEIVED, msg.obj);
                     }
                     break;
                 case MSG_FAILED:
@@ -351,13 +378,17 @@ public class BleDeviceClient {
         }
     }
 
-    private void postMessage(int flag, @Nullable Object data) {
+    private synchronized void postMessage(int flag, @Nullable Object data) {
+        if (resultHandler == null) {
+            return;
+        }
         if (data == null) {
             resultHandler.sendEmptyMessage(flag);
         } else {
             Message message = resultHandler.obtainMessage(flag);
             message.obj = data;
             resultHandler.sendMessage(message);
+            Log.d("hff", "posting message, handler name = " + ((BleRepository.MyHandler) resultHandler).name);
         }
     }
 
