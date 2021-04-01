@@ -39,6 +39,20 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions{
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/ASL2.0'
+    }
 }
 
 dependencies {
@@ -71,6 +85,11 @@ dependencies {
     implementation 'com.contrarywind:Android-PickerView:4.1.6'
 
     // for draw 
-   // implementation project(':MPChartLib')
+    // implementation project(':MPChartLib')
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    implementation 'org.codehaus.jackson:jackson-mapper-asl:1+'
+    implementation 'org.codehaus.jackson:jackson-core-asl:1+'
+
+    implementation 'com.github.huangyanbin:SmartTable:2.2.0'
 }

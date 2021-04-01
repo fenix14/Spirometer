@@ -42,4 +42,7 @@
     
     <!-- PersonalDefaultFragment -->
     <dimen name="activity_persional_margin">30dp</dimen>
+
+    <!-- TestReportFragment -->
+    <dimen name="report_item_height">30dp</dimen>
 </resources>

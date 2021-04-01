@@ -4,26 +4,25 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.fenix.spirometer.R;
 import com.fenix.spirometer.ble.MeasureData;
+import com.fenix.spirometer.model.BleDeviceState;
+import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
-import com.fenix.spirometer.ui.pcenter.detectorcalibration.DetectorCalibViewModel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.AllViewModelFactory;
+import com.fenix.spirometer.util.Constants;
+import com.fenix.spirometer.util.JSONUtils;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -31,22 +30,18 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
-import com.github.mikephil.charting.formatter.DefaultValueFormatter;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
 
 public class TestingFragment extends BaseVMFragment implements View.OnClickListener, OnChartValueSelectedListener {
     private final static String[] months = new String[]{
@@ -65,7 +60,13 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     private LineChart chart1, chart2;
     private Typeface tfRegular, tfLight;
     private Stack<MeasureData> measureDataStack = new Stack<MeasureData>();
-    private Handler handler = new Handler(Looper.getMainLooper());
+
+    // 测试开始时间
+    private long startTimeStamp;
+    // TODO：无数据时绘制0，待定。
+    private static final int[] DEFAULT_DATA = new int[100];
+    // 所有读出数据，不包括DEFAULT_DATA
+    private List<MeasureData> measureDataList = new ArrayList<>();
 
     @Override
     protected void initToolNavBar() {
@@ -254,7 +255,7 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add:
-                feedMultiple();
+                testViewModel.startMeasure();
                 break;
             case R.id.add1:
                 chart1.clear();
@@ -262,26 +263,30 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
                 testViewModel.stopMeasure();
                 break;
             case R.id.footer:
-                NavHostFragment.findNavController(this).navigate(R.id.testing_to_result);
+                Bundle bundle = new Bundle();
+                bundle.putLong(Constants.BUNDLE_KEY_TIME_STAMP, startTimeStamp);
+                NavHostFragment.findNavController(this).navigate(R.id.testing_to_result, bundle);
                 break;
             default:
                 break;
         }
     }
 
-private static final int[] DEFAULT_DATA = new int[100];
-
     final Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), dataQueue.isEmpty() ? DEFAULT_DATA : dataQueue.poll().getVoltages());
+            MeasureData measureData = null;
+            if (dataQueue.isEmpty()) {
+                measureData = dataQueue.poll();
+                measureDataList.add(measureData);
+            }
+            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData == null ? DEFAULT_DATA : dataQueue.poll().voltages);
         }
     };
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private void feedMultiple() {
-        testViewModel.startMeasure();
         executorService.execute(() -> {
             for (int i = 0; i <= 60; i++) {
                 // Don't generate garbage runnables inside the loop.
@@ -337,7 +342,19 @@ private static final int[] DEFAULT_DATA = new int[100];
     protected void initObserver() {
         testViewModel.getBleDeviceState().observe(this, bleDeviceState -> {
             //TODO 蓝牙断开处理
+            if (bleDeviceState == null) {
+
+            } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_TESTING) {
+                startTimeStamp = System.currentTimeMillis();
+                feedMultiple();
+            } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_FINISHED) {
+                executorService.shutdownNow();
+                String voltages = JSONUtils.modelList2Json(measureDataList);
+                TestReport testReport = new TestReport(startTimeStamp, viewModel.getChosenMember(), voltages, viewModel.getLoginState().getValue().getLoginOperator(), 0);
+                testViewModel.insertReport(testReport);
+            }
         });
+
         testViewModel.getMeasureData().observe(this, dataQueue::offer);
     }
 }

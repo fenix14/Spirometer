@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 蓝牙状态模型
  */
 public class BleDeviceState implements Serializable {
-    @IntDef({State.STATE_NONE, State.STATE_CONNECTING, State.STATE_CONNECTED, State.STATE_DISCONNECTED, State.STATE_DISCONNECTING, State.STATE_READY})
+    @IntDef({State.STATE_NONE, State.STATE_CONNECTING, State.STATE_CONNECTED, State.STATE_DISCONNECTED, State.STATE_DISCONNECTING, State.STATE_READY, State.STATE_TESTING, State.STATE_FINISHED})
     public @interface State {
         int STATE_NONE = 0;
         int STATE_CONNECTING = 1;
@@ -16,6 +16,8 @@ public class BleDeviceState implements Serializable {
         int STATE_DISCONNECTED = 3;
         int STATE_DISCONNECTING = 4;
         int STATE_READY = 5;
+        int STATE_TESTING = 6;
+        int STATE_FINISHED = 7;
     }
 
     private String deviceName;

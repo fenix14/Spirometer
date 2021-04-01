@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattServerCallback;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
@@ -39,6 +40,8 @@ import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_INITIALIZED;
 import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_STATE_CHANGE;
 import static com.fenix.spirometer.ble.Contants.MSG_FAILED;
 import static com.fenix.spirometer.ble.Contants.MSG_RAW_DATA_RECEIVED;
+import static com.fenix.spirometer.ble.Contants.MSG_TESTING;
+import static com.fenix.spirometer.ble.Contants.MSG_TEST_FINISH;
 
 public class BleDeviceClient {
     private static final int KEY_PREFIX = 0;
@@ -54,9 +57,9 @@ public class BleDeviceClient {
     private static final UUID UUID_SERVICE = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_COMMUNICATE = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
     private static final String COMMAND_START_MEASURE = "$YB$01110000$YE$";
     private static final String COMMAND_STOP_MEASURE = "$YB$01130000$YE$";
+    private static final String DATA_STOP_MEASURE = "$FB$01130000$FE$";
     private static final String DATA_PREFIX_START = "$FB$0112";
     private static final String DATA_PREFIX_STOP = "$FB$0113";
     private static final String DATA_SUFFIX = "$FE$";
@@ -68,14 +71,23 @@ public class BleDeviceClient {
     private BluetoothDevice mBluetoothDevice;
     private BluetoothGatt mBluetoothGatt;
     private HandlerThread thread;
-    private MyHandler mHandler;
+    private final MyHandler mHandler;
     private Handler resultHandler;
     private DataCleaner dataCleaner;
     BleDeviceState bleDeviceState = new BleDeviceState();
     StringBuilder data;
+    private static volatile boolean isStopingForStart = false;
 
     private BluetoothGattCharacteristic mCommunicateChara;
     private final BluetoothGattCallback mGattCallback = new BaseBluetoothGattCallback();
+
+    private BleDeviceClient() {
+        if (thread == null) {
+            thread = new HandlerThread("BleDeviceClient");
+            thread.start();
+        }
+        mHandler = new MyHandler(thread.getLooper(), this);
+    }
 
     private static class InstanceHolder {
         private static BleDeviceClient INSTANCE = new BleDeviceClient();
@@ -99,11 +111,6 @@ public class BleDeviceClient {
             return false;
         }
 
-        if (thread == null) {
-            thread = new HandlerThread("BleDeviceClient");
-            thread.start();
-        }
-        mHandler = new MyHandler(thread.getLooper(), this);
         Log.d("hff", "BleDeviceClient init success");
         setResultHandler(resultHandler);
         return true;
@@ -120,49 +127,61 @@ public class BleDeviceClient {
                 return;
             }
             mBluetoothGatt = mBluetoothDevice.connectGatt(context, false, mGattCallback);
+            if (mBluetoothGatt == null) {
+                mHandler.deliverMessage(MSG_FAILED, "BluetoothGatt not found");
+                return;
+            }
             mBluetoothGatt.connect();
             bleDeviceState.setMac(mac);
             bleDeviceState.setDeviceName(mBluetoothDevice.getName());
             mHandler.deliverMessage(MSG_DEVICE_CONNECTING, null);
         });
     }
-
     int time = 0;
     int preData = 0;
     Thread thread1;
 
     // 4.开始测量
     public void startMeasure() {
-        Log.d("hff", "startMeasure: " + COMMAND_START_MEASURE);
-        //sendCommand(COMMAND_START_MEASURE.getBytes());
-        dataCleaner = new DataCleaner();
-        thread1 = new Thread(() -> {
-            while (time++ < 60) {
-                int[] data = new int[100];
-                for (int i = 0; i < 100; i++) {
-                    boolean isAdd = (int) (Math.random() * 10) < 5;
-                    if (preData == 0) {
-                        data[i] = preData + 1;
-                    } else {
-                        data[i] = isAdd ? preData + 1 : preData - 1;
-                    }
-                    preData = data[i];
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
-            }
-        });
-        thread1.start();
+        Log.d("hff", "startMeasure");
+        if (isStopingForStart) {
+            return;
+        }
+        stopMeasure();
+        isStopingForStart = true;
+//        dataCleaner = new DataCleaner();
+//        thread1 = new Thread(() -> {
+//            while (time++ < 60) {
+//                int[] data = new int[100];
+//                for (int i = 0; i < 100; i++) {
+//                    boolean isAdd = (int) (Math.random() * 10) < 5;
+//                    if (preData == 0) {
+//                        data[i] = preData + 1;
+//                    } else {
+//                        data[i] = isAdd ? preData + 1 : preData - 1;
+//                    }
+//                    preData = data[i];
+//                }
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
+//            }
+//        });
+//        thread1.start();
+    }
+
+    private void startMeasureInternal(long delay) {
+        sendCommand(COMMAND_START_MEASURE.getBytes());
+        isStopingForStart = false;
     }
 
     // 5.结束测量
     public void stopMeasure() {
         sendCommand(COMMAND_STOP_MEASURE.getBytes());
-        thread1.interrupt();
+//        thread1.interrupt();
     }
 
     private void sendCommand(byte[] command) {
@@ -343,6 +362,16 @@ public class BleDeviceClient {
                     state.setState(State.STATE_READY);
                     reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
                     break;
+                case MSG_TESTING:
+                    // 初始化完成
+                    state.setState(State.STATE_TESTING);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
+                    break;
+                case MSG_TEST_FINISH:
+                    // 初始化完成
+                    state.setState(State.STATE_FINISHED);
+                    reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
+                    break;
                 case MSG_RAW_DATA_RECEIVED:
                     // 数据接收
                     if (msg.obj instanceof byte[]) {
@@ -352,7 +381,7 @@ public class BleDeviceClient {
                 case MSG_DATA_RECEIVED:
                     // 数据接收
                     if (msg.obj instanceof MeasureData) {
-                        Log.d("hff", "handleMessage: " + msg.what + ": " + Arrays.toString(((MeasureData) msg.obj).getVoltages()));
+                        Log.d("hff", "handleMessage: " + msg.what + ": " + Arrays.toString(((MeasureData) msg.obj).voltages));
                         reference.get().postMessage(MSG_DATA_RECEIVED, msg.obj);
                     }
                     break;
@@ -401,6 +430,12 @@ public class BleDeviceClient {
     private synchronized void dealWitRawData(byte[] newData) {
         String newDataStr = new String(newData);
         int start = 0;
+
+        if (newDataStr.startsWith(DATA_STOP_MEASURE) && isStopingForStart) {
+            startMeasureInternal(1000);
+            return;
+        }
+
         if (newDataStr.startsWith(DATA_PREFIX_START)) {
             start = DATA_PREFIX_START.length();
             data = new StringBuilder();
@@ -418,7 +453,6 @@ public class BleDeviceClient {
             data.append(newDataStr.substring(start));
         }
     }
-
 
     private void dealWithData(String rawData) {
         int length = rawData.length() / OFFSET_4;

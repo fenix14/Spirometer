@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "6d5e0164418aa11433f5a09126c163b5",
+    "identityHash": "5f297c437ee6ab49ff588704674f62b6",
     "entities": [
       {
         "tableName": "VoltageData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeStamp` INTEGER NOT NULL, `data` TEXT, PRIMARY KEY(`timeStamp`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeStamp` INTEGER NOT NULL, `dataAsJsonStr` TEXT, PRIMARY KEY(`timeStamp`))",
         "fields": [
           {
             "fieldPath": "timeStamp",
@@ -15,8 +15,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "data",
-            "columnName": "data",
+            "fieldPath": "dataAsJsonStr",
+            "columnName": "dataAsJsonStr",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -544,7 +544,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d5e0164418aa11433f5a09126c163b5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f297c437ee6ab49ff588704674f62b6')"
     ]
   }
 }

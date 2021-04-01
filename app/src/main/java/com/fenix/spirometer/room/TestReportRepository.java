@@ -8,10 +8,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.fenix.spirometer.app.MyApplication;
 import com.fenix.spirometer.model.LoginState;
 import com.fenix.spirometer.model.Operator;
+import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.room.database.AppDatabase;
 import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.room.model.TestReportModel;
+import com.fenix.spirometer.room.model.TestReportWithData;
 import com.fenix.spirometer.room.model.VoltageData;
+import com.fenix.spirometer.room.util.ModelObjTransUtil;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,15 +52,29 @@ public class TestReportRepository {
         });
     }
 
-    public void insertVoltages(List<VoltageData> voltageDataList) {
+    public void insert(TestReport report) {
         executor.execute(() -> {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            database.voltageDataDao().insert(voltageDataList);
+            database.memberDao().insert(report.getMember());
+            database.operatorDao().insertOperator(report.getOperator());
+            database.testReportDao().insert(new TestReportModel(report.getTimeMills(), report.getMember().getId(), report.getOperator().getUserId()));
+            database.voltageDataDao().insert(new VoltageData(report.getTimeMills(), report.getData()));
         });
+    }
+
+    public MutableLiveData<TestReport> getReport(long timeStamp) {
+        final MutableLiveData<TestReport> mdTestReport = new MutableLiveData<>();
+        executor.execute(() -> {
+             TestReportWithData testReportWithData = database.testReportDao().getReport(timeStamp);
+             if (testReportWithData != null) {
+                 mdTestReport.postValue(ModelObjTransUtil.model2Object(testReportWithData));
+             }
+        });
+        return mdTestReport;
     }
 
     public LiveData<List<SimpleReport>> getSimpleReports() {

@@ -117,8 +117,8 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void initData() {
+        super.initData();
         viewModel.setTesting(false);
         viewModel.setChosenMember(null);
     }

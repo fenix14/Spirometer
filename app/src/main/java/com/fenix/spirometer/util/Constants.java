@@ -15,6 +15,8 @@ public class Constants {
     public static final String SP_NAME = "app";
     public static final String SP_KEY_IS_INITIALIZED = "isInitialized";
 
+    public static final String BUNDLE_KEY_TIME_STAMP = "reportTimeStamp";
+
 
     @IntDef({TrainingType.STANDARD, TrainingType.VITAL_CAPACITY, TrainingType.DIASTOLIC})
     public @interface TrainingType {

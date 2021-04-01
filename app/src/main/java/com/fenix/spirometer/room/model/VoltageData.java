@@ -9,13 +9,13 @@ import androidx.room.PrimaryKey;
 public class VoltageData {
     @PrimaryKey
     @ForeignKey(entity = TestReportModel.class, parentColumns = "timeMills", childColumns = "timeStamp")
-    long timeStamp;
+    public long timeStamp;
 
-    int[] data;
+    public String dataAsJsonStr;
 
-    public VoltageData(long timeStamp, int[] data) {
+    public VoltageData(long timeStamp, String dataAsJsonStr) {
         this.timeStamp = timeStamp;
-        this.data = data;
+        this.dataAsJsonStr = dataAsJsonStr;
     }
 
     public long getTimeStamp() {
@@ -26,11 +26,11 @@ public class VoltageData {
         this.timeStamp = timeStamp;
     }
 
-    public int[] getData() {
-        return data;
+    public String getData() {
+        return dataAsJsonStr;
     }
 
-    public void setData(int[] data) {
-        this.data = data;
+    public void setData(String data) {
+        this.dataAsJsonStr = data;
     }
 }

@@ -10,16 +10,15 @@ import java.lang.reflect.Method;
 
 public class TestReport extends BaseModel{
     private long timeMills;
-
     private Member member;
-    private int[] data;
+    private String dataAsJsonStr;
     private Operator operator;
     private int specification;
 
-    public TestReport(long timeMills, Member member, int[] data, Operator operator, int specification) {
+    public TestReport(long timeMills, Member member, String dataAsJsonStr, Operator operator, int specification) {
         this.timeMills = timeMills;
         this.member = member;
-        this.data = data;
+        this.dataAsJsonStr = dataAsJsonStr;
         this.operator = operator;
         this.specification = specification;
     }
@@ -40,12 +39,12 @@ public class TestReport extends BaseModel{
         this.member = member;
     }
 
-    public int[] getData() {
-        return data;
+    public String getData() {
+        return dataAsJsonStr;
     }
 
-    public void setData(int[] data) {
-        this.data = data;
+    public void setData(String data) {
+        this.dataAsJsonStr = data;
     }
 
     public Operator getOperator() {

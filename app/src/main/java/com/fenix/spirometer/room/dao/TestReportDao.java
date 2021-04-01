@@ -10,6 +10,7 @@ import androidx.room.Transaction;
 import com.fenix.spirometer.room.model.History;
 import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.room.model.TestReportModel;
+import com.fenix.spirometer.room.model.TestReportWithData;
 
 import java.util.List;
 
@@ -23,6 +24,13 @@ public interface TestReportDao {
     @Query("select * from TestReportModel")
     LiveData<List<SimpleReport>> getAllSimpleReports();
 
+    @Transaction
+    @Query("select * from TestReportModel where timeMills = :timeStamp")
+    TestReportWithData getReport(long timeStamp);
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertTestReports(List<TestReportModel> testReports);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(TestReportModel testReport);
 }

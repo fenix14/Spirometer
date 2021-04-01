@@ -59,7 +59,7 @@ public class PersonalCenterFragment extends BaseVMPrefFragment {
 
     @Override
     protected void initObserver() {
-        viewModel.subscribeToLoginState(this, loginState -> {
+        viewModel.getLoginState().observe(this, loginState -> {
             if (loginState != null && loginState.isLogin()) {
                 setHeader(loginState.getLoginOperator().getDisplayName(), loginState.getLoginOperator().getDuty());
                 PreferenceCategory adminCategory = findPreference("admin_category");

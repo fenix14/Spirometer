@@ -60,6 +60,9 @@ public class MainViewModel extends ViewModel {
     public void subscribeToLoginState(LifecycleOwner lifecycleOwner, Observer<LoginState> observer) {
         operRepo.getLoginState().observe(lifecycleOwner, observer);
     }
+    public MutableLiveData<LoginState> getLoginState() {
+        return operRepo.getLoginState();
+    }
 
     public boolean isLogin() {
         LoginState loginState = operRepo.getLoginState().getValue();

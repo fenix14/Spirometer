@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 isShowNavBar -> btmNavigation.setVisibility(isShowNavBar != null && isShowNavBar ? View.VISIBLE : View.GONE));
         //viewModel.subscribeToIsLightToolbar(this, this::setupToolbar);
 
-        viewModel.subscribeToLoginState(this, loginState -> {
+        viewModel.getLoginState().observe(this, loginState -> {
             if (loginState == null || !loginState.isLogin()) {
                 Log.d("hff", "logout int mainActivity");
                 logout();
