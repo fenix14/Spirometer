@@ -144,12 +144,19 @@ public class BleDeviceClient {
     // 4.开始测量
     public void startMeasure() {
         Log.d("hff", "startMeasure");
-//        if (isStopingForStart) {
-//            return;
-//        }
-//        stopMeasure();
-//        isStopingForStart = true;
-        dataCleaner = new DataCleaner();
+        if (bleDeviceState.getState() == State.STATE_READY) {
+            if (isStopingForStart) {
+                return;
+            }
+            stopMeasure();
+            isStopingForStart = true;
+            dataCleaner = new DataCleaner();
+        } else {
+            startFakeMeasure();
+        }
+    }
+
+    private void startFakeMeasure() {
         mHandler.deliverMessage(MSG_TESTING, null);
         thread1 = new Thread(() -> {
             while (time++ < 60) {
