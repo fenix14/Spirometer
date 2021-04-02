@@ -144,33 +144,35 @@ public class BleDeviceClient {
     // 4.开始测量
     public void startMeasure() {
         Log.d("hff", "startMeasure");
-        if (isStopingForStart) {
-            return;
-        }
-        stopMeasure();
-        isStopingForStart = true;
-//        dataCleaner = new DataCleaner();
-//        thread1 = new Thread(() -> {
-//            while (time++ < 60) {
-//                int[] data = new int[100];
-//                for (int i = 0; i < 100; i++) {
-//                    boolean isAdd = (int) (Math.random() * 10) < 5;
-//                    if (preData == 0) {
-//                        data[i] = preData + 1;
-//                    } else {
-//                        data[i] = isAdd ? preData + 1 : preData - 1;
-//                    }
-//                    preData = data[i];
-//                }
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
-//            }
-//        });
-//        thread1.start();
+//        if (isStopingForStart) {
+//            return;
+//        }
+//        stopMeasure();
+//        isStopingForStart = true;
+        dataCleaner = new DataCleaner();
+        mHandler.deliverMessage(MSG_TESTING, null);
+        thread1 = new Thread(() -> {
+            while (time++ < 60) {
+                int[] data = new int[100];
+                for (int i = 0; i < 100; i++) {
+                    boolean isAdd = (int) (Math.random() * 10) < 5;
+                    if (preData == 0) {
+                        data[i] = preData + 1;
+                    } else {
+                        data[i] = isAdd ? preData + 1 : preData - 1;
+                    }
+                    preData = data[i];
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
+            }
+            mHandler.deliverMessage(MSG_TEST_FINISH, null);
+        });
+        thread1.start();
     }
 
     private void startMeasureInternal(long delay) {

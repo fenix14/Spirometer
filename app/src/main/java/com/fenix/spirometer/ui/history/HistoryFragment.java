@@ -16,17 +16,18 @@ import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.ui.widget.CustomExcel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
+import com.fenix.spirometer.util.Constants;
 import com.fenix.spirometer.util.ModelUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnItemClickListener, CustomExcel.OnRowStateChangeListener {
+public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnItemClickListener, CustomExcel.OnRowStateChangeListener, View.OnClickListener {
     public static final String KEY_REPORT = "report";
     private CustomExcel<SimpleReport> excel;
     private boolean isEdit = false;
-    private SimpleReport chosenReport;
+    private long chosenReportTimeStamp;
 
     @Override
     protected void initToolNavBar() {
@@ -39,6 +40,16 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
         toolbar.setOnItemClickListener(this);
 
         viewModel.setShowNavBar(false);
+        Button btmNav = getFooter();
+        if (btmNav != null) {
+            if (chosenReportTimeStamp > 0) {
+                btmNav.setVisibility(View.VISIBLE);
+                btmNav.setText(R.string.footer_compare);
+                btmNav.setOnClickListener(this);
+            } else {
+                btmNav.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -67,20 +78,20 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
     @Override
     protected void initData() {
         Bundle bundle = getArguments();
-        Log.d("hff", "00000");
-        if (bundle == null || !(bundle.get(KEY_REPORT) instanceof SimpleReport)) {
-            Log.d("hff", "11111");
+        if (bundle == null) {
             return;
         }
-        Log.d("hff", "22222");
-        chosenReport = (SimpleReport) bundle.get(KEY_REPORT);
+        chosenReportTimeStamp = bundle.getLong(Constants.BUNDLE_KEY_TIME_STAMP, 0L);
+        if (chosenReportTimeStamp > 0) {
+            initToolNavBar();
+        }
     }
 
     @Override
     public void onBindViewHolder(LinearLayout row, int position) {
         row.setOnClickListener(view -> {
             Bundle bundle = new Bundle();
-            bundle.putSerializable(KEY_REPORT, excel.getData(position));
+            bundle.putLong(Constants.BUNDLE_KEY_TIME_STAMP, excel.getData(position).getTimeMills());
             NavHostFragment.findNavController(this).navigate(R.id.history_to_report, bundle);
         });
     }
@@ -89,10 +100,23 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
     protected void initObserver() {
         viewModel.getAllSimpleReports().observe(this, data -> {
             excel.reload(data);
+            SimpleReport chosenReport = findReport(data, chosenReportTimeStamp);
+            //TODO: 考虑查找失败的情况
             if (chosenReport != null) {
                 excel.choose(chosenReport);
             }
         });
+    }
+
+    private static SimpleReport findReport(List<SimpleReport> data, long chosenReportTimeStamp) {
+        if (chosenReportTimeStamp > 0) {
+            for (SimpleReport report : data) {
+                if (report.getTimeMills() == chosenReportTimeStamp) {
+                    return report;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -102,6 +126,11 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
 
     @Override
     public void onRightClick() {
+
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 }

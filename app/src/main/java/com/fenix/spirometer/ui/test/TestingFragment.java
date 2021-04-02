@@ -184,7 +184,7 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
 //        }
         // choose a random dataSet
 //        Entry entry = new Entry(lastSet.getEntryCount(), ((float) Math.random() * 50));
-//        Log.d("hff", "entry = " + entry + ", count = " + (lineData.getDataSetCount() - 1));
+        Log.d("hff", "entry = " + data);
 //        lineData.addEntry(entry, lineData.getDataSetCount() - 1);
         lineData.addDataSet(createSet(title, color, data));
         chart.setVisibleXRangeMaximum(6000);
@@ -276,11 +276,11 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         @Override
         public void run() {
             MeasureData measureData = null;
-            if (dataQueue.isEmpty()) {
+            if (!dataQueue.isEmpty()) {
                 measureData = dataQueue.poll();
                 measureDataList.add(measureData);
             }
-            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData == null ? DEFAULT_DATA : dataQueue.poll().voltages);
+            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData == null ? DEFAULT_DATA : measureData.voltages);
         }
     };
 

@@ -45,4 +45,6 @@
 
     <!-- TestReportFragment -->
     <dimen name="report_item_height">30dp</dimen>
+    <dimen name="margin_in_group">5dp</dimen>
+    <dimen name="margin_out_group">30dp</dimen>
 </resources>

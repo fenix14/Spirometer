@@ -1,103 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95" />
-
     <LinearLayout
-        android:id="@+id/line1"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/report_item_height"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/end"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:orientation="vertical">
+
+        <!--        <androidx.constraintlayout.widget.Guideline-->
+        <!--            android:id="@+id/start"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:orientation="vertical"-->
+        <!--            app:layout_constraintGuide_percent="0.05" />-->
+
+        <!--        <androidx.constraintlayout.widget.Guideline-->
+        <!--            android:id="@+id/end"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:orientation="vertical"-->
+        <!--            app:layout_constraintGuide_percent="0.95" />-->
+
+        <LinearLayout
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_out_group"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_name"
+                style="@style/PrefItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_gender"
+                style="@style/PrefItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_in_group"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_height"
+                style="@style/PrefItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_age"
+                style="@style/PrefItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_weight"
+                style="@style/PrefItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_image1"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="@dimen/margin_out_group"
+            android:scaleType="fitCenter"
+            android:src="@drawable/default_image" />
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/iv_image2"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="200dp"-->
+        <!--            android:layout_marginTop="@dimen/margin_out_group"-->
+        <!--            android:scaleType="fitCenter"-->
+        <!--            android:src="@drawable/default_image" />-->
+
+        <com.bin.david.form.core.SmartTable
+            android:id="@+id/table"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_out_group" />
 
         <TextView
-            android:id="@+id/tv_name"
+            android:id="@+id/tv_lungs_age"
             style="@style/PrefItem"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/report_item_height"
+            android:layout_marginTop="@dimen/margin_out_group" />
 
         <TextView
-            android:id="@+id/tv_gender"
+            android:id="@+id/tv_action_standard_level"
             style="@style/PrefItem"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_in_group" />
+
+        <TextView
+            android:id="@+id/tv_testing_date"
+            style="@style/PrefItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_in_group" />
+
+        <TextView
+            android:id="@+id/tv_operator_name"
+            style="@style/PrefItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_in_group"
+            android:layout_marginBottom="@dimen/margin_out_group" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/line2"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/report_item_height"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/end"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toBottomOf="@+id/line1">
-
-        <TextView
-            android:id="@+id/tv_height"
-            style="@style/PrefItem"
-            android:layout_width="0dp"
-
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tv_age"
-            style="@style/PrefItem"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tv_weight"
-            style="@style/PrefItem"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/iv_image1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/end"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toBottomOf="@+id/line2" />
-
-    <ImageView
-        android:id="@+id/iv_image2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        app:layout_constraintEnd_toEndOf="@+id/end"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toBottomOf="@+id/iv_image1" />
-
-    <com.bin.david.form.core.SmartTable
-        android:id="@+id/table"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/end"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toBottomOf="@+id/iv_image2" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

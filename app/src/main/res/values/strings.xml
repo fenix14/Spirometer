@@ -154,6 +154,7 @@
     <!-- TestActivity -->
     <!-- HistoryFragment -->
     <string name="tab_history">历史报告</string>
+    <string name="footer_compare">对比</string>
     <string name="btn_search">查询</string>
     <string name="search">搜索</string>
     <string-array name="excel_title_simple_report_list">
@@ -168,6 +169,16 @@
     <!-- TestReportFragment -->
     <string name="tab_report">肺活量标准测试报告</string>
     <string name="btn_compare">对比</string>
+    <string name="footer_print_report">打印报告</string>
+    <string name="report_mem_name">姓名：%1$s</string>
+    <string name="report_mem_gender">性别：%1$s</string>
+    <string name="report_mem_height">身高：%1$scm</string>
+    <string name="report_mem_age">年龄：%1$s岁</string>
+    <string name="report_mem_weight">体重：%1$skg</string>
+    <string name="report_lungs_age">肺年龄：%1$f</string>
+    <string name="report_action_standard_lvl">动作规范：%1$s</string>
+    <string name="report_testing_date">检查日期：%1$s</string>
+    <string name="report_operator_name">操作人员：%1$s</string>
 
     <!-- ReportCompareFragment -->
     <string name="tab_report_compare">对比报告</string>
