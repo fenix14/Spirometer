@@ -16,6 +16,7 @@ import com.fenix.spirometer.room.model.TestReportWithData;
 import com.fenix.spirometer.room.model.VoltageData;
 import com.fenix.spirometer.room.util.ModelObjTransUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,10 +70,25 @@ public class TestReportRepository {
     public MutableLiveData<TestReport> getReport(long timeStamp) {
         final MutableLiveData<TestReport> mdTestReport = new MutableLiveData<>();
         executor.execute(() -> {
-             TestReportWithData testReportWithData = database.testReportDao().getReport(timeStamp);
-             if (testReportWithData != null) {
-                 mdTestReport.postValue(ModelObjTransUtil.model2Object(testReportWithData));
-             }
+            TestReportWithData testReportWithData = database.testReportDao().getReport(timeStamp);
+            if (testReportWithData != null) {
+                mdTestReport.postValue(ModelObjTransUtil.model2Object(testReportWithData));
+            }
+        });
+        return mdTestReport;
+    }
+
+    public MutableLiveData<List<TestReport>> getReports(long[] timeStamps) {
+        final MutableLiveData<List<TestReport>> mdTestReport = new MutableLiveData<>();
+        executor.execute(() -> {
+            List<TestReportWithData> reportModels = database.testReportDao().getReport(timeStamps);
+            List<TestReport> testReports = new ArrayList<>();
+            if (reportModels != null) {
+                for (TestReportWithData testReportWithData : reportModels) {
+                    testReports.add(ModelObjTransUtil.model2Object(testReportWithData));
+                }
+            }
+            mdTestReport.postValue(testReports);
         });
         return mdTestReport;
     }

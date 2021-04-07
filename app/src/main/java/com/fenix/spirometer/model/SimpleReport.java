@@ -1,5 +1,7 @@
 package com.fenix.spirometer.model;
 
+import android.os.Parcelable;
+
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
@@ -7,9 +9,10 @@ import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.room.model.TestReportModel;
 import com.fenix.spirometer.util.Utils;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class SimpleReport extends BaseModel {
+public class SimpleReport extends BaseModel implements Serializable {
     @Embedded
     public TestReportModel testReportModel;
 

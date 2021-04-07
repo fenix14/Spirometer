@@ -6,15 +6,18 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,10 +29,14 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.model.DetectorCompensation;
 import com.fenix.spirometer.model.Operator;
+import com.fenix.spirometer.model.Province;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.ui.main.MainActivity;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
+import com.fenix.spirometer.util.Constants;
+import com.fenix.spirometer.util.FileParser;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,20 +51,26 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.List;
 
+import static com.fenix.spirometer.util.Constants.SP_KEY_IS_INITIALIZED;
+
 public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClickListener, CustomToolbar.OnItemClickListener {
     private String mParam1;
     CustomToolbar toolbar;
+    LinearLayout mlayouthospital;
+    LinearLayout mlayoutDepartment;
     LinearLayout mlayoutphone;
-    LinearLayout mlayouemail;
-    TextView mphonetitle;
-    TextView mphonevaule;
-    TextView memailtitle;
-    TextView memailvaule;
+    LinearLayout mlayoutversion;
+    LinearLayout mlayoutaccount;
+    EditText mhospital;
+    EditText mdepartment;
+    EditText mphonenumber;
     Button mexitButton;
     boolean isaccount = false;
-    protected final int PERMS_REQUEST_CODE = 202;
-    protected final int PERMS_BLUETOOTH_PRIVILEGED = 203;
-    protected final int PERMS_LOCAL_MAC_ADDRESS = 204;
+    boolean iscontact =false;
+    TextView change_password;
+    private final String HOSPITAL_KEY="hospital_key";
+    private final String DEPARTMENT_KEY="department_key";
+    private final String PHONENUMBER_KEY="phonenumber_key";
 
     @Override
     protected void initToolNavBar() {
@@ -82,52 +95,47 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         toolbar.clear();
         toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setLeftText("<");
-        mlayoutphone = rootView.findViewById(R.id.layout_phone);
-        mlayouemail = rootView.findViewById(R.id.deaults_view_gone);
-        mphonetitle = rootView.findViewById(R.id.deaults_title);
-        mphonevaule = rootView.findViewById(R.id.deaults_value);
-        memailtitle = rootView.findViewById(R.id.email_title);
-        memailvaule = rootView.findViewById(R.id.email_value);
-        mexitButton = rootView.findViewById(R.id.exitaccount);
+        mlayouthospital= rootView.findViewById(R.id.layout_hospital);
+        mlayoutDepartment= rootView.findViewById(R.id.layout_Department);;
+        mlayoutphone= rootView.findViewById(R.id.layout_phone);;
+        mlayoutversion= rootView.findViewById(R.id.layout_version);;
+        mlayoutaccount= rootView.findViewById(R.id.layout_account);;
+        mexitButton = rootView.findViewById(R.id.button);
+        change_password = (rootView).findViewById(R.id.change_password);
+        mhospital=(rootView).findViewById(R.id.hospital_value);
+        mdepartment=(rootView).findViewById(R.id.department_value);
+        mphonenumber=(rootView).findViewById(R.id.phone_value);
         mexitButton.setOnClickListener(this);
-        mlayouemail.setOnClickListener(this);
-        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA, Manifest.permission.BLUETOOTH_PRIVILEGED
-                , Manifest.permission.ACCESS_WIFI_STATE};
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            requestPermissions(permissions, PERMS_REQUEST_CODE);
-            requestPermissions(permissions, PERMS_BLUETOOTH_PRIVILEGED);
-            requestPermissions(permissions, PERMS_LOCAL_MAC_ADDRESS);
-        }
     }
 
     @Override
     protected void initObserver() {
+
         if (mParam1.equals("contact")) {
+            SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
+            mhospital.setText(sp.getString(HOSPITAL_KEY,""));
+            mdepartment.setText(sp.getString(DEPARTMENT_KEY,""));
+            mphonenumber.setText(sp.getString(PHONENUMBER_KEY,""));
+            iscontact = true;
             toolbar.setCenterText("联系我们");
-            mexitButton.setVisibility(View.GONE);
-            mphonetitle.setText(R.string.pref_title_cellphone);
-            mphonevaule.setText(R.string.pref_content_cellphone);
-            memailtitle.setText(R.string.pref_title_email);
-            memailvaule.setText(R.string.pref_content_email);
+            mlayoutversion.setVisibility(View.GONE);
+            mlayoutaccount.setVisibility(View.GONE);
+            mexitButton.setText("保存");
         } else if (mParam1.equals("version")) {
             toolbar.setCenterText("版本信息");
-            mlayouemail.setVisibility(View.GONE);
-            mexitButton.setVisibility(View.GONE);
-            mphonetitle.setText(R.string.pref_title_version);
-            mphonevaule.setText(R.string.pref_content_version);
-        } else if (mParam1.equals("mac")) {
-            toolbar.setCenterText("Mac地址");
-            mlayouemail.setVisibility(View.GONE);
-            mexitButton.setVisibility(View.GONE);
-            mphonetitle.setText(R.string.pref_title_mac);
-            mphonevaule.setText(getBtAddressByReflection());
-        } else if (mParam1.equals("account")) {
-            isaccount = true;
+            mlayouthospital.setVisibility(View.GONE);
+            mlayoutDepartment.setVisibility(View.GONE);
             mlayoutphone.setVisibility(View.GONE);
-            memailtitle.setText(R.string.account_title);
-            memailvaule.setText(">");
+            mlayoutaccount.setVisibility(View.GONE);
+            mexitButton.setVisibility(View.GONE);
+        }  else if (mParam1.equals("account")) {
             toolbar.setCenterText("账号管理");
+            isaccount = true;
+            mlayouthospital.setVisibility(View.GONE);
+            mlayoutDepartment.setVisibility(View.GONE);
+            mlayoutphone.setVisibility(View.GONE);
+            mlayoutversion.setVisibility(View.GONE);
+            change_password.setText(">");
         }
 
     }
@@ -135,11 +143,29 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.exitaccount:
+            case R.id.button:
                 Log.d("wuxin", "exit========");
-                viewModel.logout();
+                if(iscontact){
+                    Editable hospital=mhospital.getText();
+                    Editable department=mdepartment.getText();
+                    Editable phonenumber=mphonenumber.getText();
+                    if(TextUtils.isEmpty(hospital)||TextUtils.isEmpty(department)||TextUtils.isEmpty(phonenumber)){
+                        Toast.makeText(getContext(),R.string.pref_no_input_empyt,Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(HOSPITAL_KEY, hospital.toString());
+                    editor.putString(DEPARTMENT_KEY, department.toString());
+                    editor.putString(PHONENUMBER_KEY, phonenumber.toString());
+                    editor.apply();
+                }else{
+                    viewModel.logout();
+                }
+
+
                 break;
-            case R.id.deaults_view_gone:
+            case R.id.layout_account:
                 if (isaccount) {
                     Log.d("wuxin", "change password========");
                 }
@@ -166,63 +192,4 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
             Log.d("wuxin", "===========" + mParam1);
         }
     }
-
-    public static String getBtAddressByReflection() {
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Field field = null;
-        try {
-            field = BluetoothAdapter.class.getDeclaredField("mService");
-            field.setAccessible(true);
-            Object bluetoothManagerService = field.get(bluetoothAdapter);
-            if (bluetoothManagerService == null) {
-                return "NULL";
-            }
-            Method method = bluetoothManagerService.getClass().getMethod("getAddress");
-            if (method != null) {
-                Object obj = method.invoke(bluetoothManagerService);
-                if (obj != null) {
-                    return obj.toString();
-                }
-            }
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getWifiMacFromNode() {
-        String wifiMac = "";
-        RandomAccessFile f = null;
-        try {
-            f = new RandomAccessFile("/sys/class/net/wlan0/address", "r");
-            f.seek(0);
-            wifiMac = f.readLine().trim();
-            f.close();
-            Log.d("", "getWifiMacFromNode " + wifiMac);
-            return wifiMac;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return wifiMac;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return wifiMac;
-        } finally {
-            if (f != null) {
-                try {
-                    f.close();
-                    f = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
 }

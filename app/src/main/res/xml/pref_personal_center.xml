@@ -41,12 +41,6 @@
             app:allowDividerAbove="true"
             app:allowDividerBelow="true"
             app:content_type="text"
-            app:key="mac"
-            app:title="@string/pc_mac" />
-        <com.fenix.spirometer.ui.widget.CustomPreference
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
-            app:content_type="text"
             app:key="account"
             app:title="@string/pc_account_config" />
     </PreferenceCategory>

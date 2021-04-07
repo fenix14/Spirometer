@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/layout_phone"
+            android:id="@+id/layout_hospital"
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_height"
             android:background="@drawable/selector_bg_white_grey"
@@ -14,20 +14,20 @@
 
 
             <TextView
-                android:id="@+id/deaults_title"
+                android:id="@+id/hospital_title"
                 style="@style/ContentTextLight"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="start|center_vertical"
-                android:text="@string/pref_title_cellphone" />
+                android:text="@string/pref_hospital_title" />
 
-            <TextView
-                android:id="@+id/deaults_value"
+            <EditText
+                android:id="@+id/hospital_value"
                 style="@style/ContentTextLight"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical|end"
-                android:text="@string/pref_content_cellphone" />
+                android:hint="@string/pref_content_Agency" />
         </LinearLayout>
 
         <View
@@ -38,7 +38,7 @@
             android:clickable="true" />
 
         <LinearLayout
-            android:id="@+id/deaults_view_gone"
+            android:id="@+id/layout_Department"
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_height"
             android:layout_marginTop="@dimen/divider_height"
@@ -47,23 +47,101 @@
             android:paddingHorizontal="@dimen/activity_persional_margin">
 
             <TextView
-                android:id="@+id/email_title"
+                android:id="@+id/Department_title"
                 style="@style/ContentTextLight"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="start|center_vertical"
-                android:text="@string/pref_title_email" />
+                android:text="@string/pref_department_title" />
 
-            <TextView
-                android:id="@+id/email_value"
+            <EditText
+                android:id="@+id/department_value"
                 style="@style/ContentTextLight"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical|end"
-                android:text="@string/pref_content_email" />
+                android:hint="@string/pref_content_Agency" />
         </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:background="@color/light_gray"
+        android:clickable="true" />
+    <LinearLayout
+        android:id="@+id/layout_phone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:layout_marginTop="@dimen/divider_height"
+        android:background="@drawable/selector_bg_white_grey"
+        android:clickable="true"
+        android:paddingHorizontal="@dimen/activity_persional_margin">
+
+        <TextView
+            android:id="@+id/phone_title"
+            style="@style/ContentTextLight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
+            android:text="@string/pref_title_cellphone" />
+
+        <EditText
+            android:id="@+id/phone_value"
+            style="@style/ContentTextLight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|end"
+            android:hint="@string/pref_content_cellphone" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layout_version"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:layout_marginTop="@dimen/divider_height"
+        android:background="@drawable/selector_bg_white_grey"
+        android:clickable="true"
+        android:paddingHorizontal="@dimen/activity_persional_margin">
+
+        <TextView
+            android:id="@+id/version_title"
+            style="@style/ContentTextLight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
+            android:text="@string/pref_title_version" />
+
+        <TextView
+            android:id="@+id/version_value"
+            style="@style/ContentTextLight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|end"
+            android:text="@string/pref_content_version" />
+    </LinearLayout>
+<LinearLayout
+        android:id="@+id/layout_account"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:layout_marginTop="@dimen/divider_height"
+        android:background="@drawable/selector_bg_white_grey"
+        android:clickable="true"
+        android:paddingHorizontal="@dimen/activity_persional_margin">
+    <TextView
+        style="@style/ContentTextLight"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="start|center_vertical"
+        android:text="@string/account_title" />
+    <TextView
+        android:id="@+id/change_password"
+        style="@style/ContentTextLight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|end"
+        />
+</LinearLayout>
     <Button
-        android:id="@+id/exitaccount"
+        android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="@dimen/item_height"
         android:layout_marginTop="@dimen/divider_height"

@@ -16,6 +16,7 @@ public class Constants {
     public static final String SP_KEY_IS_INITIALIZED = "isInitialized";
 
     public static final String BUNDLE_KEY_TIME_STAMP = "reportTimeStamp";
+    public static final String BUNDLE_KEY_TIME_STAMPS = "TimeStampForCompare";
 
 
     @IntDef({TrainingType.STANDARD, TrainingType.VITAL_CAPACITY, TrainingType.DIASTOLIC})

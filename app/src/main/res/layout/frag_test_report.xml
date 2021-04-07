@@ -10,20 +10,6 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:orientation="vertical">
 
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/start"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:orientation="vertical"-->
-        <!--            app:layout_constraintGuide_percent="0.05" />-->
-
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/end"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:orientation="vertical"-->
-        <!--            app:layout_constraintGuide_percent="0.95" />-->
-
         <LinearLayout
             android:id="@+id/line1"
             android:layout_width="match_parent"
@@ -36,14 +22,16 @@
                 style="@style/PrefItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="@string/report_mem_name" />
 
             <TextView
                 android:id="@+id/tv_gender"
                 style="@style/PrefItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="@string/report_mem_gender" />
         </LinearLayout>
 
         <LinearLayout
@@ -58,21 +46,24 @@
                 style="@style/PrefItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="@string/report_mem_height" />
 
             <TextView
                 android:id="@+id/tv_age"
                 style="@style/PrefItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="@string/report_mem_age" />
 
             <TextView
                 android:id="@+id/tv_weight"
                 style="@style/PrefItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="@string/report_mem_weight" />
         </LinearLayout>
 
         <ImageView
@@ -83,18 +74,18 @@
             android:scaleType="fitCenter"
             android:src="@drawable/default_image" />
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/iv_image2"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="200dp"-->
-        <!--            android:layout_marginTop="@dimen/margin_out_group"-->
-        <!--            android:scaleType="fitCenter"-->
-        <!--            android:src="@drawable/default_image" />-->
+        <ImageView
+            android:id="@+id/iv_image2"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="@dimen/margin_out_group"
+            android:scaleType="fitCenter"
+            android:src="@drawable/default_image" />
 
         <com.bin.david.form.core.SmartTable
             android:id="@+id/table"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/margin_out_group" />
 
@@ -103,21 +94,24 @@
             style="@style/PrefItem"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/report_item_height"
-            android:layout_marginTop="@dimen/margin_out_group" />
+            android:layout_marginTop="@dimen/margin_out_group"
+            android:text="@string/report_lungs_age" />
 
         <TextView
             android:id="@+id/tv_action_standard_level"
             style="@style/PrefItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_in_group" />
+            android:layout_marginTop="@dimen/margin_in_group"
+            android:text="@string/report_action_standard_lvl" />
 
         <TextView
             android:id="@+id/tv_testing_date"
             style="@style/PrefItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_in_group" />
+            android:layout_marginTop="@dimen/margin_in_group"
+            android:text="@string/report_testing_date" />
 
         <TextView
             android:id="@+id/tv_operator_name"
@@ -125,7 +119,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_in_group"
-            android:layout_marginBottom="@dimen/margin_out_group" />
+            android:layout_marginBottom="@dimen/margin_out_group"
+            android:text="@string/report_mem_name" />
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

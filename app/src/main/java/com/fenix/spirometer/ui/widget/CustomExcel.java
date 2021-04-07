@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -255,7 +256,7 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
                     rowContents[columnCount - 1] = getContext().getString(R.string.item_suffix_edit);
                     break;
                 default:
-                    return;
+                    break;
             }
 
             String content;
@@ -364,5 +365,15 @@ public class CustomExcel<T extends BaseModel> extends FrameLayout implements Sea
         } else {
             switchMode(true);
         }
+    }
+
+    public Pair<T, T> getChosen() {
+        if (chosenPosition < 0 || chosenPosition > mDataList.size()
+                || selectedPosition < 0 || selectedPosition > mDataList.size()) {
+            Log.d("hff", "Invalid chosen ids: " + chosenPosition + ", " + selectedPosition);
+            return null;
+        }
+
+        return new Pair<>(mDataList.get(chosenPosition), mDataList.get(selectedPosition));
     }
 }

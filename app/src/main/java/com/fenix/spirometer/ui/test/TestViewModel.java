@@ -12,6 +12,8 @@ import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.room.MemberRepository;
 import com.fenix.spirometer.room.TestReportRepository;
 
+import java.util.List;
+
 public class TestViewModel extends ViewModel {
     private final BleRepository bleRepo;
     private final MemberRepository memRepo;
@@ -45,5 +47,9 @@ public class TestViewModel extends ViewModel {
 
     public MutableLiveData<TestReport> getReport(long timeStamp) {
         return reportRepo.getReport(timeStamp);
+    }
+
+    public MutableLiveData<List<TestReport>> getReports(long[] timeStamps) {
+        return reportRepo.getReports(timeStamps);
     }
 }

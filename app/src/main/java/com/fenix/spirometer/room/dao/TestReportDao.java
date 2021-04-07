@@ -28,6 +28,10 @@ public interface TestReportDao {
     @Query("select * from TestReportModel where timeMills = :timeStamp")
     TestReportWithData getReport(long timeStamp);
 
+    @Transaction
+    @Query("select * from TestReportModel where timeMills in (:timeStamps)")
+    List<TestReportWithData> getReport(long[] timeStamps);
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertTestReports(List<TestReportModel> testReports);
 

@@ -1,7 +1,11 @@
 package com.fenix.spirometer.util;
 
+import android.text.TextUtils;
+
 import com.fenix.spirometer.model.BaseModel;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
@@ -20,6 +24,9 @@ public class JSONUtils {
     }
 
     public static <T> T json2Model(String jsonStr, Class<T> clazz) {
+        if (TextUtils.isEmpty(jsonStr) || clazz == null) {
+            return null;
+        }
         try {
             return mapper.readValue(jsonStr, clazz);
         } catch (IOException e) {

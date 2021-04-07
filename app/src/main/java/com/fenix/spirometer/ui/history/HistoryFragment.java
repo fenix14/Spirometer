@@ -2,6 +2,7 @@ package com.fenix.spirometer.ui.history;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.fenix.spirometer.R;
 import com.fenix.spirometer.model.SimpleReport;
+import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.ui.widget.CustomExcel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
@@ -131,6 +133,14 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
 
     @Override
     public void onClick(View v) {
-
+        if (v.getId() == R.id.footer) {
+            Pair<SimpleReport, SimpleReport> chosenReport = excel.getChosen();
+            if (chosenReport == null) {
+                return;
+            }
+            Bundle bundle = new Bundle();
+            bundle.putLongArray(Constants.BUNDLE_KEY_TIME_STAMPS, new long[]{chosenReport.first.getTimeMills(), chosenReport.second.getTimeMills()});
+            NavHostFragment.findNavController(this).navigate(R.id.history_to_compare, bundle);
+        }
     }
 }

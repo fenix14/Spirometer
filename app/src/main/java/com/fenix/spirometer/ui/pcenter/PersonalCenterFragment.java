@@ -40,9 +40,6 @@ public class PersonalCenterFragment extends BaseVMPrefFragment {
         } else if(preference.getKey().equals("version")){
             bundle.putString("flag_deaults","version");
 			action = R.id.personal_to_others;
-        } else if(preference.getKey().equals("mac")){
-            bundle.putString("flag_deaults","mac");
-			action = R.id.personal_to_others;
         } else if(preference.getKey().equals("account")){
             bundle.putString("flag_deaults","account");
 			action = R.id.personal_to_others;
