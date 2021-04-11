@@ -34,7 +34,11 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
         toolbar.clear();
         toolbar.setCenterText(null);
         toolbar.setLeftText(null);
-        toolbar.setRightText(getString(R.string.ble_state_disconnect));
+        if (viewModel.getBleDeviceState() == null || viewModel.getBleDeviceState().getValue() == null) {
+            toolbar.setRightText(getString(R.string.ble_state_disconnect));
+        } else {
+            toolbar.setRightText(viewModel.getBleDeviceState().getValue().getStateString());
+        }
         toolbar.setOnItemClickListener(this);
 
         viewModel.setShowNavBar(true);
@@ -81,18 +85,14 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
                 switch (state) {
                     case BleDeviceState.State.STATE_CONNECTED:
                         isConnect = true;
-                        toolbar.setRightText(getString(R.string.ble_state_connect));
-                        break;
-                    case BleDeviceState.State.STATE_CONNECTING:
-                        toolbar.setRightText(getString(R.string.ble_state_connecting));
                         break;
                     case BleDeviceState.State.STATE_DISCONNECTED:
                         isConnect = false;
-                        toolbar.setRightText(getString(R.string.ble_state_disconnect));
                         break;
                     default:
                         break;
                 }
+                toolbar.setRightText(viewModel.getBleDeviceState().getValue().getStateString());
             }
         });
     }

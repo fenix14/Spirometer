@@ -92,4 +92,6 @@ dependencies {
     implementation 'org.codehaus.jackson:jackson-core-asl:1+'
 
     implementation 'com.github.huangyanbin:SmartTable:2.2.0'
+
+    implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
 }

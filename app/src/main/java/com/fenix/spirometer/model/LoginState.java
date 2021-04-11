@@ -3,11 +3,6 @@ package com.fenix.spirometer.model;
 import androidx.annotation.IntDef;
 
 public class LoginState {
-    public static final int LOGIN_ERR_NONE = 0;
-    public static final int LOGIN_ERR_PASSWORD = 1;
-    public static final int LOGIN_ERR_USER_ID = 2;
-    public static final int LOGIN_ERR_UNKNOWN = 2;
-
     private Operator loginOperator;
 
     private boolean isLogin;
@@ -43,6 +38,14 @@ public class LoginState {
         isLogin = login;
     }
 
+    public int getErr() {
+        return err;
+    }
+
+    public void setErr(int err) {
+        this.err = err;
+    }
+
     public String getErrMessage() {
         return errMessage;
     }
@@ -51,11 +54,13 @@ public class LoginState {
         this.errMessage = errMessage;
     }
 
-    @IntDef({ErrType.ERR_NONE, ErrType.ERR_PASSWORD, ErrType.ERR_USER_ID, ErrType.ERR_UNKNOWN})
+    @IntDef({ErrType.ERR_NONE, ErrType.ERR_PASSWORD, ErrType.ERR_USER_ID, ErrType.ERR_UNKNOWN, ErrType.ERR_PWD_CHANGED_SUCCESS, ErrType.ERR_PWD_CHANGED_FAIL})
     public @interface ErrType {
         int ERR_NONE = 0;
         int ERR_PASSWORD = 1;
         int ERR_USER_ID = 2;
         int ERR_UNKNOWN = 3;
+        int ERR_PWD_CHANGED_SUCCESS = 4;
+        int ERR_PWD_CHANGED_FAIL = 5;
     }
 }

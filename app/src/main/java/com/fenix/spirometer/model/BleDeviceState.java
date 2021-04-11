@@ -57,6 +57,23 @@ public class BleDeviceState implements Serializable {
         return state;
     }
 
+    public String getStateString() {
+        switch (state) {
+            case State.STATE_CONNECTING:
+            case State.STATE_READY:
+            case State.STATE_TESTING:
+            case State.STATE_FINISHED:
+                return "连接中";
+            case State.STATE_CONNECTED:
+                return "已连接";
+            case State.STATE_DISCONNECTED:
+            case State.STATE_DISCONNECTING:
+            case State.STATE_NONE:
+            default:
+                return "未连接";
+        }
+    }
+
     public void setState(@State int state) {
         this.state = state;
     }

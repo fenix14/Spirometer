@@ -2,11 +2,8 @@ package com.fenix.spirometer.ui.base;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.fenix.spirometer.R;
 import com.fenix.spirometer.app.MyApplication;
@@ -60,7 +56,8 @@ public abstract class BaseVMPrefFragment extends PreferenceFragmentCompat {
         toolbar = (CustomToolbar) ((AppCompatActivity) getActivity()).getSupportActionBar().getCustomView();
         btnFooter = view.getRootView().findViewById(R.id.footer);
         vHeader = view.findViewById(R.id.header);
-
+        tvHeaderTitle = view.findViewById(R.id.header_title);
+        tvHeaderSummary = view.findViewById(R.id.header_summary);
     }
 
     @Override

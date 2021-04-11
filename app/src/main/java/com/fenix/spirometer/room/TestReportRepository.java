@@ -81,7 +81,7 @@ public class TestReportRepository {
     public MutableLiveData<List<TestReport>> getReports(long[] timeStamps) {
         final MutableLiveData<List<TestReport>> mdTestReport = new MutableLiveData<>();
         executor.execute(() -> {
-            List<TestReportWithData> reportModels = database.testReportDao().getReport(timeStamps);
+            List<TestReportWithData> reportModels = timeStamps == null ? database.testReportDao().getReports() : database.testReportDao().getReports(timeStamps);
             List<TestReport> testReports = new ArrayList<>();
             if (reportModels != null) {
                 for (TestReportWithData testReportWithData : reportModels) {

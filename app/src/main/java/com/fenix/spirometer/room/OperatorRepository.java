@@ -1,7 +1,6 @@
 package com.fenix.spirometer.room;
 
 import android.content.Context;
-import android.graphics.Path;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -65,6 +64,30 @@ public class OperatorRepository {
     // 登录相关
     public void logout() {
         mdLoginState.postValue(null);
+    }
+
+    public void changePassword(@NonNull String oldPassword, @NonNull String newPassword) {
+        executor.execute(() -> {
+            LoginState loginState = mdLoginState == null || mdLoginState.getValue() == null ? null : mdLoginState.getValue();
+            if (loginState == null || !oldPassword.equals(loginState.getLoginOperator().getPassword())) {
+                Log.d("hff", "old password = " + oldPassword + ", current password = " + loginState.getLoginOperator().getPassword());
+                loginState.setErr(LoginState.ErrType.ERR_PWD_CHANGED_FAIL);
+                loginState.setErrMessage("旧密码错误");
+            } else {
+                Operator loginOperator = loginState.getLoginOperator();
+                loginOperator.setPassword(newPassword);
+                int id = database.operatorDao().updateOperator(loginOperator);
+                if (id < 0) {
+                    loginState.setErr(LoginState.ErrType.ERR_PWD_CHANGED_FAIL);
+                    loginState.setErrMessage("数据库异常，修改失败");
+                } else {
+                    loginState.setLoginOperator(loginOperator);
+                    loginState.setErr(LoginState.ErrType.ERR_PWD_CHANGED_SUCCESS);
+                    loginState.setErrMessage(null);
+                }
+            }
+            mdLoginState.postValue(loginState);
+        });
     }
 
     public MutableLiveData<LoginState> getLoginState() {

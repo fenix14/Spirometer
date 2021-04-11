@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattServerCallback;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
@@ -59,9 +58,9 @@ public class BleDeviceClient {
     private static final UUID UUID_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private static final String COMMAND_START_MEASURE = "$YB$01110000$YE$";
     private static final String COMMAND_STOP_MEASURE = "$YB$01130000$YE$";
-    private static final String DATA_STOP_MEASURE = "$FB$01130000$FE$";
+    private static final String DATA_STOP_MEASURE = "$FB$01140000$FE$";
     private static final String DATA_PREFIX_START = "$FB$0112";
-    private static final String DATA_PREFIX_STOP = "$FB$0113";
+    private static final int OFFSET_DATA_HEADER = 16;  // 8（DATA_PREFIX_START） + 4（版本号） + 4（数据下标）
     private static final String DATA_SUFFIX = "$FE$";
 
     public Context context;
@@ -76,7 +75,7 @@ public class BleDeviceClient {
     private DataCleaner dataCleaner;
     BleDeviceState bleDeviceState = new BleDeviceState();
     StringBuilder data;
-    private static volatile boolean isStopingForStart = false;
+    private static volatile boolean isStoppingForStart = false;
 
     private BluetoothGattCharacteristic mCommunicateChara;
     private final BluetoothGattCallback mGattCallback = new BaseBluetoothGattCallback();
@@ -137,25 +136,22 @@ public class BleDeviceClient {
             mHandler.deliverMessage(MSG_DEVICE_CONNECTING, null);
         });
     }
-    int time = 0;
-    int preData = 0;
-    Thread thread1;
 
     // 4.开始测量
     public void startMeasure() {
         Log.d("hff", "startMeasure");
         if (bleDeviceState.getState() == State.STATE_READY) {
-            if (isStopingForStart) {
-                return;
+            if (!isStoppingForStart) {
+                stopMeasure();
+                isStoppingForStart = true;
+                dataCleaner = new DataCleaner();
             }
-            stopMeasure();
-            isStopingForStart = true;
-            dataCleaner = new DataCleaner();
-        } else {
-            startFakeMeasure();
         }
     }
 
+    int time = 0;
+    int preData = 0;
+    Thread thread1;
     private void startFakeMeasure() {
         mHandler.deliverMessage(MSG_TESTING, null);
         thread1 = new Thread(() -> {
@@ -183,14 +179,16 @@ public class BleDeviceClient {
     }
 
     private void startMeasureInternal(long delay) {
-        sendCommand(COMMAND_START_MEASURE.getBytes());
-        isStopingForStart = false;
+        isStoppingForStart = false;
+        mHandler.postDelayed(() -> sendCommand(COMMAND_START_MEASURE.getBytes()), delay);
     }
 
     // 5.结束测量
     public void stopMeasure() {
+        if (isStoppingForStart) {
+            return;
+        }
         sendCommand(COMMAND_STOP_MEASURE.getBytes());
-//        thread1.interrupt();
     }
 
     private void sendCommand(byte[] command) {
@@ -291,7 +289,7 @@ public class BleDeviceClient {
             super.onCharacteristicChanged(gatt, characteristic);
             // 处理数据
             Log.d("hff", "onCharacteristicChanged");
-            //mHandler.deliverMessage(MSG_RAW_DATA_RECEIVED, characteristic.getValue());
+            mHandler.deliverMessage(MSG_RAW_DATA_RECEIVED, characteristic.getValue());
         }
 
         @Override
@@ -380,6 +378,8 @@ public class BleDeviceClient {
                     // 初始化完成
                     state.setState(State.STATE_FINISHED);
                     reference.get().postMessage(MSG_DEVICE_STATE_CHANGE, state);
+                    state.setState(State.STATE_READY);
+                    deliverMessage(MSG_DEVICE_INITIALIZED, state);
                     break;
                 case MSG_RAW_DATA_RECEIVED:
                     // 数据接收
@@ -403,7 +403,7 @@ public class BleDeviceClient {
             }
         }
 
-        void deliverMessage(int what, Object message) {
+        synchronized void deliverMessage(int what, Object message) {
             if (message != null) {
                 Message msg = obtainMessage();
                 msg.what = what;
@@ -437,16 +437,21 @@ public class BleDeviceClient {
     private static final int OFFSET_4 = 4;
 
     private synchronized void dealWitRawData(byte[] newData) {
+Log.d("hff", "newData = " + Arrays.toString(newData));
         String newDataStr = new String(newData);
         int start = 0;
-
-        if (newDataStr.startsWith(DATA_STOP_MEASURE) && isStopingForStart) {
-            startMeasureInternal(1000);
+Log.d("hff", "newDataStr = " + newDataStr);
+        if (newDataStr.startsWith(DATA_STOP_MEASURE)) {
+            if (isStoppingForStart) {
+                startMeasureInternal(1000);
+            } else {
+                mHandler.deliverMessage(MSG_TEST_FINISH, null);
+            }
             return;
         }
 
         if (newDataStr.startsWith(DATA_PREFIX_START)) {
-            start = DATA_PREFIX_START.length();
+            start = OFFSET_DATA_HEADER;
             data = new StringBuilder();
         }
 

@@ -54,13 +54,14 @@ public class LoginActivity extends AppCompatActivity {
         etUserId = findViewById(R.id.userId);
         etPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.login);
+        pbLoading = findViewById(R.id.loading);
+
         btnLogin.setOnClickListener(v -> {
             pbLoading.setVisibility(View.VISIBLE);
-            //loginViewModel.login(etUserId.getText().toString(), etPassword.getText().toString());
-            loginViewModel.login("18674018759", "123456");
+            loginViewModel.login(etUserId.getText().toString(), etPassword.getText().toString());
+//            loginViewModel.login("18674018759", "123456");
         });
 
-        pbLoading = findViewById(R.id.loading);
     }
 
     private void initObserver() {

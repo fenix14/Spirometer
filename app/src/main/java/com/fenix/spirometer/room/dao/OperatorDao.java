@@ -29,7 +29,7 @@ public interface OperatorDao {
     void insertOperators(List<Operator> operators);
 
     @Update
-    void updateOperator(Operator operator);
+    int updateOperator(Operator operator);
 
     @Delete
     void deleteOperator(Operator operator);

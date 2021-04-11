@@ -17,6 +17,7 @@ import java.util.Locale;
 public class Utils {
     private static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private static SimpleDateFormat SIMPLE_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+    private static SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     public static boolean isUserIdValid(String userId) {
         return Constants.USER_NAME_PATTERN.matcher(userId).matches();
@@ -50,5 +51,13 @@ public class Utils {
 
     public static String getTimeByMills(long timeMills) {
         return SIMPLE_TIME_FORMAT.format(new Date(timeMills));
+    }
+
+    public static String getDateTimeByMills(long timeMills, String format) {
+        if (format == null) {
+            return SIMPLE_DATE_TIME_FORMAT.format(new Date(timeMills));
+        } else {
+            return new SimpleDateFormat(format, Locale.getDefault()).format(new Date(timeMills));
+        }
     }
 }

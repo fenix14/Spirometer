@@ -1,9 +1,11 @@
 package com.fenix.spirometer.ui.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import androidx.annotation.LayoutRes;
@@ -75,5 +77,13 @@ public abstract class BaseVMFragment extends Fragment {
     protected abstract void initView(View rootView);
 
     protected void initObserver() {
+    }
+
+    protected boolean hideSoftInput(View view) {
+        if (view != null) {
+            InputMethodManager im = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 package com.fenix.spirometer.ui.main;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,6 +14,7 @@ import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.model.Operator;
 import com.fenix.spirometer.model.SimpleReport;
 import com.fenix.spirometer.model.TestInfo;
+import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.room.AddrRepository;
 import com.fenix.spirometer.room.EstValueRepository;
 import com.fenix.spirometer.room.MemberRepository;
@@ -53,8 +55,11 @@ public class MainViewModel extends ViewModel {
     }
 
     public void login(String userId, String password) {
-
         operRepo.login(userId, password);
+    }
+
+    public void changePassword(@NonNull String oldPassword,@NonNull String newPassword) {
+        operRepo.changePassword(oldPassword, newPassword);
     }
 
     public void subscribeToLoginState(LifecycleOwner lifecycleOwner, Observer<LoginState> observer) {
@@ -136,6 +141,11 @@ public class MainViewModel extends ViewModel {
     // for HistoryFragment
     public LiveData<List<SimpleReport>> getAllSimpleReports() {
         return reportRepo.getSimpleReports();
+    }
+
+    // for HistoryFragment
+    public LiveData<List<TestReport>> getAllReports() {
+        return reportRepo.getReports(null);
     }
 
     // 底部Tab导航栏是否显示

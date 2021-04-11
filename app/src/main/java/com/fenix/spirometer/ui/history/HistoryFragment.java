@@ -1,12 +1,12 @@
 package com.fenix.spirometer.ui.history;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -14,11 +14,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.fenix.spirometer.R;
 import com.fenix.spirometer.model.SimpleReport;
-import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.ui.widget.CustomExcel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.Constants;
+import com.fenix.spirometer.util.ExcelUtils;
 import com.fenix.spirometer.util.ModelUtils;
 
 import java.lang.reflect.Method;
@@ -28,6 +28,7 @@ import java.util.List;
 public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnItemClickListener, CustomExcel.OnRowStateChangeListener, View.OnClickListener {
     public static final String KEY_REPORT = "report";
     private CustomExcel<SimpleReport> excel;
+    private ProgressBar loading;
     private boolean isEdit = false;
     private long chosenReportTimeStamp;
 
@@ -38,7 +39,7 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
         toolbar.clear();
         toolbar.setCenterText(getString(R.string.tab_history));
         toolbar.setLeftText(getString(R.string.item_back));
-        toolbar.setRightText(null);
+        toolbar.setRightText(chosenReportTimeStamp > 0 ? null : getString(R.string.toolbar_right_export));
         toolbar.setOnItemClickListener(this);
 
         viewModel.setShowNavBar(false);
@@ -75,6 +76,8 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
         Button btnSearch = rootView.findViewById(R.id.btn_search);
         btnSearch.setOnClickListener(view -> {
         });
+
+        loading = rootView.findViewById(R.id.loading);
     }
 
     @Override
@@ -128,7 +131,13 @@ public class HistoryFragment extends BaseVMFragment implements CustomToolbar.OnI
 
     @Override
     public void onRightClick() {
-
+        loading.setVisibility(View.VISIBLE);
+        viewModel.getAllReports().observe(this, testReports -> {
+            if (testReports != null && testReports.size() > 0) {
+                ExcelUtils.writeOperateTagToExcel(testReports);
+                loading.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override

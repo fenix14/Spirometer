@@ -1,21 +1,11 @@
 package com.fenix.spirometer.ui.pcenter.others;
 
-import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothProfile;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -23,35 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 
 import com.fenix.spirometer.R;
-import com.fenix.spirometer.model.DetectorCompensation;
-import com.fenix.spirometer.model.Operator;
-import com.fenix.spirometer.model.Province;
+import com.fenix.spirometer.model.LoginState;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
-import com.fenix.spirometer.ui.main.MainActivity;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.Constants;
-import com.fenix.spirometer.util.FileParser;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.List;
-
-import static com.fenix.spirometer.util.Constants.SP_KEY_IS_INITIALIZED;
 
 public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClickListener, CustomToolbar.OnItemClickListener {
     private String mParam1;
@@ -66,11 +35,12 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
     EditText mphonenumber;
     Button mexitButton;
     boolean isaccount = false;
-    boolean iscontact =false;
+    boolean iscontact = false;
     TextView change_password;
-    private final String HOSPITAL_KEY="hospital_key";
-    private final String DEPARTMENT_KEY="department_key";
-    private final String PHONENUMBER_KEY="phonenumber_key";
+    private AlertDialog changePwdDialog;
+    private final String HOSPITAL_KEY = "hospital_key";
+    private final String DEPARTMENT_KEY = "department_key";
+    private final String PHONENUMBER_KEY = "phonenumber_key";
 
     @Override
     protected void initToolNavBar() {
@@ -95,49 +65,71 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         toolbar.clear();
         toolbar.setBackgroundResource(R.color.colorPrimary);
         toolbar.setLeftText("<");
-        mlayouthospital= rootView.findViewById(R.id.layout_hospital);
-        mlayoutDepartment= rootView.findViewById(R.id.layout_Department);;
-        mlayoutphone= rootView.findViewById(R.id.layout_phone);;
-        mlayoutversion= rootView.findViewById(R.id.layout_version);;
-        mlayoutaccount= rootView.findViewById(R.id.layout_account);;
+        mlayouthospital = rootView.findViewById(R.id.layout_hospital);
+        mlayoutDepartment = rootView.findViewById(R.id.layout_Department);
+        mlayoutphone = rootView.findViewById(R.id.layout_phone);
+        mlayoutversion = rootView.findViewById(R.id.layout_version);
+        mlayoutaccount = rootView.findViewById(R.id.layout_account);
+        mlayoutaccount.setOnClickListener(this);
         mexitButton = rootView.findViewById(R.id.button);
         change_password = (rootView).findViewById(R.id.change_password);
-        mhospital=(rootView).findViewById(R.id.hospital_value);
-        mdepartment=(rootView).findViewById(R.id.department_value);
-        mphonenumber=(rootView).findViewById(R.id.phone_value);
+        mhospital = (rootView).findViewById(R.id.hospital_value);
+        mdepartment = (rootView).findViewById(R.id.department_value);
+        mphonenumber = (rootView).findViewById(R.id.phone_value);
         mexitButton.setOnClickListener(this);
+
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString("flag_deaults", "");
+        }
+        switch (mParam1) {
+            case "contact":
+                SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
+                mhospital.setText(sp.getString(HOSPITAL_KEY, ""));
+                mdepartment.setText(sp.getString(DEPARTMENT_KEY, ""));
+                mphonenumber.setText(sp.getString(PHONENUMBER_KEY, ""));
+                iscontact = true;
+                toolbar.setCenterText("联系我们");
+                mlayoutversion.setVisibility(View.GONE);
+                mlayoutaccount.setVisibility(View.GONE);
+                mexitButton.setText("保存");
+                break;
+            case "version":
+                toolbar.setCenterText("版本信息");
+                mlayouthospital.setVisibility(View.GONE);
+                mlayoutDepartment.setVisibility(View.GONE);
+                mlayoutphone.setVisibility(View.GONE);
+                mlayoutaccount.setVisibility(View.GONE);
+                mexitButton.setVisibility(View.GONE);
+                break;
+            case "account":
+                toolbar.setCenterText("账号管理");
+                isaccount = true;
+                mlayouthospital.setVisibility(View.GONE);
+                mlayoutDepartment.setVisibility(View.GONE);
+                mlayoutphone.setVisibility(View.GONE);
+                mlayoutversion.setVisibility(View.GONE);
+                change_password.setText(">");
+                break;
+            default:
+                NavHostFragment.findNavController(this).navigateUp();
+                break;
+        }
     }
 
     @Override
     protected void initObserver() {
-
-        if (mParam1.equals("contact")) {
-            SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
-            mhospital.setText(sp.getString(HOSPITAL_KEY,""));
-            mdepartment.setText(sp.getString(DEPARTMENT_KEY,""));
-            mphonenumber.setText(sp.getString(PHONENUMBER_KEY,""));
-            iscontact = true;
-            toolbar.setCenterText("联系我们");
-            mlayoutversion.setVisibility(View.GONE);
-            mlayoutaccount.setVisibility(View.GONE);
-            mexitButton.setText("保存");
-        } else if (mParam1.equals("version")) {
-            toolbar.setCenterText("版本信息");
-            mlayouthospital.setVisibility(View.GONE);
-            mlayoutDepartment.setVisibility(View.GONE);
-            mlayoutphone.setVisibility(View.GONE);
-            mlayoutaccount.setVisibility(View.GONE);
-            mexitButton.setVisibility(View.GONE);
-        }  else if (mParam1.equals("account")) {
-            toolbar.setCenterText("账号管理");
-            isaccount = true;
-            mlayouthospital.setVisibility(View.GONE);
-            mlayoutDepartment.setVisibility(View.GONE);
-            mlayoutphone.setVisibility(View.GONE);
-            mlayoutversion.setVisibility(View.GONE);
-            change_password.setText(">");
-        }
-
+        viewModel.subscribeToLoginState(this, loginState -> {
+            if (loginState == null) {
+                return;
+            }
+            if (loginState.getErr() == LoginState.ErrType.ERR_PWD_CHANGED_SUCCESS) {
+                new AlertDialog.Builder(getActivity()).setMessage("密码修改成功，请重新登录。")
+                        .setPositiveButton(R.string.dialog_ok, (dialog, which) -> viewModel.logout())
+                        .setCancelable(false).create().show();
+            } else if (loginState.getErr() == LoginState.ErrType.ERR_PWD_CHANGED_FAIL) {
+                Toast.makeText(getContext(), loginState.getErrMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -145,12 +137,12 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         switch (view.getId()) {
             case R.id.button:
                 Log.d("wuxin", "exit========");
-                if(iscontact){
-                    Editable hospital=mhospital.getText();
-                    Editable department=mdepartment.getText();
-                    Editable phonenumber=mphonenumber.getText();
-                    if(TextUtils.isEmpty(hospital)||TextUtils.isEmpty(department)||TextUtils.isEmpty(phonenumber)){
-                        Toast.makeText(getContext(),R.string.pref_no_input_empyt,Toast.LENGTH_LONG).show();
+                if (iscontact) {
+                    Editable hospital = mhospital.getText();
+                    Editable department = mdepartment.getText();
+                    Editable phonenumber = mphonenumber.getText();
+                    if (TextUtils.isEmpty(hospital) || TextUtils.isEmpty(department) || TextUtils.isEmpty(phonenumber)) {
+                        Toast.makeText(getContext(), R.string.pref_no_input_empyt, Toast.LENGTH_LONG).show();
                         return;
                     }
                     SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
@@ -159,19 +151,53 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
                     editor.putString(DEPARTMENT_KEY, department.toString());
                     editor.putString(PHONENUMBER_KEY, phonenumber.toString());
                     editor.apply();
-                }else{
+                } else {
                     viewModel.logout();
                 }
-
-
                 break;
             case R.id.layout_account:
                 if (isaccount) {
                     Log.d("wuxin", "change password========");
+                    showChangePwdDialog();
                 }
                 break;
         }
+    }
 
+    private void showChangePwdDialog() {
+        if (changePwdDialog == null) {
+            View view = getLayoutInflater().inflate(R.layout.dialog_change_pwd, null);
+            View oldPwd = view.findViewById(R.id.old_password);
+            View newPwd = view.findViewById(R.id.new_password);
+            View confirmPwd = view.findViewById(R.id.confirm_password);
+            ((TextView) oldPwd.findViewById(R.id.title)).setText(R.string.dialog_old_password);
+            ((TextView) newPwd.findViewById(R.id.title)).setText(R.string.dialog_new_password);
+            ((TextView) confirmPwd.findViewById(R.id.title)).setText(R.string.dialog_confirm_password);
+            changePwdDialog = new AlertDialog.Builder(getActivity()).setView(view)
+                    .setPositiveButton(R.string.dialog_ok, (dialog, which) -> {
+                        EditText etOldPwd = oldPwd.findViewById(R.id.edit);
+                        EditText etNewPwd = newPwd.findViewById(R.id.edit);
+                        EditText etConfirmPwd = confirmPwd.findViewById(R.id.edit);
+                        changePassword(etOldPwd.getText().toString(), etNewPwd.getText().toString(), etConfirmPwd.getText().toString());
+                        hideSoftInput(changePwdDialog.getButton(which));
+                    }).setNegativeButton(R.string.cancel, (dialog, which) -> hideSoftInput(changePwdDialog.getButton(which))).create();
+            changePwdDialog.getWindow().getDecorView().setOnTouchListener((v, event) -> hideSoftInput(changePwdDialog.getWindow().getDecorView()));
+        }
+        changePwdDialog.show();
+    }
+
+    private void changePassword(String oldPassword, String newPassword, String confirmPassword) {
+        if (TextUtils.isEmpty(oldPassword) || TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
+            Toast.makeText(requireContext(), "填写内容不可为空", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (newPassword.equals(oldPassword)) {
+            Toast.makeText(requireContext(), "新旧密码相同", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (!newPassword.equals(confirmPassword)) {
+            Toast.makeText(requireContext(), "新密码不相符", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        viewModel.changePassword(oldPassword, newPassword);
     }
 
     @Override
@@ -181,14 +207,12 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
 
     @Override
     public void onRightClick() {
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString("flag_deaults");
             Log.d("wuxin", "===========" + mParam1);
         }
     }

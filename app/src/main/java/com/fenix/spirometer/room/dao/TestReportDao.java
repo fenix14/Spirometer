@@ -30,7 +30,11 @@ public interface TestReportDao {
 
     @Transaction
     @Query("select * from TestReportModel where timeMills in (:timeStamps)")
-    List<TestReportWithData> getReport(long[] timeStamps);
+    List<TestReportWithData> getReports(long[] timeStamps);
+
+    @Transaction
+    @Query("select * from TestReportModel")
+    List<TestReportWithData> getReports();
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertTestReports(List<TestReportModel> testReports);

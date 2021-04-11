@@ -154,6 +154,7 @@
     <!-- TestActivity -->
     <!-- HistoryFragment -->
     <string name="tab_history">历史报告</string>
+    <string name="toolbar_right_export">导出</string>
     <string name="footer_compare">对比</string>
     <string name="btn_search">查询</string>
     <string name="search">搜索</string>
@@ -225,6 +226,11 @@
     <string name="pref_hospital_title">医院信息</string>
     <string name="pref_department_title">科室信息</string>
     <string name="pref_no_input_empyt">输入不能为空</string>
+    <string name="dialog_old_password">旧密码</string>
+    <string name="dialog_new_password">新密码</string>
+    <string name="dialog_confirm_password">确认密码</string>
+    <string name="dialog_change_password">修改密码</string>
+
 
     <string name="fancy_qr_code_theme_name_yellow">黄</string>
     <string name="fancy_qr_code_theme_name_green">绿</string>
@@ -232,4 +238,12 @@
     <string name="fancy_qr_code_theme_name_blue">蓝</string>
     <string name="fancy_qr_code_theme_name_purple">紫</string>
     <string name="fancy_qr_code_theme_name_black">黑</string>
+
+    <string-array name="excel_file_column">
+        <item name="excel_0_index">序号</item>
+        <item name="excel_1_date">时间</item>
+        <item name="excel_2_member">测试人员信息</item>
+        <item name="excel_3_operator">操作人员信息</item>
+        <item name="excel_4_data">数据值</item>
+    </string-array>
 </resources>

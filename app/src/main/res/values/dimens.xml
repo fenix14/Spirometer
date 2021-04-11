@@ -18,6 +18,7 @@
     <dimen name="prepare_image_padding">30dp</dimen>
     <dimen name="margin_content_to_title">15dp</dimen>
     <dimen name="margin_paragraph">25dp</dimen>
+    <dimen name="function_margin_top">30dp</dimen>
 
 
     <dimen name="pref_vertical_margin">8dp</dimen>
