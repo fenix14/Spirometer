@@ -2,6 +2,10 @@ package com.fenix.spirometer.ui.test;
 
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +23,7 @@ import com.fenix.spirometer.R;
 import com.fenix.spirometer.ble.MeasureData;
 import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.model.TestReport;
+import com.fenix.spirometer.print.SunmiPrintHelper;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.AllViewModelFactory;
@@ -125,10 +130,72 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.footer) {
-            // TODO: 跳转到打印
+            print();
         }
     }
 
+    /**
+     *  Scaled image width is an integer multiple of 8 and can be ignored
+     */
+    private Bitmap scaleImage(Bitmap bitmap1) {
+        int width = bitmap1.getWidth();
+        int height = bitmap1.getHeight();
+        Log.d("wuxin","width0=="+width+"==height1"+height);
+        // 设置想要的大小
+        int newWidth = (width/14+1)*8;
+        // 计算缩放比例
+        float scaleWidth = ((float) newWidth) / width;
+        // 取得想要缩放的matrix参数
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, 1);
+        // 得到新的图片
+        //Log.d("wuxin","width=="+width+"==height"+height);
+        return Bitmap.createBitmap(bitmap1, 0, 0, width, height, matrix, true);
+    }
+    private void print(){
+        //标题
+        SunmiPrintHelper.getInstance().setAlign(1);
+        SunmiPrintHelper.getInstance().printText("肺活量标准测试报告\n",32f,false,false);
+        //人员信息
+        SunmiPrintHelper.getInstance().setAlign(0);
+        SunmiPrintHelper.getInstance().printTable(new String[]{ tvMemName.getText().toString(), tvMemGender.getText().toString()},
+                new int[]{1,1},new int[]{0,0});
+        SunmiPrintHelper.getInstance().printTable(new String[]{ tvMemHeight.getText().toString(), tvMemAge.getText().toString(),tvMemWeight.getText().toString()},
+                new int[]{1,1,1},new int[]{0,1,2});
+        SunmiPrintHelper.getInstance().printText("  \n", 22f,false,false);
+        // TODO: 跳转到打印
+        //图片
+        Bitmap bitmap = ((BitmapDrawable)imageView1.getDrawable()).getBitmap();
+          if (bitmap == null) {
+             bitmap= BitmapFactory.decodeResource(getResources(), R.drawable.default_image, null);
+        }
+        bitmap=scaleImage(bitmap);
+        SunmiPrintHelper.getInstance().setAlign(0);
+        SunmiPrintHelper.getInstance().printBitmap(scaleImage(bitmap),1);
+        SunmiPrintHelper.getInstance().printText("  \n", 22f,false,false);
+        //表格
+        int width[]=new int[]{3,2,2,3};
+        int align[] = new int[]{0,1,1,2};
+        List<TestParam> params = smartTable.getTableData().getT();
+        SunmiPrintHelper.getInstance().setAlign(0);
+        SunmiPrintHelper.getInstance().printTable(TestParam.getTitle(),
+                width, align);
+        for (TestParam tableItem : params) {
+            SunmiPrintHelper.getInstance().printTable(tableItem.getLineValue(),
+                    width, align);
+        }
+        SunmiPrintHelper.getInstance().printText("", 22f,false,false);
+        SunmiPrintHelper.getInstance().setAlign(0);
+        SunmiPrintHelper.getInstance().printText(tvLungsAge.getText()+"\n",
+                22f,false,false);
+        SunmiPrintHelper.getInstance().printText(tvActionStandardLvl.getText()+"\n",
+                22f,false,false);
+        SunmiPrintHelper.getInstance().printText(tvTestingDate.getText()+"\n",
+                22f,false,false);
+        SunmiPrintHelper.getInstance().printText(tvOperatorName.getText()+"\n",
+                22f,false,false);
+        SunmiPrintHelper.getInstance().feedPaper();
+    }
     /**
      * 解析测试数据，生成加载数据和显示图片
      */
@@ -214,6 +281,12 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             this.predict = predict;
             this.actual = actual;
             this.percent = PERCENT_FORMAT.format(actual / predict);
+        }
+        public String[] getLineValue(){
+            return new String[]{name,String.valueOf(predict),String.valueOf(actual),percent};
+        }
+        public static String[] getTitle(){
+            return new String[]{"参数","预测值","实际值","实/预"};
         }
     }
 }

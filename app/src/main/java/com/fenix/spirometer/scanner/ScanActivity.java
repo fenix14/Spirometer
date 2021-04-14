@@ -26,6 +26,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
@@ -93,17 +94,12 @@ public class ScanActivity extends AppCompatActivity implements SurfaceHolder.Cal
         ((CheckBox) findViewById(R.id.cbx_torch)).setOnCheckedChangeListener(this);
         fromGallery = false;
 
-        ImageView ivTopLeft = findViewById(R.id.iv_top_left);
-        ivTopLeft.setImageResource(R.mipmap.icon_back_black);
-        findViewById(R.id.view_top_left).setOnClickListener(onClickListener);
+        Button ivTopLeft = findViewById(R.id.toolbar_left);
+        ivTopLeft.setText("<");
+        findViewById(R.id.toolbar_left).setOnClickListener(onClickListener);
 
-        TextView txtTopCenter = findViewById(R.id.txt_top_center);
+        TextView txtTopCenter = findViewById(R.id.toolbar_center);
         txtTopCenter.setText(R.string.qr_code_text);
-
-        TextView tvTopRight = findViewById(R.id.tv_top_right);
-        tvTopRight.setText(R.string.album_text);
-        tvTopRight.setVisibility(View.GONE);
-        findViewById(R.id.view_top_right).setOnClickListener(onClickListener);
     }
 
     public void setOverlay(View v) {
@@ -162,13 +158,8 @@ public class ScanActivity extends AppCompatActivity implements SurfaceHolder.Cal
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.view_top_left:
+                case R.id.toolbar_left:
                     finish();
-                    break;
-                case R.id.view_top_right:
-//                    fromGallery = true;
-//                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                    startActivityForResult(intent, FromGalleryRequestCode);
                     break;
             }
         }

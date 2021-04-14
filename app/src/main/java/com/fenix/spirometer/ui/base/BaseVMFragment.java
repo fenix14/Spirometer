@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.print.SunmiPrintHelper;
 import com.fenix.spirometer.ui.main.MainViewModel;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.AllViewModelFactory;
@@ -56,6 +57,7 @@ public abstract class BaseVMFragment extends Fragment {
         super.onResume();
         initToolNavBar();
         initData();
+        initSunmiPrinterService();
     }
 
     protected void initData() {
@@ -85,5 +87,8 @@ public abstract class BaseVMFragment extends Fragment {
             im.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
         return false;
+    }
+	private void initSunmiPrinterService(){
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(getContext());
     }
 }
