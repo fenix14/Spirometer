@@ -3,8 +3,8 @@ package com.fenix.spirometer.ui.home;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AlertDialog;
@@ -42,6 +42,10 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
         toolbar.setOnItemClickListener(this);
 
         viewModel.setShowNavBar(true);
+        Button btmNav = getFooter();
+        if (btmNav != null) {
+            btmNav.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -101,8 +105,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
     public void onClick(View view) {
         int vId = view.getId();
         if (vId == R.id.tv_fuc_operation_video) {
-            viewModel.stopMeasure();
-            Toast.makeText(getActivity(), "go to Video!", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigate(R.id.home_to_video);
         } else if (vId == R.id.tv_fuc_history_report) {
             NavHostFragment.findNavController(this).navigate(R.id.home_to_history);
         } else {

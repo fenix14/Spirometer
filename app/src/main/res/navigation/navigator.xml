@@ -18,13 +18,16 @@
             android:id="@+id/home_to_member"
             app:destination="@+id/frag_member" />
         <action
+            android:id="@+id/home_to_video"
+            app:destination="@+id/frag_video" />
+        <action
             android:id="@+id/home_to_history"
             app:destination="@+id/frag_history" />
     </fragment>
     <fragment
         android:id="@+id/frag_members"
-        android:label="main"
         android:name="com.fenix.spirometer.ui.member.MemberListFragment"
+        android:label="main"
         tools:layout="@layout/frag_members">
         <action
             android:id="@+id/members_to_member"
@@ -32,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/frag_member"
-        android:name="com.fenix.spirometer.ui.member.MemberDetailFragment" >
+        android:name="com.fenix.spirometer.ui.member.MemberDetailFragment">
         <action
             android:id="@+id/member_to_members"
             app:destination="@+id/frag_members" />
@@ -42,9 +45,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/frag_video"
+        android:name="com.fenix.spirometer.ui.home.VideoFragment"
+        tools:layout="@layout/frag_video" />
+    <fragment
         android:id="@+id/frag_personal"
-        android:label="main"
-        android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment">
+        android:name="com.fenix.spirometer.ui.pcenter.PersonalCenterFragment"
+        android:label="main">
         <action
             android:id="@+id/personal_to_operators"
             app:destination="@+id/frag_operator_list" />
@@ -98,16 +105,15 @@
     </fragment>
     <fragment
         android:id="@+id/frag_testing"
-        android:label="testing"
-        android:name="com.fenix.spirometer.ui.test.TestingFragment">
+        android:name="com.fenix.spirometer.ui.test.TestingFragment"
+        android:label="testing">
         <action
             android:id="@+id/testing_to_result"
             app:destination="@+id/frag_report" />
     </fragment>
     <fragment
         android:id="@+id/frag_report"
-        android:name="com.fenix.spirometer.ui.test.TestReportFragment">
-    </fragment>
+        android:name="com.fenix.spirometer.ui.test.TestReportFragment"></fragment>
 
     <fragment
         android:id="@+id/frag_history"
@@ -121,6 +127,6 @@
     </fragment>
     <fragment
         android:id="@+id/frag_compare"
-        android:name="com.fenix.spirometer.ui.history.ReportCompareFragment"/>
+        android:name="com.fenix.spirometer.ui.history.ReportCompareFragment" />
 
 </navigation>

@@ -53,6 +53,8 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         toolbar.setOnItemClickListener(this);
 
         viewModel.setShowNavBar(false);
+        Button btmNav = getFooter();
+        btmNav.setVisibility(View.GONE);
     }
 
     @LayoutRes
@@ -79,14 +81,10 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         mexitButton.setOnClickListener(this);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString("flag_deaults", "");
+            mParam1 = getArguments().getString("flag_defaults", "");
         }
         switch (mParam1) {
             case "contact":
-                SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
-                mhospital.setText(sp.getString(HOSPITAL_KEY, ""));
-                mdepartment.setText(sp.getString(DEPARTMENT_KEY, ""));
-                mphonenumber.setText(sp.getString(PHONENUMBER_KEY, ""));
                 iscontact = true;
                 toolbar.setCenterText("联系我们");
                 mlayoutversion.setVisibility(View.GONE);
@@ -117,6 +115,19 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
     }
 
     @Override
+    protected void initData() {
+        if (getContext() == null) {
+            return;
+        }
+        if (getArguments() != null && "contact".equals(getArguments().getString("flag_defaults", ""))) {
+            SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, 0);
+            mhospital.setText(sp.getString(HOSPITAL_KEY, ""));
+            mdepartment.setText(sp.getString(DEPARTMENT_KEY, ""));
+            mphonenumber.setText(sp.getString(PHONENUMBER_KEY, ""));
+        }
+    }
+
+    @Override
     protected void initObserver() {
         viewModel.subscribeToLoginState(this, loginState -> {
             if (loginState == null) {
@@ -137,6 +148,9 @@ public class CurrencyInfoFragment extends BaseVMFragment implements View.OnClick
         switch (view.getId()) {
             case R.id.button:
                 Log.d("wuxin", "exit========");
+                if (getContext() == null) {
+                    return;
+                }
                 if (iscontact) {
                     Editable hospital = mhospital.getText();
                     Editable department = mdepartment.getText();

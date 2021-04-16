@@ -35,13 +35,13 @@ public class PersonalCenterFragment extends BaseVMPrefFragment {
         } else if ("detector_calibration".equals(key)) {
             action = R.id.personal_to_detector_calibration;
         } else if(preference.getKey().equals("contact_us")){
-            bundle.putString("flag_deaults","contact");
+            bundle.putString("flag_defaults","contact");
 			action = R.id.personal_to_others;
         } else if(preference.getKey().equals("version")){
-            bundle.putString("flag_deaults","version");
+            bundle.putString("flag_defaults","version");
 			action = R.id.personal_to_others;
         } else if(preference.getKey().equals("account")){
-            bundle.putString("flag_deaults","account");
+            bundle.putString("flag_defaults","account");
 			action = R.id.personal_to_others;
         } else {
             return super.onPreferenceTreeClick(preference);

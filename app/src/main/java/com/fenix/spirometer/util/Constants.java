@@ -1,5 +1,7 @@
 package com.fenix.spirometer.util;
 
+import android.os.Environment;
+
 import androidx.annotation.IntDef;
 
 import java.util.regex.Pattern;
@@ -17,6 +19,9 @@ public class Constants {
 
     public static final String BUNDLE_KEY_TIME_STAMP = "reportTimeStamp";
     public static final String BUNDLE_KEY_TIME_STAMPS = "TimeStampForCompare";
+    public final static String STORAGE_PATH = Environment.getExternalStorageDirectory().getPath() + "/Spirometer/";
+    public final static String EXCEL_PATH = STORAGE_PATH + "excels/";
+    public final static String VIDEO_PATH = STORAGE_PATH + "video/";
 
 
     @IntDef({TrainingType.STANDARD, TrainingType.VITAL_CAPACITY, TrainingType.DIASTOLIC})

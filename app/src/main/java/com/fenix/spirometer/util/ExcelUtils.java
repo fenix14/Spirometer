@@ -35,11 +35,10 @@ public class ExcelUtils {
     private final static String[] TEST_REPORTS = MyApplication.getInstance().getResources().getStringArray(R.array.excel_file_column);
     private final static String FILE_NAME = "TestReports_";
     private final static String FILE_SUFFIX = ".xls";
-    private final static String STORAGE_PATH = Environment.getExternalStorageDirectory().getPath() + "/Spirometer/excels/";
 
 
     public static void writeOperateTagToExcel(List<TestReport> reports) {
-        String fileName = STORAGE_PATH + FILE_NAME + Utils.getDateTimeByMills(System.currentTimeMillis(), "yyMMdd_HHmm") + FILE_SUFFIX;
+        String fileName = Constants.EXCEL_PATH + FILE_NAME + Utils.getDateTimeByMills(System.currentTimeMillis(), "yyMMdd_HHmm") + FILE_SUFFIX;
         initExcel(fileName, TEST_REPORTS);
         writeOperateTagListToExcel(reports, fileName);
     }

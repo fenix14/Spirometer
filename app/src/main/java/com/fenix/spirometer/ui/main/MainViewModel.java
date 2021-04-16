@@ -96,13 +96,6 @@ public class MainViewModel extends ViewModel {
         return bleRepo.getBleDeviceState();
     }
 
-    public void startMeasure() {
-        bleRepo.startMeasure();
-    }
-    public void stopMeasure() {
-        bleRepo.stopMeasure();
-    }
-
     // 人员列表相关 TODO:有必要放这吗？
     public LiveData<List<Member>> getAllMembers() {
        return memberRepo.getAllMembers();
