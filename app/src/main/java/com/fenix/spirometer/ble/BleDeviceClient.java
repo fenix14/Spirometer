@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -56,12 +57,12 @@ public class BleDeviceClient {
     private static final UUID UUID_SERVICE = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_COMMUNICATE = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final String COMMAND_START_MEASURE = "$YB$01110000$YE$";
-    private static final String COMMAND_STOP_MEASURE = "$YB$01130000$YE$";
-    private static final String DATA_STOP_MEASURE = "$FB$01140000$FE$";
-    private static final String DATA_PREFIX_START = "$FB$0112";
-    private static final int OFFSET_DATA_HEADER = 16;  // 8（DATA_PREFIX_START） + 4（版本号） + 4（数据下标）
-    private static final String DATA_SUFFIX = "$FE$";
+
+    private static final byte[] COMMAND_START_MEASURE = DataUtils.hexStringToBytes("F0F0000B0F0F");
+    private static final byte[] COMMAND_STOP_MEASURE = DataUtils.hexStringToBytes("F0F0000D0F0F");
+    private static final byte[] REC_DATA_HEADER = DataUtils.hexStringToBytes("F0F0000C");
+    private static final byte[] REC_MEASURE_STOP = DataUtils.hexStringToBytes("F0F0000E");
+    private static final byte[] REC_TAIL = DataUtils.hexStringToBytes("0F0F");
 
     public Context context;
     private BluetoothManager btManager;
@@ -152,6 +153,7 @@ public class BleDeviceClient {
     int time = 0;
     int preData = 0;
     Thread thread1;
+
     private void startFakeMeasure() {
         mHandler.deliverMessage(MSG_TESTING, null);
         thread1 = new Thread(() -> {
@@ -180,7 +182,7 @@ public class BleDeviceClient {
 
     private void startMeasureInternal(long delay) {
         isStoppingForStart = false;
-        mHandler.postDelayed(() -> sendCommand(COMMAND_START_MEASURE.getBytes()), delay);
+        mHandler.postDelayed(() -> sendCommand(COMMAND_START_MEASURE), delay);
     }
 
     // 5.结束测量
@@ -188,7 +190,7 @@ public class BleDeviceClient {
         if (isStoppingForStart) {
             return;
         }
-        sendCommand(COMMAND_STOP_MEASURE.getBytes());
+        sendCommand(COMMAND_STOP_MEASURE);
     }
 
     private void sendCommand(byte[] command) {
@@ -435,55 +437,71 @@ public class BleDeviceClient {
     }
 
     private static final int OFFSET_4 = 4;
+    private static final int OFFSET_2 = 2;
+    private static final int HEX_CODE = 0xffff;
+    private static final int DATA_SIZE_SINGLE_TRANS = 10;
+    private MeasureData measureData;
+    private int dataCount = 0;
 
     private synchronized void dealWitRawData(byte[] newData) {
-Log.d("hff", "newData = " + Arrays.toString(newData));
-        String newDataStr = new String(newData);
-        int start = 0;
-Log.d("hff", "newDataStr = " + newDataStr);
-        if (newDataStr.startsWith(DATA_STOP_MEASURE)) {
+        Log.d("hff", "newData = " + Arrays.toString(newData));
+        if (newData == null || newData.length == 0) {
+            return;
+        }
+        int index = 0;
+        byte[] data = DataUtils.subByteArray(newData, index, OFFSET_4);
+        // 收到结束回执
+        if (Arrays.equals(REC_MEASURE_STOP, data)) {
             if (isStoppingForStart) {
                 startMeasureInternal(1000);
             } else {
+                if (measureData != null) {
+                    // 处理因不足10条尚未发送的数据
+                    mHandler.deliverMessage(MSG_DATA_RECEIVED, measureData);
+                    measureData = null;
+                    dataCount = 0;
+                }
                 mHandler.deliverMessage(MSG_TEST_FINISH, null);
             }
             return;
         }
 
-        if (newDataStr.startsWith(DATA_PREFIX_START)) {
-            start = OFFSET_DATA_HEADER;
-            data = new StringBuilder();
+        // 收到测量数据
+        if (Arrays.equals(REC_DATA_HEADER, data)) {
+            if (measureData == null) {
+                measureData = new MeasureData();
+                measureData.timeStamp = System.currentTimeMillis();
+                measureData.voltages = new int[10];
+            }
+            // 电流转流量
+            int voltage = (data[8] << OFFSET_2 + data[9]) & HEX_CODE;
+            measureData.voltages[dataCount++] = DataUtils.voltageToFlow(voltage);
         }
 
-        if (data == null) {
-            return;
-        }
-        int locSuffix = newDataStr.indexOf(DATA_SUFFIX);
-        if (locSuffix > 0) {
-            data.append(newDataStr.substring(start, locSuffix));
-            dealWithData(data.toString());
-            data = null;
-        } else {
-            data.append(newDataStr.substring(start));
+        // 每收集到10个数据传输
+        if (dataCount == DATA_SIZE_SINGLE_TRANS) {
+            mHandler.deliverMessage(MSG_DATA_RECEIVED, measureData);
+            measureData = null;
+            dataCount = 0;
         }
     }
 
-    private void dealWithData(String rawData) {
-        int length = rawData.length() / OFFSET_4;
-        int[] data = new int[length];
-        for (int i = 0; i < length; i++) {
-            String sub = rawData.substring(i * OFFSET_4, (i + 1) * OFFSET_4);
-            data[i] = Integer.parseInt(sub);
-        }
-        Log.d("hff", "dealWithData() data with int: " + Arrays.toString(data));
-        mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
-    }
-
-    public static byte[] getBytes(char[] chars) {
-        CharBuffer cb = CharBuffer.allocate(chars.length);
-        cb.put(chars);
-        cb.flip();
-        ByteBuffer bb = StandardCharsets.UTF_8.encode(cb);
-        return bb.array();
-    }
+//    private void dealWithData(String rawData) {
+//        int length = rawData.length() / OFFSET_4;
+//        int[] data = new int[length];
+//        for (int i = 0; i < length; i++) {
+//            String sub = rawData.substring(i * OFFSET_4, (i + 1) * OFFSET_4);
+//            data[i] = Integer.parseInt(sub);
+//        }
+//        Log.d("hff", "dealWithData() data with int: " + Arrays.toString(data));
+//        mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
+//    }
+//
+//    public static byte[] getBytes(char[] chars) {
+//        CharBuffer cb = CharBuffer.allocate(chars.length);
+//        cb.put(chars);
+//        cb.flip();
+//        ByteBuffer bb = StandardCharsets.UTF_8.encode(cb);
+//        return bb.array();
+//    }
 }
