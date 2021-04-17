@@ -30,7 +30,9 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
 
     protected void initToolNavBar() {
         viewModel.setShowLightToolbar(false);
-        toolbar = getToolbar();
+        if (toolbar == null) {
+            toolbar = getToolbar();
+        }
         toolbar.clear();
         toolbar.setCenterText(null);
         toolbar.setLeftText(null);
@@ -113,7 +115,6 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
 //                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
 //                return;
 //            }
-//            viewModel.startMeasure();
             viewModel.setTesting(true);
             NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
         }
@@ -136,7 +137,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
             showBtConnectDialog(getString(R.string.confirm_replace_ble_device));
             return;
         }
-        viewModel.connectToBleDevice("20:05:19:15:20:1E");
+        viewModel.connectToBleDevice("20:05:19:15:20:64");
     }
 
     private void showBtConnectDialog(String content) {

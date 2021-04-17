@@ -60,10 +60,10 @@ public class BleDeviceState implements Serializable {
     public String getStateString() {
         switch (state) {
             case State.STATE_CONNECTING:
+                return "连接中";
             case State.STATE_READY:
             case State.STATE_TESTING:
             case State.STATE_FINISHED:
-                return "连接中";
             case State.STATE_CONNECTED:
                 return "已连接";
             case State.STATE_DISCONNECTED:

@@ -58,8 +58,8 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> {
             pbLoading.setVisibility(View.VISIBLE);
-            loginViewModel.login(etUserId.getText().toString(), etPassword.getText().toString());
-//            loginViewModel.login("18674018759", "123456");
+//            loginViewModel.login(etUserId.getText().toString(), etPassword.getText().toString());
+            loginViewModel.login("18674018759", "123456");
         });
 
     }

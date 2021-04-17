@@ -37,12 +37,11 @@ public class DataUtils {
 
     }
 
-
     public static byte charToByte(char c) {
         return (byte) HEX_STRING.indexOf(c);
     }
 
     public static int voltageToFlow(int voltage) {
-        return (int) (0.0275f * voltage - 825);
+        return (int) (0.0275f * voltage - 82.5);
     }
 }

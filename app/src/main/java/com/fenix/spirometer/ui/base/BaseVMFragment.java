@@ -42,7 +42,6 @@ public abstract class BaseVMFragment extends Fragment {
         setHasOptionsMenu(true);
         toolbar = (CustomToolbar) ((AppCompatActivity) getActivity()).getSupportActionBar().getCustomView();
         initView(rootView);
-        initObserver();
         return rootView;
     }
 
@@ -57,6 +56,7 @@ public abstract class BaseVMFragment extends Fragment {
         super.onResume();
         initToolNavBar();
         initData();
+        initObserver();
         initSunmiPrinterService();
     }
 

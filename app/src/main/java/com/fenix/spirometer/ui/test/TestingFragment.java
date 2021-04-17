@@ -176,25 +176,13 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
             chart.setData(lineData);
             chart.getData().setHighlightEnabled(!chart.getData().isHighlightEnabled());
         }
-//        ILineDataSet lastSet = lineData.getDataSetByIndex(lineData.getDataSetCount() - 1);
-        // set.addEntry(...); // can be called as well
-//        if (lastSet == null) {
-//            lastSet = createSet(title, color);
-//            lineData.addDataSet(lastSet);
-//        }
-        // choose a random dataSet
-//        Entry entry = new Entry(lastSet.getEntryCount(), ((float) Math.random() * 50));
         Log.d("hff", "entry = " + data);
-//        lineData.addEntry(entry, lineData.getDataSetCount() - 1);
         lineData.addDataSet(createSet(title, color, data));
         chart.setVisibleXRangeMaximum(6000);
         chart.setVisibleXRangeMinimum(6000);
         // let the chart know it's data has changed
         chart.notifyDataSetChanged();
         chart.invalidate();
-        //chart.setVisibleYRangeMaximum(15, AxisDependency.LEFT);
-//      // this automatically refreshes the chart (calls invalidate())
-        //chart.moveViewTo(data.getEntryCount() - 7, 20f, YAxis.AxisDependency.LEFT);
     }
 
     int j = 0;
@@ -229,26 +217,14 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
                     .show();
     }
 
+    @Override
     public void onValueSelected(Entry e, Highlight h) {
-        Log.i("Entry selected", e.toString());
 
-//        chart.centerViewToAnimated(e.getX(), e.getY(), chart.getData().getDataSetByIndex(h.getDataSetIndex())
-//                .getAxisDependency(), 500);
-        //chart.zoomAndCenterAnimated(2.5f, 2.5f, e.getX(), e.getY(), chart.getData().getDataSetByIndex(dataSetIndex)
-        // .getAxisDependency(), 1000);
-        //chart.zoomAndCenterAnimated(1.8f, 1.8f, e.getX(), e.getY(), chart.getData().getDataSetByIndex(dataSetIndex)
-        // .getAxisDependency(), 1000);
     }
 
     @Override
     public void onNothingSelected() {
         Log.i("Nothing selected", "Nothing selected.");
-    }
-
-    public void onStartTrackingTouch(SeekBar seekBar) {
-    }
-
-    public void onStopTrackingTouch(SeekBar seekBar) {
     }
 
     @Override
@@ -304,46 +280,10 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-//        for (int i = 0; i < 5; i++) {
-//            initEntry(chart1, "通气功能", ColorTemplate.getHoloBlue());
-//        }
-    }
-
-    public void initEntry(LineChart chart, String title, int color) {
-//        LineData data = chart.getData();
-//        if (data == null) {
-//            data = new LineData();
-//            chart.setData(data);
-//            chart.getData().setHighlightEnabled(!chart.getData().isHighlightEnabled());
-//        }
-//        ILineDataSet set = data.getDataSetByIndex(0);
-//        // set.addEntry(...); // can be called as well
-//        if (set == null) {
-//            set = createSet(title, color);
-//            data.addDataSet(set);
-//        }
-//        // choose a random dataSet
-//        int randomDataSetIndex = (int) (Math.random() * data.getDataSetCount());
-//        ILineDataSet randomSet = data.getDataSetByIndex(randomDataSetIndex);
-//        float value = (float) (Math.random() * 20) + 20f * (randomDataSetIndex + 1);
-//        data.addEntry(new Entry(randomSet.getEntryCount(), 50f), randomDataSetIndex);
-//        data.notifyDataChanged();
-//        // let the chart know it's data has changed
-//        chart.notifyDataSetChanged();
-//        chart.setVisibleXRangeMaximum(200);
-//        chart.setVisibleXRangeMinimum(200);
-//
-//       // chart.moveViewTo(data.getEntryCount() - 7, 20f, YAxis.AxisDependency.LEFT);
-    }
-
-    @Override
     protected void initObserver() {
         testViewModel.getBleDeviceState().observe(this, bleDeviceState -> {
             //TODO 蓝牙断开处理
             if (bleDeviceState == null) {
-
             } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_TESTING) {
                 startTimeStamp = System.currentTimeMillis();
                 feedMultiple();

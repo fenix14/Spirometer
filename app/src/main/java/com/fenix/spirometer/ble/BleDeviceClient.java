@@ -58,11 +58,11 @@ public class BleDeviceClient {
     private static final UUID UUID_COMMUNICATE = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
     private static final UUID UUID_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    private static final byte[] COMMAND_START_MEASURE = DataUtils.hexStringToBytes("F0F0000B0F0F");
-    private static final byte[] COMMAND_STOP_MEASURE = DataUtils.hexStringToBytes("F0F0000D0F0F");
-    private static final byte[] REC_DATA_HEADER = DataUtils.hexStringToBytes("F0F0000C");
-    private static final byte[] REC_MEASURE_STOP = DataUtils.hexStringToBytes("F0F0000E");
-    private static final byte[] REC_TAIL = DataUtils.hexStringToBytes("0F0F");
+    private static final byte[] COMMAND_START_MEASURE = DataUtils.hexStringToBytes("FBFB000B0000FEFE");
+    private static final byte[] COMMAND_STOP_MEASURE = DataUtils.hexStringToBytes("FBFB000D0000FEFE");
+    private static final byte[] REC_DATA_HEADER = DataUtils.hexStringToBytes("FBFB000C");
+    private static final byte[] REC_MEASURE_STOP = DataUtils.hexStringToBytes("FBFB000E");
+    private static final byte[] REC_TAIL = DataUtils.hexStringToBytes("FEFE");
 
     public Context context;
     private BluetoothManager btManager;
@@ -283,7 +283,6 @@ public class BleDeviceClient {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //write成功
             }
-
         }
 
         @Override
@@ -437,15 +436,15 @@ public class BleDeviceClient {
     }
 
     private static final int OFFSET_4 = 4;
-    private static final int OFFSET_2 = 2;
     private static final int HEX_CODE = 0xffff;
+    private static final int HEX_CODE_SIG = 0x00ff;
     private static final int DATA_SIZE_SINGLE_TRANS = 10;
     private MeasureData measureData;
     private int dataCount = 0;
 
     private synchronized void dealWitRawData(byte[] newData) {
-        Log.d("hff", "newData = " + Arrays.toString(newData));
-        if (newData == null || newData.length == 0) {
+        Log.d("hff", "newData = " + DataUtils.Bytes2HexString(newData));
+        if (newData == null || newData.length < 8) {
             return;
         }
         int index = 0;
@@ -474,7 +473,8 @@ public class BleDeviceClient {
                 measureData.voltages = new int[10];
             }
             // 电流转流量
-            int voltage = (data[8] << OFFSET_2 + data[9]) & HEX_CODE;
+            int voltage = ((newData[8] << 8) & HEX_CODE) + (newData[9] & HEX_CODE_SIG);
+            Log.d("hff", "voltage = " + voltage + ", flow = " + DataUtils.voltageToFlow(voltage));
             measureData.voltages[dataCount++] = DataUtils.voltageToFlow(voltage);
         }
 
@@ -486,22 +486,11 @@ public class BleDeviceClient {
         }
     }
 
-//    private void dealWithData(String rawData) {
-//        int length = rawData.length() / OFFSET_4;
-//        int[] data = new int[length];
-//        for (int i = 0; i < length; i++) {
-//            String sub = rawData.substring(i * OFFSET_4, (i + 1) * OFFSET_4);
-//            data[i] = Integer.parseInt(sub);
-//        }
-//        Log.d("hff", "dealWithData() data with int: " + Arrays.toString(data));
-//        mHandler.deliverMessage(MSG_DATA_RECEIVED, new MeasureData(System.currentTimeMillis(), data));
-//    }
-//
-//    public static byte[] getBytes(char[] chars) {
-//        CharBuffer cb = CharBuffer.allocate(chars.length);
-//        cb.put(chars);
-//        cb.flip();
-//        ByteBuffer bb = StandardCharsets.UTF_8.encode(cb);
-//        return bb.array();
-//    }
+    public interface BleStateListener {
+        void onBleStateChanged(@State int state, Object data);
+    }
+
+    public interface BleDataListener {
+        void onBleDataReceived(Object data);
+    }
 }
