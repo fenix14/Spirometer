@@ -1,5 +1,6 @@
 package com.fenix.spirometer.ui.home;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
@@ -13,6 +14,9 @@ import com.fenix.spirometer.ui.widget.CustomToolbar;
 import com.fenix.spirometer.util.Constants;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class VideoFragment extends BaseVMFragment implements CustomToolbar.OnItemClickListener {
     VideoView videoView;
@@ -45,14 +49,45 @@ public class VideoFragment extends BaseVMFragment implements CustomToolbar.OnIte
         videoView = rootView.findViewById(R.id.videoView);
 
         String videoPath = Constants.VIDEO_PATH + "demo.mp4";
-        if (!new File(videoPath).exists()) {
-            videoPath = "file:///android_assets/demo.mp4";
-        }
-        if (new File(videoPath).exists()) {
-            videoView.setVideoPath(videoPath);
-            MediaController mediaController = new MediaController(getContext());
-            videoView.setMediaController(mediaController);
-            videoView.requestFocus();
+        copyVideoToSdcard(videoPath);
+        videoView.setVideoPath(videoPath);
+        MediaController mediaController = new MediaController(getContext());
+        videoView.setMediaController(mediaController);
+        videoView.requestFocus();
+    }
+
+    private void copyVideoToSdcard(String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+
+            InputStream inputStream = null;
+            FileOutputStream fileOutputStream = null;
+            try {
+                file.createNewFile();
+                inputStream = getResources().getAssets().open("mp4/demo.mp4");
+                fileOutputStream = new FileOutputStream(file);
+                byte[] buffer = new byte[1024];
+                int count = 0;
+                while ((count = inputStream.read(buffer)) > 0) {
+                    fileOutputStream.write(buffer, 0, count);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fileOutputStream != null) {
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+                    }
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Log.d("hff", "fileName = " + file.getPath() + ", exist = " + file.exists());
         }
     }
 
