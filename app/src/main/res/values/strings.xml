@@ -246,4 +246,13 @@
         <item name="excel_3_operator">操作人员信息</item>
         <item name="excel_4_data">数据值</item>
     </string-array>
+    <string name="index_fvc">FVC(L)</string>
+    <string name="index_fev1">FEV(L)</string>
+    <string name="index_fev_fvc">FEV1/FVC</string>
+    <string name="index_pef">PEF(L/S)</string>
+    <string name="index_pef_25_75">PEF25%~75%(L/S)</string>
+    <string name="index_fef_50">FEF50%(L/S)</string>
+    <string name="index_fef_75">FEF75%(L/S)</string>
+    <string name="index_fet">FET(S)</string>
+    <string name="index_vexp">Vexp(L)</string>
 </resources>

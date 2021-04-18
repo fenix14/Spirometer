@@ -45,15 +45,15 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
 
     static {
         // TODO：测试用
-        PARAM_LIST.add(new TestParam("FVC", 4.31f, 3.28f));
-        PARAM_LIST.add(new TestParam("FEV", 3.59f, 3.20f));
-        PARAM_LIST.add(new TestParam("FEV1/fVC", 0.8120f, 0.9769f));
-        PARAM_LIST.add(new TestParam("PEF", 9.44f, 6.01f));
-        PARAM_LIST.add(new TestParam("MEF75", 8.07f, 4.59f));
-        PARAM_LIST.add(new TestParam("MEF50", 4.43f, 5.90f));
-        PARAM_LIST.add(new TestParam("MEF25", 1.87f, 3.02f));
-        PARAM_LIST.add(new TestParam("MMEF75/25", 3.66f, 4.33f));
-        PARAM_LIST.add(new TestParam("EV%FVC", 0.05f, 0.0166f));
+        PARAM_LIST.add(new TestParam("FVC(L)", 4.31f, 3.28f));
+        PARAM_LIST.add(new TestParam("FEV(L)", 3.59f, 3.20f));
+        PARAM_LIST.add(new TestParam("FEV1/FVC", 0.8120f, 0.9769f));
+        PARAM_LIST.add(new TestParam("PEF(L/S)", 9.44f, 6.01f));
+        PARAM_LIST.add(new TestParam("PEF25%~75%(L/S)", 8.07f, 4.59f));
+        PARAM_LIST.add(new TestParam("FEF50%(L/S)", 4.43f, 5.90f));
+        PARAM_LIST.add(new TestParam("FEF75%(L/S)", 1.87f, 3.02f));
+        PARAM_LIST.add(new TestParam("FET(S)", 3.66f, 4.33f));
+        PARAM_LIST.add(new TestParam("Vexp(L)", 0.05f, 0.0166f));
     }
 
     @Override
@@ -285,7 +285,7 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             return new String[]{name,String.valueOf(predict),String.valueOf(actual),percent};
         }
         public static String[] getTitle(){
-            return new String[]{"参数","预测值","实际值","实/预"};
+            return new String[]{"指标","Pred","BEST","%Pred"};
         }
     }
 }

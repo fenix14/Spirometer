@@ -93,12 +93,14 @@ public class ReportCompareFragment extends BaseVMFragment implements CustomToolb
     private List<TestTarget> getTestTargets(List<TestReport> testReports) {
         //TODO: 从测试数据中解析出指标值对
         List<TestTarget> testTargets = new ArrayList<>();
-        testTargets.add(new TestTarget("指标一", "0", "0"));
-        testTargets.add(new TestTarget("指标二", "0", "0"));
-        testTargets.add(new TestTarget("指标三", "0", "0"));
-        testTargets.add(new TestTarget("指标四", "0", "0"));
-        testTargets.add(new TestTarget("指标五", "0", "0"));
-        testTargets.add(new TestTarget("指标六", "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_fvc), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_fev1), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_fev_fvc), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_pef), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_pef_25_75), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_fef_75), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_fet), "0", "0"));
+        testTargets.add(new TestTarget(getString(R.string.index_vexp), "0", "0"));
         return testTargets;
     }
 
