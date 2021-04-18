@@ -24,7 +24,6 @@
             app:title="@string/pc_estimated_value_config" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:allowDividerBelow="true">
         <com.fenix.spirometer.ui.widget.CustomPreference
             app:allowDividerAbove="true"
             app:allowDividerBelow="true"
@@ -43,5 +42,4 @@
             app:content_type="text"
             app:key="account"
             app:title="@string/pc_account_config" />
-    </PreferenceCategory>
 </PreferenceScreen>
