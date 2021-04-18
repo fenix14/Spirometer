@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "5f297c437ee6ab49ff588704674f62b6",
+    "identityHash": "ac3f1ad6b47a8b32cf66ac5e38eb6b43",
     "entities": [
       {
         "tableName": "VoltageData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeStamp` INTEGER NOT NULL, `dataAsJsonStr` TEXT, PRIMARY KEY(`timeStamp`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeStamp` INTEGER NOT NULL, `dataAsJsonStr` TEXT, `FVC` REAL NOT NULL, `FEV1` REAL NOT NULL, `PEF` REAL NOT NULL, `MVV` REAL NOT NULL, `TLC` REAL NOT NULL, `VC` REAL NOT NULL, PRIMARY KEY(`timeStamp`))",
         "fields": [
           {
             "fieldPath": "timeStamp",
@@ -19,6 +19,42 @@
             "columnName": "dataAsJsonStr",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "FVC",
+            "columnName": "FVC",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "FEV1",
+            "columnName": "FEV1",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "PEF",
+            "columnName": "PEF",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "MVV",
+            "columnName": "MVV",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "TLC",
+            "columnName": "TLC",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "VC",
+            "columnName": "VC",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -544,7 +580,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f297c437ee6ab49ff588704674f62b6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ac3f1ad6b47a8b32cf66ac5e38eb6b43')"
     ]
   }
 }

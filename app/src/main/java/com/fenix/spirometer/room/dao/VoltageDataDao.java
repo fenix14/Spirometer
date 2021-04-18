@@ -20,5 +20,5 @@ public interface VoltageDataDao {
     void insert(List<VoltageData> voltageDataList);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(VoltageData voltageData);
+    long insert(VoltageData voltageData);
 }

@@ -23,7 +23,6 @@ public class TestReportWithData {
     @Relation(
             parentColumn = "timeMills",
             entity = VoltageData.class,
-            entityColumn = "timeStamp",
-            projection = "dataAsJsonStr")
-    public String voltageData;
+            entityColumn = "timeStamp")
+    public VoltageData voltageData;
 }

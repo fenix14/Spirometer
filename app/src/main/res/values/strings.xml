@@ -171,15 +171,15 @@
     <string name="tab_report">肺活量标准测试报告</string>
     <string name="btn_compare">对比</string>
     <string name="footer_print_report">打印报告</string>
-    <string name="report_mem_name">姓名:</string>
-    <string name="report_mem_gender">性别:</string>
-    <string name="report_mem_height">身高:</string>
-    <string name="report_mem_age">年龄:</string>
-    <string name="report_mem_weight">体重:</string>
-    <string name="report_lungs_age">肺年龄:</string>
-    <string name="report_action_standard_lvl">动作规范:</string>
-    <string name="report_testing_date">检查日期:</string>
-    <string name="report_operator_name">操作人员:</string>
+    <string name="report_mem_name">姓名:%s</string>
+    <string name="report_mem_gender">性别:%s</string>
+    <string name="report_mem_height">身高:%s cm</string>
+    <string name="report_mem_age">年龄:%s 岁</string>
+    <string name="report_mem_weight">体重:%s kg</string>
+    <string name="report_lungs_age">肺年龄:%s 岁</string>
+    <string name="report_action_standard_lvl">动作规范:%s</string>
+    <string name="report_testing_date">检查日期:%s</string>
+    <string name="report_operator_name">操作人员:%s</string>
 
     <!-- ReportCompareFragment -->
     <string name="tab_report_compare">对比报告</string>
@@ -197,6 +197,9 @@
     <!-- TestingFragment -->
     <string name="tab_testing">待改</string>
     <string name="footer_stop_testing">结束测试</string>
+    <string name="footer_retesting">重新开始</string>
+    <string name="footer_create_report">生成报告</string>
+    <string name="footer_cancel">取消测试</string>
 
 
     <!-- ScanActivity -->

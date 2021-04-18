@@ -53,7 +53,8 @@ public class TestReportRepository {
         });
     }
 
-    public void insert(TestReport report) {
+    public MutableLiveData<Long> insert(TestReport report) {
+        MutableLiveData<Long> mdInsertId = new MutableLiveData();
         executor.execute(() -> {
             try {
                 Thread.sleep(1000);
@@ -63,8 +64,11 @@ public class TestReportRepository {
             database.memberDao().insert(report.getMember());
             database.operatorDao().insertOperator(report.getOperator());
             database.testReportDao().insert(new TestReportModel(report.getTimeMills(), report.getMember().getId(), report.getOperator().getUserId()));
-            database.voltageDataDao().insert(new VoltageData(report.getTimeMills(), report.getData()));
+            long insertId = database.voltageDataDao().insert(new VoltageData(report.getTimeMills(), report.getData(),
+                    report.getFVC(), report.getFEV1(), report.getPEF(), report.getMVV(), report.getTLC(), report.getVC()));
+            mdInsertId.postValue(insertId);
         });
+        return mdInsertId;
     }
 
     public MutableLiveData<TestReport> getReport(long timeStamp) {

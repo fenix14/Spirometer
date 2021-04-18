@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -25,6 +24,7 @@ import com.fenix.spirometer.util.Constants;
 import com.fenix.spirometer.util.JSONUtils;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -38,10 +38,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class TestingFragment extends BaseVMFragment implements View.OnClickListener, OnChartValueSelectedListener {
     private final static String[] months = new String[]{
@@ -59,15 +58,12 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     private TestViewModel testViewModel;
     private LineChart chart1, chart2;
     private Typeface tfRegular, tfLight;
-    private Stack<MeasureData> measureDataStack = new Stack<MeasureData>();
 
-    // 测试开始时间
-    private long startTimeStamp;
     // 所有读出数据
     private List<MeasureData> measureDataList = new ArrayList<>();
 
-    private ExecutorService executorService;
-    private boolean isTesting = false;
+    private Timer timer;
+    private View innerFooter;
 
     @Override
     protected void initToolNavBar() {
@@ -79,13 +75,24 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
             toolbar.setLeftText(null);
             toolbar.setRightText(null);
         }
+        initFooter(true);
+    }
 
+    private void initFooter(boolean isTesting) {
         viewModel.setShowNavBar(false);
-        Button btmNav = getFooter();
-        if (btmNav != null) {
-            btmNav.setVisibility(View.VISIBLE);
-            btmNav.setText(R.string.footer_stop_testing);
-            btmNav.setOnClickListener(this);
+        Button footer = getFooter();
+        if (isTesting) {
+            if (footer != null) {
+                footer.setVisibility(View.VISIBLE);
+                innerFooter.setVisibility(View.GONE);
+                footer.setText(R.string.footer_stop_testing);
+                footer.setOnClickListener(this);
+            }
+        } else {
+            innerFooter.setVisibility(View.VISIBLE);
+            if (footer != null) {
+                footer.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -101,15 +108,10 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         return R.layout.activity_linechart;
     }
 
-private Button start;
     @Override
     protected void initView(View rootView) {
         testViewModel = new ViewModelProvider(this, new AllViewModelFactory()).get(TestViewModel.class);
 
-        start = rootView.findViewById(R.id.add);
-        start.setOnClickListener(this);
-
-        rootView.findViewById(R.id.add1).setOnClickListener(this);
         chart1 = rootView.findViewById(R.id.chart1);
         chart2 = rootView.findViewById(R.id.chart2);
         chart1.setOnChartValueSelectedListener(this);
@@ -148,11 +150,18 @@ private Button start;
 
         YAxis rightAxis2 = chart2.getAxisRight();
         rightAxis2.setEnabled(false);
+
+        innerFooter = rootView.findViewById(R.id.finish_footer);
+        rootView.findViewById(R.id.restart).setOnClickListener(this);
+        rootView.findViewById(R.id.report).setOnClickListener(this);
+        rootView.findViewById(R.id.cancel).setOnClickListener(this);
     }
 
     @Override
     protected void initData() {
         chart2.animateX(1500);
+        Legend mLegend1=chart1.getLegend();
+        mLegend1.setEnabled(false);
 
         ValueFormatter xAxisFormatter = new CustomFormatter(0);
         XAxis xAxis = chart1.getXAxis();
@@ -165,9 +174,12 @@ private Button start;
         //xAxis.setLabelCount(5, true);
         xAxis.setGranularityEnabled(true);
 
+
         XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
         mv.setChartView(chart1); // For bounds control
         chart1.setMarker(mv);
+
+        feedMultiple();
     }
 
     private void addEntry(LineChart chart, String title, int color, int[] data) {
@@ -187,7 +199,6 @@ private Button start;
     }
 
     int j = 0;
-
     private LineDataSet createSet(String title, int color, int[] data) {
         LineDataSet set = new LineDataSet(null, null);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -199,6 +210,194 @@ private Button start;
             set.addEntry(new Entry(j++, datum));
         }
         return set;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.footer:
+                testViewModel.stopMeasure();
+                break;
+            case R.id.restart:
+                initFooter(true);
+                chart1.clear();
+                testViewModel.startMeasure();
+                break;
+            case R.id.report:
+                //TODO:图
+                if (measureDataList.isEmpty()) {
+                    Toast.makeText(requireContext(), "数据不足，无法生成报告", Toast.LENGTH_SHORT).show();
+                } else {
+                    testViewModel.insertReport(createTestReport()).observe(this, insertId -> {
+                        if (insertId > 0) {
+                            Bundle bundle = new Bundle();
+                            bundle.putLong(Constants.BUNDLE_KEY_TIME_STAMP, measureDataList.get(0).timeStamp);
+                            NavHostFragment.findNavController(this).navigate(R.id.testing_to_result, bundle);
+                        }
+                    });
+                }
+                break;
+            case R.id.cancel:
+                NavHostFragment.findNavController(this).navigate(R.id.frag_home);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void feedMultiple() {
+        testViewModel.startMeasure();
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Log.d("hff", "TimerTask");
+                    requireActivity().runOnUiThread(runnable);
+                }
+            }
+        }, 1000, 200);
+    }
+
+    final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!dataQueue.isEmpty()) {
+                MeasureData measureData = dataQueue.poll();
+                Log.d("hff", "rec: measureData: " + Arrays.toString(measureData.flow));
+                if (measureData.flow == null) {
+                    Log.d("hff", "test finish");
+                    // 结束时会发送空数据
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                    initFooter(false);
+                    return;
+                }
+                measureDataList.add(measureData);
+                addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData.flow);
+            }
+        }
+    };
+
+    private TestReport createTestReport() {
+        float fvc = 0; // 最大呼气容积
+        float fev1 = 0; // 第1秒呼气容积，20ms/点，Math.sum(50个点，不足50计单程)
+        float pef = 0;  // 呼气峰值流量
+        float mvv = 0;
+        float vc = 0;
+        float tlc = 0; //最大吸气容积
+
+        float tempFvcSum = 0;
+        float tempFev1Sum = 0;
+        int inhaleCumCount = 0; // 吸气数据个数
+        int exhaleCumCount = 0; // 呼气数据个数
+        float tempTlcSum = 0;
+        float preFlow = 0;
+
+        long timeStampStart = 0;
+        long timeStampStop = 0;
+        for (MeasureData data : measureDataList) {
+            int[] flows = data.flow;
+            for (int i = 0; i < flows.length; i++) {
+                int flow = flows[i];
+                if (flow > 0) {
+                    // 找呼气流量峰值PEF
+                    pef = Math.max(pef, flow);
+                    if (preFlow > 0) {
+                        // 继续呼气
+                        if (data.timeStamp + 20 * i - timeStampStart <= 1000) {
+                            // 还在第一秒，累计FEV1
+                            tempFev1Sum += flow;
+                        } else if (tempFev1Sum > 0) {
+                            // 结算(FEV1 = 平均流量SLM * 1秒) TODO：确认M是否分钟
+                            fev1 = Math.max(fev1, (tempFev1Sum / exhaleCumCount) / 60);
+                            tempFev1Sum = 0;
+                        }
+
+                        timeStampStop = data.timeStamp + i * 20;
+                    } else {
+                        // 开始一次新的呼气，结算前一次吸气的数据
+                        if (tempTlcSum < 0 && timeStampStop > 0) {
+                            // 结算(TLC = 平均流量SLM * 分钟数) TODO：确认M是否分钟
+                            tlc = Math.min(tlc, (tempTlcSum / inhaleCumCount) * (timeStampStop - timeStampStart) / 60000);
+                        }
+                        timeStampStart = data.timeStamp + i * 20;
+                        tempFev1Sum += flow;
+                        inhaleCumCount = 0;
+                    }
+                    //累计FVC
+                    tempFvcSum += flow;
+                    exhaleCumCount++;
+                } else if (flow < 0) {
+                    if (preFlow < 0) {
+                        // 继续吸气
+                        timeStampStop = data.timeStamp + i * 20;
+                    } else {
+                        // 开始一次新的吸气，结算前一次呼气FVC
+                        if (tempFvcSum > 0 && timeStampStop > 0) {
+                            // 结算(FVC = 平均流量SLM * 分钟数) TODO：确认M是否分钟
+                            float exhaleFlow = (tempFvcSum / exhaleCumCount) * (timeStampStop - timeStampStart) / 60000;
+                            fvc = Math.max(fvc, exhaleFlow);
+                            // 如果前一次呼气未超过1秒，结算其FEV1
+                            if (tempFev1Sum > 0.01f) {
+                                fev1 = Math.max(fev1, exhaleFlow);
+                                tempFev1Sum = 0;
+                            }
+                        }
+
+                        timeStampStart = data.timeStamp + i * 20;
+                        exhaleCumCount = 0;
+                    }
+                    //累计TLC
+                    tempTlcSum += flow;
+                    inhaleCumCount++;
+                } else {
+
+                    continue;
+                }
+                preFlow = flow;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n").append("result: fvc = " + fvc)
+                .append(", fev1 = " + fev1)
+                .append(", pef = " + pef)
+                .append(" ,tlc = " + tlc)
+                .append(" ,mvv = " + mvv);
+        mvv = fev1 * 35;
+        Log.d("hff", sb.toString());
+
+        String voltages = JSONUtils.modelList2Json(measureDataList);
+        return new TestReport(measureDataList.get(0).timeStamp,
+                viewModel.getChosenMember(), voltages,
+                viewModel.getLoginState().getValue().getLoginOperator(), 0, fvc, fev1, pef, mvv, Math.abs(tlc), vc);
+    }
+
+    @Override
+    protected void initObserver() {
+        testViewModel.getBleDeviceState().observe(this, bleDeviceState -> {
+            if (bleDeviceState == null || (bleDeviceState.getState() == BleDeviceState.State.STATE_DISCONNECTED)) {
+                Toast.makeText(getContext(), "蓝牙断开，请重新连接", Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(this).navigateUp();
+            }
+        });
+
+        testViewModel.getMeasureData().observe(this, dataQueue::offer);
+    }
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+    }
+
+    @Override
+    public void onNothingSelected() {
+        Log.i("Nothing selected", "Nothing selected.");
     }
 
     private void saveToGallery() {
@@ -213,91 +412,5 @@ private Button start;
         else
             Toast.makeText(requireContext(), "Saving FAILED!", Toast.LENGTH_SHORT)
                     .show();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.add:
-                feedMultiple();
-                testViewModel.startMeasure();
-                break;
-            case R.id.add1:
-                chart1.clear();
-//                addEntry(chart2, "流量容积杯", Color.rgb(240, 99, 99));
-                testViewModel.stopMeasure();
-                break;
-            case R.id.footer:
-                Bundle bundle = new Bundle();
-                bundle.putLong(Constants.BUNDLE_KEY_TIME_STAMP, startTimeStamp);
-                NavHostFragment.findNavController(this).navigate(R.id.testing_to_result, bundle);
-                break;
-            default:
-                break;
-        }
-    }
-
-    final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!dataQueue.isEmpty()) {
-                MeasureData measureData = dataQueue.poll();
-                if (measureData.voltages == null) {
-                    // 结束时会发送空数据
-                    executorService.shutdownNow();
-                    String voltages = JSONUtils.modelList2Json(measureDataList);
-                    TestReport testReport = new TestReport(startTimeStamp, viewModel.getChosenMember(), voltages, viewModel.getLoginState().getValue().getLoginOperator(), 0);
-                    testViewModel.insertReport(testReport);
-                    return;
-                }
-                measureDataList.add(measureData);
-                addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData.voltages);
-            }
-        }
-    };
-
-    private void feedMultiple() {
-        if (executorService == null || executorService.isShutdown()) {
-            executorService = Executors.newSingleThreadExecutor();
-        }
-        executorService.execute(() -> {
-            for (int i = 0; i <= 60; i++) {
-                // Don't generate garbage runnables inside the loop.
-                try {
-                    Thread.sleep(500);
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        requireActivity().runOnUiThread(runnable);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void initObserver() {
-        testViewModel.getBleDeviceState().observe(this, bleDeviceState -> {
-            //TODO 蓝牙断开处理
-            if (bleDeviceState == null || (isTesting && bleDeviceState.getState() == BleDeviceState.State.STATE_DISCONNECTED)) {
-                start.setEnabled(false);
-            } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_CONNECTED) {
-                // TODO:
-                start.setEnabled(true);
-            }
-        });
-
-        testViewModel.getMeasureData().observe(this, dataQueue::offer);
-    }
-
-    @Override
-    public void onValueSelected(Entry e, Highlight h) {
-
-    }
-
-    @Override
-    public void onNothingSelected() {
-        Log.i("Nothing selected", "Nothing selected.");
     }
 }

@@ -6,6 +6,7 @@ import android.widget.Button;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.model.BleDeviceState;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
 import com.fenix.spirometer.ui.widget.CustomToolbar;
 
@@ -51,6 +52,9 @@ public class PrepareFragment extends BaseVMFragment implements CustomToolbar.OnI
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.footer) {
+            if (viewModel.getBleDeviceState().getValue() == null || viewModel.getBleDeviceState().getValue().getState() != BleDeviceState.State.STATE_CONNECTED) {
+                viewModel.reconnect();
+            }
             NavHostFragment.findNavController(this).navigate(R.id.prepare_to_testing);
         }
     }

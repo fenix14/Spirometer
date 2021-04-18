@@ -82,6 +82,9 @@ public class MainViewModel extends ViewModel {
     public void connectToBleDevice(String mac) {
         bleRepo.connectTo(mac);
     }
+    public void reconnect() {
+        bleRepo.reconnect();
+    }
 
     // 蓝牙设备相关
     public void disconnect() {

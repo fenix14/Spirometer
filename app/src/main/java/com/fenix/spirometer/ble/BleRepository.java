@@ -71,6 +71,9 @@ public class BleRepository implements BleDeviceClient.BleStateListener {
         });
     }
 
+    public void reconnect() {
+        repoHandler.post(() -> connectTo(mdBleDeviceState.getValue().getMac()));
+    }
     public void disConnect() {
         repoHandler.post(() -> bleDeviceClient.disconnect());
     }

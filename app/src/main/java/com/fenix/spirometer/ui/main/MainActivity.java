@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 showExitConfirmDialog();
             } else if ("testing".contentEquals(label)) {
                 // 测试页面忽略返回键
-            } else if ("none_pre".contentEquals(label)) {
+            } else if ("toHome".contentEquals(label)) {
                 navController.navigate(R.id.frag_home);
             }
         } else {

@@ -17,18 +17,38 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/add"
+    <LinearLayout
+        android:id="@+id/finish_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="增加1"/>
+        android:visibility="gone"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/add1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="增加2"/>
+        <Button
+            android:id="@+id/restart"
+            style="@style/BottomNavigationBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="@string/footer_retesting" />
 
+        <Button
+            android:id="@+id/report"
+            style="@style/BottomNavigationBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="@string/footer_create_report" />
+
+        <Button
+            android:id="@+id/cancel"
+            style="@style/BottomNavigationBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="@string/footer_cancel" />
+    </LinearLayout>
 </LinearLayout>

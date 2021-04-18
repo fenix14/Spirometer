@@ -18,6 +18,7 @@ public class Constants {
     public static final String SP_KEY_IS_INITIALIZED = "isInitialized";
 
     public static final String BUNDLE_KEY_TIME_STAMP = "reportTimeStamp";
+    public static final String BUNDLE_KEY_IS_FROM_TESTING = "isFromTesting";
     public static final String BUNDLE_KEY_TIME_STAMPS = "TimeStampForCompare";
     public final static String STORAGE_PATH = Environment.getExternalStorageDirectory().getPath() + "/Spirometer/";
     public final static String EXCEL_PATH = STORAGE_PATH + "excels/";

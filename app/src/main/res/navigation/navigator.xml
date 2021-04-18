@@ -113,7 +113,8 @@
     </fragment>
     <fragment
         android:id="@+id/frag_report"
-        android:name="com.fenix.spirometer.ui.test.TestReportFragment"></fragment>
+        android:name="com.fenix.spirometer.ui.test.TestReportFragment"
+        android:label="toHome"/>
 
     <fragment
         android:id="@+id/frag_history"

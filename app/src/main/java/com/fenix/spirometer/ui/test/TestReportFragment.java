@@ -19,8 +19,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bin.david.form.annotation.SmartColumn;
 import com.bin.david.form.core.SmartTable;
 import com.fenix.spirometer.R;
+import com.fenix.spirometer.ble.DataUtils;
 import com.fenix.spirometer.ble.MeasureData;
 import com.fenix.spirometer.model.Member;
+import com.fenix.spirometer.model.Operator;
 import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.print.SunmiPrintHelper;
 import com.fenix.spirometer.ui.base.BaseVMFragment;
@@ -38,23 +40,9 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
     private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("#0.00%");
     private TestViewModel testViewModel;
     private SmartTable<TestParam> smartTable;
-    private static final List<TestParam> PARAM_LIST = new ArrayList<>();
     private TextView tvMemName, tvMemGender, tvMemHeight, tvMemAge, tvMemWeight;
     private TextView tvLungsAge, tvActionStandardLvl, tvTestingDate, tvOperatorName;
     private ImageView imageView1, imageView2;
-
-    static {
-        // TODO：测试用
-        PARAM_LIST.add(new TestParam("FVC(L)", 4.31f, 3.28f));
-        PARAM_LIST.add(new TestParam("FEV(L)", 3.59f, 3.20f));
-        PARAM_LIST.add(new TestParam("FEV1/FVC", 0.8120f, 0.9769f));
-        PARAM_LIST.add(new TestParam("PEF(L/S)", 9.44f, 6.01f));
-        PARAM_LIST.add(new TestParam("PEF25%~75%(L/S)", 8.07f, 4.59f));
-        PARAM_LIST.add(new TestParam("FEF50%(L/S)", 4.43f, 5.90f));
-        PARAM_LIST.add(new TestParam("FEF75%(L/S)", 1.87f, 3.02f));
-        PARAM_LIST.add(new TestParam("FET(S)", 3.66f, 4.33f));
-        PARAM_LIST.add(new TestParam("Vexp(L)", 0.05f, 0.0166f));
-    }
 
     @Override
     protected int getLayoutId() {
@@ -63,6 +51,10 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
 
     @Override
     protected void initToolNavBar() {
+        if (viewModel.isTesting()) {
+            NavHostFragment.findNavController(this).getCurrentDestination().setLabel("toHome");
+        }
+
         viewModel.setShowLightToolbar(true);
         CustomToolbar toolbar = getToolbar();
         toolbar.clear();
@@ -85,6 +77,7 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
         testViewModel = new ViewModelProvider(this, new AllViewModelFactory()).get(TestViewModel.class);
         smartTable = rootView.findViewById(R.id.table);
         smartTable.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        smartTable.getConfig().setHorizontalPadding(1);
         smartTable.getConfig().setShowYSequence(false).setShowXSequence(false);
 
         tvMemName = rootView.findViewById(R.id.tv_name);
@@ -109,7 +102,11 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             Toast.makeText(getActivity(), "数据加载失败", Toast.LENGTH_SHORT).show();
             return;
         }
-        testViewModel.getReport(bundle.getLong(Constants.BUNDLE_KEY_TIME_STAMP, 0L)).observe(this, this::decodeTestData);
+        testViewModel.getReport(bundle.getLong(Constants.BUNDLE_KEY_TIME_STAMP, 0L)).observe(this, testReport -> {
+            if (testReport != null) {
+                decodeTestData(testReport);
+            }
+        });
     }
 
     @Override
@@ -134,14 +131,14 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
     }
 
     /**
-     *  Scaled image width is an integer multiple of 8 and can be ignored
+     * Scaled image width is an integer multiple of 8 and can be ignored
      */
     private Bitmap scaleImage(Bitmap bitmap1) {
         int width = bitmap1.getWidth();
         int height = bitmap1.getHeight();
-        Log.d("wuxin","width0=="+width+"==height1"+height);
+        Log.d("wuxin", "width0==" + width + "==height1" + height);
         // 设置想要的大小
-        int newWidth = (width/14+1)*8;
+        int newWidth = (width / 14 + 1) * 8;
         // 计算缩放比例
         float scaleWidth = ((float) newWidth) / width;
         // 取得想要缩放的matrix参数
@@ -151,30 +148,31 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
         //Log.d("wuxin","width=="+width+"==height"+height);
         return Bitmap.createBitmap(bitmap1, 0, 0, width, height, matrix, true);
     }
-    private void print(){
+
+    private void print() {
         //标题
         SunmiPrintHelper.getInstance().setAlign(1);
-        SunmiPrintHelper.getInstance().printText("肺活量标准测试报告\n",32f,false,false);
+        SunmiPrintHelper.getInstance().printText("肺活量标准测试报告\n", 32f, false, false);
         //人员信息
         SunmiPrintHelper.getInstance().setAlign(0);
-        SunmiPrintHelper.getInstance().printTable(new String[]{ tvMemName.getText().toString(), tvMemGender.getText().toString()},
-                new int[]{1,1},new int[]{0,0});
-        SunmiPrintHelper.getInstance().printTable(new String[]{ tvMemHeight.getText().toString(), tvMemAge.getText().toString(),tvMemWeight.getText().toString()},
-                new int[]{1,1,1},new int[]{0,1,2});
-        SunmiPrintHelper.getInstance().printText("  \n", 22f,false,false);
+        SunmiPrintHelper.getInstance().printTable(new String[]{tvMemName.getText().toString(), tvMemGender.getText().toString()},
+                new int[]{1, 1}, new int[]{0, 0});
+        SunmiPrintHelper.getInstance().printTable(new String[]{tvMemHeight.getText().toString(), tvMemAge.getText().toString(), tvMemWeight.getText().toString()},
+                new int[]{1, 1, 1}, new int[]{0, 1, 2});
+        SunmiPrintHelper.getInstance().printText("  \n", 22f, false, false);
         // TODO: 跳转到打印
         //图片
-        Bitmap bitmap = ((BitmapDrawable)imageView1.getDrawable()).getBitmap();
-          if (bitmap == null) {
-             bitmap= BitmapFactory.decodeResource(getResources(), R.drawable.default_image, null);
+        Bitmap bitmap = ((BitmapDrawable) imageView1.getDrawable()).getBitmap();
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_image, null);
         }
-        bitmap=scaleImage(bitmap);
+        bitmap = scaleImage(bitmap);
         SunmiPrintHelper.getInstance().setAlign(0);
-        SunmiPrintHelper.getInstance().printBitmap(scaleImage(bitmap),1);
-        SunmiPrintHelper.getInstance().printText("  \n", 22f,false,false);
+        SunmiPrintHelper.getInstance().printBitmap(scaleImage(bitmap), 1);
+        SunmiPrintHelper.getInstance().printText("  \n", 22f, false, false);
         //表格
-        int width[]=new int[]{3,2,2,3};
-        int align[] = new int[]{0,1,1,2};
+        int[] width = new int[]{3, 2, 2, 3};
+        int[] align = new int[]{0, 1, 1, 2};
         List<TestParam> params = smartTable.getTableData().getT();
         SunmiPrintHelper.getInstance().setAlign(0);
         SunmiPrintHelper.getInstance().printTable(TestParam.getTitle(),
@@ -183,22 +181,26 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             SunmiPrintHelper.getInstance().printTable(tableItem.getLineValue(),
                     width, align);
         }
-        SunmiPrintHelper.getInstance().printText("", 22f,false,false);
+        SunmiPrintHelper.getInstance().printText("", 22f, false, false);
         SunmiPrintHelper.getInstance().setAlign(0);
-        SunmiPrintHelper.getInstance().printText(tvLungsAge.getText()+"\n",
-                22f,false,false);
-        SunmiPrintHelper.getInstance().printText(tvActionStandardLvl.getText()+"\n",
-                22f,false,false);
-        SunmiPrintHelper.getInstance().printText(tvTestingDate.getText()+"\n",
-                22f,false,false);
-        SunmiPrintHelper.getInstance().printText(tvOperatorName.getText()+"\n",
-                22f,false,false);
+        SunmiPrintHelper.getInstance().printText(tvLungsAge.getText() + "\n",
+                22f, false, false);
+        SunmiPrintHelper.getInstance().printText(tvActionStandardLvl.getText() + "\n",
+                22f, false, false);
+        SunmiPrintHelper.getInstance().printText(tvTestingDate.getText() + "\n",
+                22f, false, false);
+        SunmiPrintHelper.getInstance().printText(tvOperatorName.getText() + "\n",
+                22f, false, false);
         SunmiPrintHelper.getInstance().feedPaper();
     }
+
     /**
      * 解析测试数据，生成加载数据和显示图片
      */
     private void decodeTestData(TestReport testReport) {
+        if (testReport == null) {
+            return;
+        }
         new Thread(() -> {
             // 填充TextView
             setTextResources(testReport);
@@ -210,8 +212,8 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             }
 
             // 填充ImageView
-            setImageResource(0, getBitmapFromRawData(measureData.voltages));
-            setImageResource(1, getBitmapFromRawData(measureData.voltages));
+            setImageResource(0, getBitmapFromRawData(measureData.flow));
+            setImageResource(1, getBitmapFromRawData(measureData.flow));
         }).start();
     }
 
@@ -224,18 +226,31 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             }
 
             Member member = testReport.getMember();
-            tvMemName.append(member.getName());
-            tvMemGender.append(member.getGender());
-            tvMemHeight.append(member.getHeight() + "cm");
-            tvMemAge.append(member.getAge() + "岁");
-            tvMemWeight.append(member.getWeight() + "kg");
-            tvLungsAge.append(String.valueOf(0.0f));
-            tvActionStandardLvl.append("中");
-            tvTestingDate.append(Utils.getDateByMills(testReport.getTimeMills()));
-            tvOperatorName.append(testReport.getOperator().getDisplayName());
+            if (member != null) {
+                tvMemName.setText(getString(R.string.report_mem_name, member.getName()));
+                tvMemGender.setText(getString(R.string.report_mem_gender, member.getGender()));
+                tvMemHeight.setText(getString(R.string.report_mem_height, member.getHeight()));
+                tvMemAge.setText(getString(R.string.report_mem_age, member.getAge()));
+                tvMemWeight.setText(getString(R.string.report_mem_weight, member.getWeight()));
+            }
+            Operator operator = testReport.getOperator();
+            if (operator != null) {
+                tvOperatorName.setText(getString(R.string.report_operator_name, operator.getDisplayName()));
+            }
+            tvLungsAge.setText(getString(R.string.report_lungs_age, String.valueOf(0.0f)));
+            tvActionStandardLvl.setText(getString(R.string.report_action_standard_lvl, "中"));
+            tvTestingDate.setText(getString(R.string.report_testing_date, Utils.getDateByMills(testReport.getTimeMills())));
 
-            //TODO: 数据转换为预计值、实际值、比值。
-            smartTable.setData(PARAM_LIST);
+            List<TestParam> paramList = new ArrayList<>();
+            paramList.add(new TestParam("FVC", 4.31f, DataUtils.getShorterFloat(testReport.getFVC(), 2)));
+            paramList.add(new TestParam("FEV1", 3.59f, DataUtils.getShorterFloat(testReport.getFEV1(), 2)));
+            float fev1pFvc = testReport.getFVC() < 0.01 ? 0 : DataUtils.getShorterFloat(testReport.getFEV1() / testReport.getFVC(), 2);
+            paramList.add(new TestParam("FEV1/fVC", 0.8120f, fev1pFvc));
+            paramList.add(new TestParam("PEF", 9.44f, DataUtils.getShorterFloat(testReport.getPEF(), 2)));
+            paramList.add(new TestParam("MVV", 125.65f, DataUtils.getShorterFloat(testReport.getMVV(), 2)));
+            paramList.add(new TestParam("TLC", 4.31f, DataUtils.getShorterFloat(testReport.getTLC(), 2)));
+            paramList.add(new TestParam("VC", 1f, DataUtils.getShorterFloat(testReport.getFVC(), 2)));
+            smartTable.setData(paramList);
         });
     }
 
@@ -281,9 +296,11 @@ public class TestReportFragment extends BaseVMFragment implements CustomToolbar.
             this.actual = actual;
             this.percent = PERCENT_FORMAT.format(actual / predict);
         }
-        public String[] getLineValue(){
-            return new String[]{name,String.valueOf(predict),String.valueOf(actual),percent};
+
+        public String[] getLineValue() {
+            return new String[]{name, String.valueOf(predict), String.valueOf(actual), percent};
         }
+
         public static String[] getTitle(){
             return new String[]{"指标","Pred","BEST","%Pred"};
         }

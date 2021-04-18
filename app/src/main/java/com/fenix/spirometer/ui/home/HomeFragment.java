@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AlertDialog;
@@ -111,10 +112,10 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
         } else if (vId == R.id.tv_fuc_history_report) {
             NavHostFragment.findNavController(this).navigate(R.id.home_to_history);
         } else {
-//            if (!isConnect) {
-//                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
-//                return;
-//            }
+            if (!isConnect) {
+                Toast.makeText(getActivity(), R.string.confirm_bt_connection, Toast.LENGTH_SHORT).show();
+                return;
+            }
             viewModel.setTesting(true);
             NavHostFragment.findNavController(this).navigate(R.id.home_to_member);
         }
@@ -135,9 +136,10 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
     public void onRightClick() {
         if (isConnect) {
             showBtConnectDialog(getString(R.string.confirm_replace_ble_device));
-            return;
+        } else {
+//            startActivity(new Intent(getActivity(), ScanActivity.class));
+            viewModel.connectToBleDevice("20:05:19:15:20:64");
         }
-        viewModel.connectToBleDevice("20:05:19:15:20:64");
     }
 
     private void showBtConnectDialog(String content) {

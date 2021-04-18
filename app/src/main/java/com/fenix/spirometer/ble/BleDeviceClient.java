@@ -46,7 +46,7 @@ public class BleDeviceClient {
     private static final int OFFSET_4 = 4;
     private static final int HEX_CODE = 0xFFFF;
     private static final int HEX_CODE_SIG = 0x00FF;
-    private static final int DATA_SIZE_SINGLE_TRANS = 25;
+    private static final int DATA_SIZE_SINGLE_TRANS = 10;
 
     public Context context;
     private BluetoothManager btManager;
@@ -322,12 +322,12 @@ public class BleDeviceClient {
             if (measureData == null) {
                 measureData = new MeasureData();
                 measureData.timeStamp = System.currentTimeMillis();
-                measureData.voltages = new int[DATA_SIZE_SINGLE_TRANS];
+                measureData.flow = new int[DATA_SIZE_SINGLE_TRANS];
             }
             // 电流转流量
             int voltage = ((newData[8] << 8) & HEX_CODE) + (newData[9] & HEX_CODE_SIG);
             Log.d("hff", "voltage = " + voltage + ", flow = " + DataUtils.voltageToFlow(voltage));
-            measureData.voltages[dataCount++] = DataUtils.voltageToFlow(voltage);
+            measureData.flow[dataCount++] = DataUtils.voltageToFlow(voltage);
         }
 
         // 每收集到10个数据传输

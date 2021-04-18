@@ -2,13 +2,13 @@ package com.fenix.spirometer.ble;
 
 public class MeasureData {
     public long timeStamp;
-    public int[] voltages;
+    public int[] flow;
 
     public MeasureData() {
     }
 
-    public MeasureData(long timeStamp, int[] voltages) {
+    public MeasureData(long timeStamp, int[] flow) {
         this.timeStamp = timeStamp;
-        this.voltages = voltages;
+        this.flow = flow;
     }
 }

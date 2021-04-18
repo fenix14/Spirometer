@@ -42,14 +42,18 @@ public class DataUtils {
     }
 
     public static int voltageToFlow(int voltage) {
-        int flow = (int) (0.0275f * voltage - 82.5);
+        int flow = (int) (0.275f * voltage - 825);
         if (flow == 0) {
-            if (voltage > 3010) {
+            if (voltage > 3015) {
                 flow = 1;
-            } else if (voltage < 2990) {
+            } else if (voltage < 2985) {
                 flow = -1;
             }
         }
         return flow;
+    }
+
+    public static float getShorterFloat(float number, int decimal) {
+        return new BigDecimal(number).setScale(decimal, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 }

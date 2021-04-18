@@ -41,8 +41,8 @@ public class TestViewModel extends ViewModel {
         bleRepo.stopMeasure();
     }
 
-    public void insertReport(TestReport testReport) {
-        reportRepo.insert(testReport);
+    public MutableLiveData<Long> insertReport(TestReport testReport) {
+        return reportRepo.insert(testReport);
     }
 
     public MutableLiveData<TestReport> getReport(long timeStamp) {

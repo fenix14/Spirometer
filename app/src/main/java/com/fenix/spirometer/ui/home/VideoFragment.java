@@ -46,7 +46,7 @@ public class VideoFragment extends BaseVMFragment implements CustomToolbar.OnIte
 
         String videoPath = Constants.VIDEO_PATH + "demo.mp4";
         if (!new File(videoPath).exists()) {
-            videoPath = "file:///android_asset/demo.mp4";
+            videoPath = "file:///android_assets/demo.mp4";
         }
         if (new File(videoPath).exists()) {
             videoView.setVideoPath(videoPath);

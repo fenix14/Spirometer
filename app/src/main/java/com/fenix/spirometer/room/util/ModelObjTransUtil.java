@@ -6,6 +6,7 @@ import com.fenix.spirometer.model.Member;
 import com.fenix.spirometer.model.TestReport;
 import com.fenix.spirometer.room.model.TestReportModel;
 import com.fenix.spirometer.room.model.TestReportWithData;
+import com.fenix.spirometer.room.model.VoltageData;
 
 public class ModelObjTransUtil {
 
@@ -41,6 +42,14 @@ public class ModelObjTransUtil {
     }
 
     public static TestReport model2Object(TestReportWithData model) {
-        return new TestReport(model.testReportModel.getTimeMills(), model.member, model.voltageData, model.operator, 0);
+        VoltageData voltageData = model.voltageData;
+        if (voltageData == null) {
+            return new TestReport(model.testReportModel.getTimeMills(), model.member, "",
+                    model.operator, 0, 0, 0, 0, 0, 0, 0);
+        } else {
+            return new TestReport(model.testReportModel.getTimeMills(), model.member, model.voltageData.dataAsJsonStr,
+                    model.operator, 0, voltageData.FVC, voltageData.FEV1, voltageData.PEF, voltageData.MVV, voltageData.TLC, voltageData.VC);
+        }
+
     }
 }

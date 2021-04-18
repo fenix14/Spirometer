@@ -9,7 +9,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import java.util.Arrays;
 
 public class CustomFormatter extends DefaultAxisValueFormatter {
-    private final static int[] title = new int[]{2000 , 4000, 6000};
+    private final static int[] title = new int[]{2000, 4000, 6000};
 
     /**
      * Constructor that specifies to how many digits the value should be
