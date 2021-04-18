@@ -1,5 +1,6 @@
 package com.fenix.spirometer.ble;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -13,14 +14,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.fenix.spirometer.app.MyApplication;
 import com.fenix.spirometer.model.BleDeviceState;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import static com.fenix.spirometer.model.BleDeviceState.State.STATE_CONNECTED;
+import static com.fenix.spirometer.model.BleDeviceState.State.STATE_CONNECTING;
+import static com.fenix.spirometer.model.BleDeviceState.State.STATE_DISCONNECTED;
+import static com.fenix.spirometer.model.BleDeviceState.State.STATE_FINISHED;
+import static com.fenix.spirometer.model.BleDeviceState.State.STATE_TESTING;
 
-import static com.fenix.spirometer.ble.Contants.MSG_DATA_RECEIVED;
-import static com.fenix.spirometer.ble.Contants.MSG_DEVICE_STATE_CHANGE;
-import static com.fenix.spirometer.ble.Contants.MSG_FAILED;
-
-public class BleRepository {
+public class BleRepository implements BleDeviceClient.BleStateListener {
     private static final BleRepository INSTANCE = new BleRepository();
 
     private BleDeviceClient bleDeviceClient;
@@ -29,6 +29,8 @@ public class BleRepository {
 
     private Handler repoHandler;
 
+    private BleDeviceClient.BleStateListener bleStateListener;
+
     private final MutableLiveData<BleDeviceState> mdBleDeviceState = new MutableLiveData<>();
 
     private final MutableLiveData<MeasureData> mdMeasureData = new MutableLiveData<>();
@@ -36,9 +38,9 @@ public class BleRepository {
     private BleRepository() {
         handlerThread = new HandlerThread("BleRepository");
         handlerThread.start();
-        repoHandler = new MyHandler(handlerThread.getLooper());
+        repoHandler = new Handler(handlerThread.getLooper());
         bleDeviceClient = BleDeviceClient.getInstance();
-        bleDeviceClient.init(MyApplication.getInstance(), repoHandler);
+        bleDeviceClient.init(MyApplication.getInstance(), this);
     }
 
 
@@ -57,28 +59,20 @@ public class BleRepository {
     public void connectTo(@NonNull String mac) {
         repoHandler.post(() -> {
             BleDeviceState state = mdBleDeviceState.getValue();
-            String currentMac = state == null ? null : state.getMac();
-            if (mac.equals(currentMac) && (state.getState() == BleDeviceState.State.STATE_CONNECTED
-                    || state.getState() == BleDeviceState.State.STATE_CONNECTING)) {
-                Log.w("hff", "same device connected: " + currentMac);
+            if (state != null && mac.equals(state.getMac()) && (state.getState() == STATE_CONNECTED || state.getState() == STATE_CONNECTING)) {
+                Log.w("hff", "same device ignore: " + mac);
                 return;
             }
+            state = new BleDeviceState();
+            state.setMac(mac);
+            state.setState(STATE_CONNECTING);
+            postState(state);
             bleDeviceClient.connectTo(mac);
         });
     }
 
     public void disConnect() {
-        repoHandler.post(() -> {
-            BleDeviceState state = mdBleDeviceState.getValue();
-            String currentMac = state == null ? null : state.getMac();
-            if (currentMac == null || state.getState() == BleDeviceState.State.STATE_DISCONNECTED
-                    || state.getState() == BleDeviceState.State.STATE_DISCONNECTING) {
-                Log.w("hff", "Already disconnected or disconnecting: " + currentMac);
-                return;
-            }
-            Log.w("hff", "disconnecting: " + currentMac);
-            bleDeviceClient.disconnect();
-        });
+        repoHandler.post(() -> bleDeviceClient.disconnect());
     }
 
     public void startMeasure() {
@@ -95,47 +89,42 @@ public class BleRepository {
         bleDeviceClient.release();
     }
 
+    private void postState(BleDeviceState state) {
+        repoHandler.post(() -> mdBleDeviceState.postValue(state));
+    }
+
     private void postData(MeasureData data) {
         repoHandler.post(() -> mdMeasureData.postValue(data));
     }
 
-    public class MyHandler extends Handler {
-        public String name;
-
-        MyHandler(Looper looper) {
-            super(looper);
-            name = getClass().getName() + (int) (Math.random() * 1000);
-            Log.d("hff", "name = " + name);
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            Log.d("hff", "repo.msg : " + msg.what + ", msg: " + msg.obj);
-            switch (msg.what) {
-                case MSG_DEVICE_STATE_CHANGE:
-                    if (msg.obj instanceof BleDeviceState) {
-                        changeState((BleDeviceState) msg.obj);
-                    }
-                    // 初始化完成
-                    break;
-                case MSG_DATA_RECEIVED:
-                    // 数据接收
-                    if (msg.obj instanceof MeasureData) {
-                        postData((MeasureData) msg.obj);
-                    }
-                    break;
-                case MSG_FAILED:
-                    changeState(null);
-                    break;
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
+    @Override
+    public void onBleStateChanged(int devState, Object data) {
+        Log.d("hff", "onBleStateChanged: " + devState);
+        switch (devState) {
+            case STATE_CONNECTED:
+            case STATE_CONNECTING:
+            case STATE_DISCONNECTED:
+                BleDeviceState state = mdBleDeviceState.getValue();
+                if (state == null) {
+                    return;
+                }
+                state.setState(devState);
+                if (data instanceof BluetoothDevice) {
+                    state.setDeviceName(((BluetoothDevice) data).getName());
+                }
+                postState(state);
+                break;
+            default:
+                break;
         }
     }
 
-    private void changeState(BleDeviceState state) {
-        Log.d("hff", "newState = " + state);
-        mdBleDeviceState.postValue(state);
+    @Override
+    public void onBleDataReceived(int testState, Object data) {
+        if (testState == STATE_TESTING || testState == STATE_FINISHED) {
+            if (data instanceof MeasureData) {
+                postData((MeasureData) data);
+            }
+        }
     }
 }

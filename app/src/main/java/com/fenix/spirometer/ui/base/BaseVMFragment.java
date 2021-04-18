@@ -55,8 +55,8 @@ public abstract class BaseVMFragment extends Fragment {
     public void onResume() {
         super.onResume();
         initToolNavBar();
-        initData();
         initObserver();
+        initData();
         initSunmiPrinterService();
     }
 

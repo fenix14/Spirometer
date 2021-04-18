@@ -98,7 +98,7 @@ public class HomeFragment extends BaseVMFragment implements View.OnClickListener
                     default:
                         break;
                 }
-                toolbar.setRightText(viewModel.getBleDeviceState().getValue().getStateString());
+                toolbar.setRightText(bleDeviceState.getStateString());
             }
         });
     }

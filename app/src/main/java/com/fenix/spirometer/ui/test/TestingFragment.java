@@ -63,10 +63,11 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
 
     // 测试开始时间
     private long startTimeStamp;
-    // TODO：无数据时绘制0，待定。
-    private static final int[] DEFAULT_DATA = new int[100];
-    // 所有读出数据，不包括DEFAULT_DATA
+    // 所有读出数据
     private List<MeasureData> measureDataList = new ArrayList<>();
+
+    private ExecutorService executorService;
+    private boolean isTesting = false;
 
     @Override
     protected void initToolNavBar() {
@@ -100,12 +101,14 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
         return R.layout.activity_linechart;
     }
 
-
+private Button start;
     @Override
     protected void initView(View rootView) {
         testViewModel = new ViewModelProvider(this, new AllViewModelFactory()).get(TestViewModel.class);
 
-        rootView.findViewById(R.id.add).setOnClickListener(this);
+        start = rootView.findViewById(R.id.add);
+        start.setOnClickListener(this);
+
         rootView.findViewById(R.id.add1).setOnClickListener(this);
         chart1 = rootView.findViewById(R.id.chart1);
         chart2 = rootView.findViewById(R.id.chart2);
@@ -149,8 +152,6 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
 
     @Override
     protected void initData() {
-        Arrays.fill(DEFAULT_DATA, 0);
-        chart1.animateX(1500);
         chart2.animateX(1500);
 
         ValueFormatter xAxisFormatter = new CustomFormatter(0);
@@ -190,11 +191,8 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     private LineDataSet createSet(String title, int color, int[] data) {
         LineDataSet set = new LineDataSet(null, null);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        //set.setColor(ColorTemplate.getHoloBlue());
         set.setColor(color);
         set.setLineWidth(2f);
-       // set.setDrawIcons(false);
-        //set.setDrawValues(false);
         set.setMode(LineDataSet.Mode.LINEAR);
         set.setDrawCircles(false);
         for (int datum : data) {
@@ -218,19 +216,10 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     }
 
     @Override
-    public void onValueSelected(Entry e, Highlight h) {
-
-    }
-
-    @Override
-    public void onNothingSelected() {
-        Log.i("Nothing selected", "Nothing selected.");
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add:
+                feedMultiple();
                 testViewModel.startMeasure();
                 break;
             case R.id.add1:
@@ -251,23 +240,31 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     final Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            MeasureData measureData = null;
             if (!dataQueue.isEmpty()) {
-                measureData = dataQueue.poll();
+                MeasureData measureData = dataQueue.poll();
+                if (measureData.voltages == null) {
+                    // 结束时会发送空数据
+                    executorService.shutdownNow();
+                    String voltages = JSONUtils.modelList2Json(measureDataList);
+                    TestReport testReport = new TestReport(startTimeStamp, viewModel.getChosenMember(), voltages, viewModel.getLoginState().getValue().getLoginOperator(), 0);
+                    testViewModel.insertReport(testReport);
+                    return;
+                }
                 measureDataList.add(measureData);
+                addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData.voltages);
             }
-            addEntry(chart1, "通气功能", ColorTemplate.getHoloBlue(), measureData == null ? DEFAULT_DATA : measureData.voltages);
         }
     };
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
     private void feedMultiple() {
+        if (executorService == null || executorService.isShutdown()) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
         executorService.execute(() -> {
             for (int i = 0; i <= 60; i++) {
                 // Don't generate garbage runnables inside the loop.
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                     Activity activity = getActivity();
                     if (activity != null) {
                         requireActivity().runOnUiThread(runnable);
@@ -283,18 +280,24 @@ public class TestingFragment extends BaseVMFragment implements View.OnClickListe
     protected void initObserver() {
         testViewModel.getBleDeviceState().observe(this, bleDeviceState -> {
             //TODO 蓝牙断开处理
-            if (bleDeviceState == null) {
-            } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_TESTING) {
-                startTimeStamp = System.currentTimeMillis();
-                feedMultiple();
-            } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_FINISHED) {
-                executorService.shutdownNow();
-                String voltages = JSONUtils.modelList2Json(measureDataList);
-                TestReport testReport = new TestReport(startTimeStamp, viewModel.getChosenMember(), voltages, viewModel.getLoginState().getValue().getLoginOperator(), 0);
-                testViewModel.insertReport(testReport);
+            if (bleDeviceState == null || (isTesting && bleDeviceState.getState() == BleDeviceState.State.STATE_DISCONNECTED)) {
+                start.setEnabled(false);
+            } else if (bleDeviceState.getState() == BleDeviceState.State.STATE_CONNECTED) {
+                // TODO:
+                start.setEnabled(true);
             }
         });
 
         testViewModel.getMeasureData().observe(this, dataQueue::offer);
+    }
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+
+    }
+
+    @Override
+    public void onNothingSelected() {
+        Log.i("Nothing selected", "Nothing selected.");
     }
 }

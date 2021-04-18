@@ -42,6 +42,14 @@ public class DataUtils {
     }
 
     public static int voltageToFlow(int voltage) {
-        return (int) (0.0275f * voltage - 82.5);
+        int flow = (int) (0.0275f * voltage - 82.5);
+        if (flow == 0) {
+            if (voltage > 3010) {
+                flow = 1;
+            } else if (voltage < 2990) {
+                flow = -1;
+            }
+        }
+        return flow;
     }
 }
